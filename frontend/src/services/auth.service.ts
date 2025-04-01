@@ -1,0 +1,18 @@
+/**
+ * Authentication service
+ * 
+ * This service is responsible for handling authentication-related functionality,
+ * including storing and retrieving authentication tokens, as well as services
+ * related to the API endpoints that start with /auth.
+ * 
+ * Note that this file should not import apiUtil.ts.
+ */
+
+/**
+ * Gets the authentication token from localStorage
+ * This is a stub that will be replaced with the actual implementation
+ */
+export const getAuthToken = (): string | null => {
+  // TODO
+  return null;
+}; 
