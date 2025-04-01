@@ -11,6 +11,7 @@
 /**
  * Gets the authentication token from localStorage
  * This is a stub that will be replaced with the actual implementation
+ * This function is required by apiUtil.ts to make authenticated API requests
  */
 export const getAuthToken = (): string | null => {
   // TODO
