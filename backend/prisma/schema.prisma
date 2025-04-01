@@ -1,0 +1,128 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  regular
+  cashier
+  manager
+  superuser
+}
+
+enum TransactionType {
+  purchase
+  adjustment
+  redemption
+  transfer
+  event
+}
+
+enum PromotionType {
+  automatic
+  one_time
+}
+
+// Check: email ends with @mail.utoronto.ca
+model User {
+  id                Int           @id @default(autoincrement())
+  utorid            String        @unique
+  name              String
+  email             String       @unique
+  verified          Boolean       @default(false)
+  resetExpiresAt    DateTime?      
+  resetToken        String?
+  role              Role          @default(regular)
+  activated         Boolean       @default(false)
+  birthday          DateTime?
+  points            Int           @default(0)
+  createdAt         DateTime      @default(now())
+  lastLogin         DateTime?
+  avatarUrl         String?
+  suspicious        Boolean       @default(false)
+  password          String
+
+  // Relationships
+  transactions      Transaction[] @relation("TransactionOwner")
+  createdTransactions Transaction[] @relation("TransactionCreator")
+  promotionUsed     Promotion[]   @relation("UsedOneTimePromotions") // needs to update when transactions use one-time promotions
+  eventsOrganized   Event[]       @relation("EventOrganizers")
+  eventsAttended    Event[]       @relation("EventGuests")
+}
+
+// On retrieval, these fields will be included for all types: 
+// id, type, amount, promotionIDs, remark, createdBy
+// Besides, purchase will include spent, and all other types will include relatedId
+model Transaction {
+  id            Int               @id @default(autoincrement())
+  type          TransactionType
+  remark        String?
+  suspicious    Boolean           @default(false) // for purchase, if cashier suspicious, true and not add points to accounts
+
+  // Type specific fields
+  spent         Float?            // Purchase: dollar amount spent in this transaction
+  amount        Int?              // Purchase (> 0), Adjustment (<> 0), Redemption? (> 0), Transfer (> 0), Event (> 0)
+
+  isSender      Boolean           @default(true) // Transfer only: if this is the sender's transaction (TODO: need?)
+
+  // Foreign key to owner
+  // For purchase transactions, this is the customer making the purchase
+  // For redemption transactions, this is the customer redeeming points
+  // For transfer, this is the sender or receiver
+  // For adjustment, this is the user whose previous transaction is being adjusted
+  // For event, this is the recipient who got awarded points
+  utorid        String
+  user          User              @relation("TransactionOwner", fields: [utorid], references: [utorid])
+
+  // Purchase by cashier (needs verify if suspicious), Adjustment by manager, 
+  // Redemption by customer, Transfer by user, Event by organizer/manager
+  createdBy     String
+  creater       User              @relation("TransactionCreator", fields: [createdBy], references: [utorid])
+  
+  // For adjustment, this is the ID of the transaction for which the adjustment is being made to
+  // For transfer, this is the ID of the other user (i.e., for sender's transaction, this is the receiver's ID, and vice versa)
+  // For redemption, this is the user ID of the cashier who processed the redemption (null if not processed yet)
+  // For event, this is the ID of the event from which points were disbursed
+  // For purchase, this field is not used
+  relatedId     Int?              
+
+  // Purchase and Adjustment only: promotion (both types) used in this transaction.
+  // For Adjustment, simply add the promotions to the list of promotion ids, and don’t preform any calculations with them
+  promotionUsed Promotion[]       @relation("PromotionsApplied")
+}
+
+model Event {
+  id                Int         @id @default(autoincrement())
+  name              String
+  description       String
+  location          String
+  startTime         DateTime
+  endTime           DateTime
+  capacity          Int?        // > 0 or null (no limit)
+  pointsAllocated   Int         // pointsRemain = pointsAllocated - pointsAwarded.
+  pointsAwarded     Int         @default(0)
+  published         Boolean     @default(false)
+
+  // Many-to-many relationships
+  organizers        User[]      @relation("EventOrganizers")
+  guests            User[]      @relation("EventGuests")
+}
+
+model Promotion {
+  id           Int                @id @default(autoincrement())
+  name         String
+  description  String
+  type         PromotionType
+  startTime    DateTime                                     // must not be in the past  
+  endTime      DateTime                                     // must be after startTime
+  minSpending  Float              @default(0.00)            // minimum spending required to trigger this promotion.
+  rate         Float              @default(0.00)            // extra rate. (e.g., 0.01 = 1 extra point per $1 spent)
+  points       Int                @default(0)               // additional promotion points for qualifying purchase. 
+
+  transactions  Transaction[]     @relation("PromotionsApplied")
+  oneTimeUsed   User[]            @relation("UsedOneTimePromotions")
+}
