@@ -24,10 +24,10 @@ function App() {
       <Route path="/verifyEmail" element={<VerifyEmailPage />} />
       <Route path="/resetPassword" element={<ResetPasswordPage />} />
       <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
-      <Route path="/users" element={<UsersPage />} />}
-      <Route path="/promotions" element={<PromotionsPage />} />}
-      <Route path="/events" element={<EventsPage />} />}
-      <Route path="/organizer-events" element={<OrganizerEventsPage />} />}
+      <Route path="/users" element={<UsersPage />} />
+      <Route path="/promotions" element={<PromotionsPage />} />
+      <Route path="/events" element={<EventsPage />} />
+      <Route path="/organizer-events" element={<OrganizerEventsPage />} />
     </Routes>
   </Router>
 );
