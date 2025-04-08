@@ -14,6 +14,5 @@
  * This function is required by api.utils.ts to make authenticated API requests
  */
 export const getAuthToken = (): string | null => {
-  // TODO
-  return null;
-}; 
+  return localStorage.getItem('token'); // Retrieve the token from localStorage
+};

@@ -1,0 +1,22 @@
+.item-box {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px 0;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.item-box:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.item-box h3 {
+  margin: 0 0 8px;
+  font-size: 1.2em;
+}
+
+.item-box p {
+  margin: 0;
+  color: #666;
+}
