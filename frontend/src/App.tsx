@@ -7,6 +7,10 @@ import LoginPage from './pages/Login';
 import VerifyEmailPage from './pages/VerifyEmail';
 import ResetPasswordPage from './pages/ResetPassword';
 import TransactionDetailPage from './pages/TransactionDetail';
+import UsersPage from './pages/UsersPage.tsx';
+import PromotionsPage from './pages/PromotionsPage.tsx';
+import EventsPage from './pages/EventsPage.tsx';
+import OrganizerEventsPage from './pages/OrganizerEventsPage.tsx';
 
 function App() {
   // login: the page to login, uses /auth/tokens
@@ -20,9 +24,13 @@ function App() {
       <Route path="/verifyEmail" element={<VerifyEmailPage />} />
       <Route path="/resetPassword" element={<ResetPasswordPage />} />
       <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
+      <Route path="/users" element={<UsersPage />} />}
+      <Route path="/promotions" element={<PromotionsPage />} />}
+      <Route path="/events" element={<EventsPage />} />}
+      <Route path="/organizer-events" element={<OrganizerEventsPage />} />}
     </Routes>
   </Router>
 );
-}
+};
 
-export default App
+export default App;
