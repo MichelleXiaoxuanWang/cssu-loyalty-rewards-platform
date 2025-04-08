@@ -1,25 +1,36 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import LoginPage from './pages/Login';
+import VerifyEmailPage from './pages/VerifyEmail';
+import ResetPasswordPage from './pages/ResetPassword';
+import TransactionDetailPage from './pages/TransactionDetail';
 import UsersPage from './pages/UsersPage.tsx';
 import PromotionsPage from './pages/PromotionsPage.tsx';
 import EventsPage from './pages/EventsPage.tsx';
 import OrganizerEventsPage from './pages/OrganizerEventsPage.tsx';
-import { hasAccess } from './utils/auth.utils';
 
-const App: React.FC = () => {
-  const userRole = 'manager'; // Temporary hardcoded role for matching string
-
+function App() {
+  // login: the page to login, uses /auth/tokens
+  // verifyEmail: the page to send verify email, uses /auth/resets
+  // resetPassword: the page to reset password, uses /auth/resets/:resetToken
   return (
-    <Router>
-      <Routes>
-        {hasAccess(userRole, 'UsersPage') && <Route path="/users" element={<UsersPage />} />}
-        {hasAccess(userRole, 'PromotionsPage') && <Route path="/promotions" element={<PromotionsPage />} />}
-        {hasAccess(userRole, 'EventsPage') && <Route path="/events" element={<EventsPage />} />}
-        {hasAccess(userRole, 'OrganizerEventsPage') && <Route path="/organizer-events" element={<OrganizerEventsPage />} />}
-        <Route path="*" element={<Navigate to="/events" />} />
-      </Routes>
-    </Router>
-  );
+  <Router>
+    <Routes>
+      <Route path="/" element={<div>Home</div>} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/verifyEmail" element={<VerifyEmailPage />} />
+      <Route path="/resetPassword" element={<ResetPasswordPage />} />
+      <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
+      <Route path="/users" element={<UsersPage />} />}
+      <Route path="/promotions" element={<PromotionsPage />} />}
+      <Route path="/events" element={<EventsPage />} />}
+      <Route path="/organizer-events" element={<OrganizerEventsPage />} />}
+    </Routes>
+  </Router>
+);
 };
 
 export default App;

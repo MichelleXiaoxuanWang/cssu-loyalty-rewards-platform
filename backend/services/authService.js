@@ -28,7 +28,8 @@ async function login(utorid, password) {
 
     // If user not found or password doesn't match
     if (!user || user.password !== password) {
-        const error = new Error('Invalid credential');
+        // const error = new Error('Invalid credential');
+        const error = new Error('User does not exists or incorrect password!');
         error.statusCode = 401;
         throw error;
     }
@@ -58,10 +59,12 @@ async function login(utorid, password) {
     );
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24);
+    const userRole = user.role;
 
     return {
         token,
-        expiresAt
+        expiresAt,
+        userRole
     };
 }
 
