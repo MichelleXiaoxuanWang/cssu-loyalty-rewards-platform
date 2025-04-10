@@ -1,6 +1,6 @@
 // src/pages/ResetPasswordPage.tsx
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import ResetPasswordForm from '../components/ResetPasswordForm';
 
 const ResetPasswordPage: React.FC = () => {
@@ -28,8 +28,7 @@ const ResetPasswordPage: React.FC = () => {
       {/* Always render the form with the token (empty string if not provided) */}
       <ResetPasswordForm
         onResetSuccess={handleResetSuccess}
-        onError={handleError}
-      />
+        onError={handleError} resetToken={''}      />
       <p style={{ marginTop: '1rem' }}>
         <Link to="/login">Back to Login</Link>
       </p>
