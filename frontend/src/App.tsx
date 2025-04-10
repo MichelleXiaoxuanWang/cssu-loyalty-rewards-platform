@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, ReactNode } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -11,8 +11,8 @@ import UsersPage from './pages/UsersPage.tsx';
 import PromotionsPage from './pages/PromotionsPage.tsx';
 import EventsPage from './pages/EventsPage.tsx';
 import OrganizerEventsPage from './pages/OrganizerEventsPage.tsx';
-import { hasAccess } from './utils/auth.utils';
-import React, { ReactNode } from 'react';
+import CreateUser from './pages/CreateUser.tsx';
+import Navbar from './components/NavBar.tsx';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -20,13 +20,13 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ children, page }: ProtectedRouteProps) {
-  // const token = localStorage.getItem('token');
-  // const role = localStorage.getItem('role');
-  const role = 'superuser'; // For testing purposes, set role to superuser
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  // const role = 'superuser'; // For testing purposes, set role to superuser
 
-  // if (!token || !role || !hasAccess(role, page)) {
-  //   return <Navigate to="/login" replace />;
-  // }
+  if (!token || !role || !hasAccess(role, page)) {
+    return <Navigate to="/login" replace />;
+  }
 
   return <>{children}</>;
 }
@@ -37,45 +37,49 @@ function App() {
   // resetPassword: the page to reset password, uses /auth/resets/:resetToken
   return (
   <Router>
-    <Routes>
-      <Route path="/" element={<div>Home</div>} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/verifyEmail" element={<VerifyEmailPage />} />
-      <Route path="/resetPassword" element={<ResetPasswordPage />} />
-      <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
-      <Route
-        path="/users"
-        element={
-          <ProtectedRoute page="UsersPage">
-            <UsersPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/promotions"
-        element={
-          <ProtectedRoute page="PromotionsPage">
-            <PromotionsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/events"
-        element={
-          <ProtectedRoute page="EventsPage">
-            <EventsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/organizer-events"
-        element={
-          <ProtectedRoute page="OrganizerEventsPage">
-            <OrganizerEventsPage />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <Navbar />
+    <div>
+      <Routes>
+        <Route path="/" element={<div>Home</div>} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/verifyEmail" element={<VerifyEmailPage />} />
+        <Route path="/resetPassword" element={<ResetPasswordPage />} />
+        <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute page="UsersPage">
+              <UsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/promotions"
+          element={
+            <ProtectedRoute page="PromotionsPage">
+              <PromotionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/events"
+          element={
+            <ProtectedRoute page="EventsPage">
+              <EventsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/organizer-events"
+          element={
+            <ProtectedRoute page="OrganizerEventsPage">
+              <OrganizerEventsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/create-user" element={<CreateUser/>} />
+      </Routes>
+    </div>
   </Router>
 );
 };
