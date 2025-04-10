@@ -11,6 +11,8 @@ import UsersPage from './pages/UsersPage.tsx';
 import PromotionsPage from './pages/PromotionsPage.tsx';
 import EventsPage from './pages/EventsPage.tsx';
 import OrganizerEventsPage from './pages/OrganizerEventsPage.tsx';
+import CreateUser from './pages/CreateUser.tsx';
+import Navbar from './components/NavBar.tsx';
 
 function App() {
   // login: the page to login, uses /auth/tokens
@@ -18,17 +20,21 @@ function App() {
   // resetPassword: the page to reset password, uses /auth/resets/:resetToken
   return (
   <Router>
-    <Routes>
-      <Route path="/" element={<div>Home</div>} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/verifyEmail" element={<VerifyEmailPage />} />
-      <Route path="/resetPassword" element={<ResetPasswordPage />} />
-      <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
-      <Route path="/users" element={<UsersPage />} />
-      <Route path="/promotions" element={<PromotionsPage />} />
-      <Route path="/events" element={<EventsPage />} />
-      <Route path="/organizer-events" element={<OrganizerEventsPage />} />
-    </Routes>
+    <Navbar />
+    <div>
+       <Routes>
+          <Route path="/" element={<div>Home</div>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/verifyEmail" element={<VerifyEmailPage />} />
+          <Route path="/resetPassword" element={<ResetPasswordPage />} />
+          <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/promotions" element={<PromotionsPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/organizer-events" element={<OrganizerEventsPage />} />
+          <Route path="/create-user" element={<CreateUser/>} />
+        </Routes>
+    </div>
   </Router>
 );
 };

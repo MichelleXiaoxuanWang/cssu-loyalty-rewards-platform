@@ -31,10 +31,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onError }) => {
 
       const data = await response.json();
       // Save the token, token expiration, and the highest role in localStorage
-      //TODO: 
       localStorage.setItem(`resetExpiresAt_${utorid}`, data.expiresAt);
       localStorage.setItem(`token_${utorid}`, data.token);
-      localStorage.setItem(`role_${utorid}`, data.role);
+      localStorage.setItem(`role_${utorid}`, data.userRole);
+      //TODO:just use this for now, maybe delete this later
+      localStorage.setItem(`currentUser`, utorid);
       onLoginSuccess();
     } catch (error: any) {
       onError(error.message);
