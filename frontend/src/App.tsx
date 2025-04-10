@@ -1,7 +1,5 @@
-import { useState, ReactNode } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { useState, ReactNode } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import VerifyEmailPage from './pages/VerifyEmail';
@@ -13,6 +11,7 @@ import EventsPage from './pages/EventsPage.tsx';
 import OrganizerEventsPage from './pages/OrganizerEventsPage.tsx';
 import CreateUser from './pages/CreateUser.tsx';
 import Navbar from './components/NavBar.tsx';
+import { hasAccess } from './utils/auth.utils';
 
 interface ProtectedRouteProps {
   children: ReactNode;
