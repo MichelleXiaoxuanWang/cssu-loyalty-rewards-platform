@@ -17,15 +17,18 @@ const UsersPage: React.FC = () => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const role = localStorage.getItem('role');
 
   useEffect(() => {
-    const loadUsers = async () => {
-      const data = await fetchUsers(currentPage, {}, '');
-      setUsers(data.users);
-      setTotalPages(data.totalPages);
-    };
-    loadUsers();
-  }, [currentPage]);
+    if (role === 'manager' || role === 'superuser') {
+      const loadUsers = async () => {
+        const data = await fetchUsers(currentPage, {}, '');
+        setUsers(data.users);
+        setTotalPages(data.totalPages);
+      };
+      loadUsers();
+    }
+  }, [currentPage, role]);
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
@@ -59,6 +62,26 @@ const UsersPage: React.FC = () => {
     setUsers(data.users);
     setTotalPages(data.totalPages);
   };
+
+  if (role === 'regular') {
+    return <div>Access Denied</div>;
+  }
+
+  if (role === 'cashier') {
+    return (
+      <div>
+        <h1>Create New User</h1>
+        <Form
+          fields={[
+            { name: 'name', label: 'Name', type: 'text' },
+            { name: 'role', label: 'Role', type: 'select', options: ['regular', 'cashier']},
+            { name: 'email', label: 'Email', type: 'email' },
+          ]}
+          onSubmit={handleSubmit}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>

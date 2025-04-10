@@ -56,15 +56,18 @@ const OrganizerEventsPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Organizer Events Page</h1>
-      {events.map((event) => (
+      <h1>My Organized Events</h1>
+      {events.length === 0 ? (
+        <div>No events found</div>
+      ) : (
+        events.map((event) => (
         <ItemBox
           key={event.id}
           title={event.title}
           description={event.description}
           onClick={() => console.log(`Clicked on event ${event.id}`)}
         />
-      ))}
+        )))}
       <button onClick={() => awardPoints(1, null, 10)}>Award 10 Points to All Participants</button>
     </div>
   );
