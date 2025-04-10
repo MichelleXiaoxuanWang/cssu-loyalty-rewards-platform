@@ -17,15 +17,18 @@ const EventsPage: React.FC = () => {
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const role = localStorage.getItem('role');
 
   useEffect(() => {
-    const loadEvents = async () => {
-      const data = await fetchEvents(currentPage, {}, '');
-      setEvents(data.events);
-      setTotalPages(data.totalPages);
-    };
-    loadEvents();
-  }, [currentPage]);
+    if (role === 'manager' || role === 'superuser') {
+      const loadEvents = async () => {
+        const data = await fetchEvents(currentPage, {}, '');
+        setEvents(data.events);
+        setTotalPages(data.totalPages);
+      };
+      loadEvents();
+    }
+  }, [currentPage, role]);
 
   const handleEdit = (event: any) => {
     setEditingEvent(event);
@@ -65,10 +68,40 @@ const EventsPage: React.FC = () => {
     setTotalPages(data.totalPages);
   };
 
+  if (role === 'regular' || role === 'cashier') {
+    return (
+      <div>
+        <h1>Events</h1>
+        {events.length === 0 ? (
+          <div>No events available</div>
+        ) : (
+          events.map((event) => (
+            <ItemBox
+              key={event.id}
+              title={event.title}
+              description={event.description}
+              onClick={() => handleEdit(event)}
+            />
+          ))
+        )}
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>Events Page</h1>
       <button onClick={handleCreate}>Create New Event</button>
+      {creatingEvent && (
+        <Form
+          fields={[
+            { name: 'name', label: 'Name', type: 'text' },
+            { name: 'description', label: 'Description', type: 'text' },
+            { name: 'location', label: 'Location', type: 'text' },
+          ]}
+          onSubmit={handleSubmit}
+        />
+      )}
       <FilterAndSort
         filters={[
           { label: 'Name', value: 'name' },
@@ -95,7 +128,7 @@ const EventsPage: React.FC = () => {
           />
         ))
       )}
-      {(editingEvent || creatingEvent) && (
+      {(editingEvent) && (
         <Form
           fields={[
             { name: 'title', label: 'Title', type: 'text', value: editingEvent?.title || '' },

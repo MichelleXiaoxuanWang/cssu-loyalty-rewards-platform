@@ -17,15 +17,18 @@ const PromotionsPage: React.FC = () => {
   const [creatingPromotion, setCreatingPromotion] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const role = localStorage.getItem('role');
 
   useEffect(() => {
-    const loadPromotions = async () => {
-      const data = await fetchPromotions(currentPage, {}, '');
-      setPromotions(data.promotions);
-      setTotalPages(data.totalPages);
-    };
-    loadPromotions();
-  }, [currentPage]);
+    if (role === 'manager' || role === 'superuser') {
+      const loadPromotions = async () => {
+        const data = await fetchPromotions(currentPage, {}, '');
+        setPromotions(data.promotions);
+        setTotalPages(data.totalPages);
+      };
+      loadPromotions();
+    }
+  }, [currentPage, role]);
 
   const handleEdit = (promotion: any) => {
     setEditingPromotion(promotion);
@@ -65,10 +68,39 @@ const PromotionsPage: React.FC = () => {
     setTotalPages(data.totalPages);
   };
 
+  if (role === 'regular' || role === 'cashier') {
+    return (
+      <div>
+        <h1>Promotions</h1>
+        {promotions.length === 0 ? (
+          <div>No promotions available</div>
+        ) : (
+          promotions.map((promotion) => (
+            <ItemBox
+              key={promotion.id}
+              title={promotion.title}
+              description={promotion.description}
+              onClick={() => handleEdit(promotion)}
+            />
+          ))
+        )}
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>Promotions Page</h1>
       <button onClick={handleCreate}>Create New Promotion</button>
+      {(creatingPromotion) && (
+        <Form
+          fields={[
+            { name: 'title', label: 'Title', type: 'text', value: editingPromotion?.title || '' },
+            { name: 'description', label: 'Description', type: 'text', value: editingPromotion?.description || '' },
+          ]}
+          onSubmit={handleSubmit}
+        />
+      )}
       <FilterAndSort
         filters={[
           { label: 'Name', value: 'name' },
@@ -85,16 +117,16 @@ const PromotionsPage: React.FC = () => {
           <p>There are currently no entries</p>
         </div>
       ) : (
-        promotions.map((promo) => (
+        promotions.map((promotion) => (
           <ItemBox
-            key={promo.id}
-            title={promo.title}
-            description={promo.description}
-            onClick={() => handleEdit(promo)}
+            key={promotion.id}
+            title={promotion.title}
+            description={promotion.description}
+            onClick={() => handleEdit(promotion)}
           />
         ))
       )}
-      {(editingPromotion || creatingPromotion) && (
+      {(editingPromotion) && (
         <Form
           fields={[
             { name: 'title', label: 'Title', type: 'text', value: editingPromotion?.title || '' },

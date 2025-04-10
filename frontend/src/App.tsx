@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, ReactNode } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -14,6 +14,23 @@ import OrganizerEventsPage from './pages/OrganizerEventsPage.tsx';
 import CreateUser from './pages/CreateUser.tsx';
 import Navbar from './components/NavBar.tsx';
 
+interface ProtectedRouteProps {
+  children: ReactNode;
+  page: string;
+}
+
+function ProtectedRoute({ children, page }: ProtectedRouteProps) {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  // const role = 'superuser'; // For testing purposes, set role to superuser
+
+  if (!token || !role || !hasAccess(role, page)) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 function App() {
   // login: the page to login, uses /auth/tokens
   // verifyEmail: the page to send verify email, uses /auth/resets
@@ -22,18 +39,46 @@ function App() {
   <Router>
     <Navbar />
     <div>
-       <Routes>
-          <Route path="/" element={<div>Home</div>} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/verifyEmail" element={<VerifyEmailPage />} />
-          <Route path="/resetPassword" element={<ResetPasswordPage />} />
-          <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/promotions" element={<PromotionsPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/organizer-events" element={<OrganizerEventsPage />} />
-          <Route path="/create-user" element={<CreateUser/>} />
-        </Routes>
+      <Routes>
+        <Route path="/" element={<div>Home</div>} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/verifyEmail" element={<VerifyEmailPage />} />
+        <Route path="/resetPassword" element={<ResetPasswordPage />} />
+        <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />  
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute page="UsersPage">
+              <UsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/promotions"
+          element={
+            <ProtectedRoute page="PromotionsPage">
+              <PromotionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/events"
+          element={
+            <ProtectedRoute page="EventsPage">
+              <EventsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/organizer-events"
+          element={
+            <ProtectedRoute page="OrganizerEventsPage">
+              <OrganizerEventsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/create-user" element={<CreateUser/>} />
+      </Routes>
     </div>
   </Router>
 );

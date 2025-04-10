@@ -5,6 +5,7 @@ type FormField = {
   label: string;
   type: string;
   value?: string | number | boolean;
+  options?: string[]; // Added options property for select fields
 };
 
 type FormProps = {
@@ -37,7 +38,11 @@ const Form: React.FC<FormProps> = ({ fields, onSubmit }) => {
           <label htmlFor={field.name}>{field.label}</label>
           {field.type === 'select' ? (
             <select name={field.name} value={formData[field.name]} onChange={handleChange}>
-              {/* Add options dynamically */}
+              {field.options?.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
             </select>
           ) : (
             <input
