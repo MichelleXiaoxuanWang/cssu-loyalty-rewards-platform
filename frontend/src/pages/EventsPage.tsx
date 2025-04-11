@@ -4,6 +4,7 @@ import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchEvents, updateEvent, createEvent } from '../services/event.service';
+import '../App.css';
 
 interface Event {
   id: number;
@@ -23,9 +24,14 @@ const EventsPage: React.FC = () => {
   useEffect(() => {
     if (role === 'manager' || role === 'superuser') {
       const loadEvents = async () => {
-        const data = await fetchEvents(currentPage, {}, '');
-        setEvents(data.events);
-        setTotalPages(data.totalPages);
+        try {
+          const data = await fetchEvents(currentPage, {}, '');
+          setEvents(data.events || []);
+          setTotalPages(data.totalPages || 1);
+        } catch (error) {
+          console.error('Error loading events:', error);
+          setEvents([]);
+        }
       };
       loadEvents();
     }
@@ -74,7 +80,7 @@ const EventsPage: React.FC = () => {
       <div>
         <h1>Events</h1>
         {events.length === 0 ? (
-          <div>No events available</div>
+          <div className="no-entries">No events available</div>
         ) : (
           events.map((event) => (
             <ItemBox
@@ -91,7 +97,7 @@ const EventsPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Events Page</h1>
+      <h1>Events</h1>
       <button onClick={handleCreate}>Create New Event</button>
       {creatingEvent && (
         <Form
@@ -114,10 +120,11 @@ const EventsPage: React.FC = () => {
         sortOptions={[{ label: 'Title', value: 'title' }, { label: 'Date', value: 'date' }]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
+        disabled={events.length === 0}
       />
       {events.length === 0 ? (
-        <div style={{ margin: '20px 0' }}>
-          <p>There are currently no entries</p>
+        <div className="no-entries">
+          <p>No events available</p>
         </div>
       ) : (
         events.map((event) => (

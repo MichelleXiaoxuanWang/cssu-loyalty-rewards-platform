@@ -71,14 +71,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/organizer-events"
-          element={
-            <ProtectedRoute page="OrganizerEventsPage">
-              <OrganizerEventsPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/organizer-events" element={<OrganizerEventsPage />} />
         <Route path="/create-user" element={<CreateUser/>} />
       </Routes>
     </div>

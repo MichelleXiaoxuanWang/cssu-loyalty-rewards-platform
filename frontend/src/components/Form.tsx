@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Form.css';
 
 type FormField = {
   name: string;
@@ -32,7 +33,7 @@ const Form: React.FC<FormProps> = ({ fields, onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="form" onSubmit={handleSubmit}>
       {fields.map((field) => (
         <div key={field.name}>
           <label htmlFor={field.name}>{field.label}</label>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ItemBox from '../components/ItemBox';
 import { fetchEvents } from '../services/event.service';
+import '../App.css';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -12,18 +13,25 @@ interface Event {
 
 const OrganizerEventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
+  const [currentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const role = 'organizer'; // Assuming role is 'organizer' for this example
 
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const data = await fetchEvents(1, {}, ''); // Fetch events for the organizer
-        setEvents(data.events);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-      }
-    };
-    loadEvents();
-  }, []);
+    if (role === 'organizer') {
+      const loadEvents = async () => {
+        try {
+          const data = await fetchEvents(currentPage, {}, '');
+          setEvents(data.events || []);
+          setTotalPages(data.totalPages || 1);
+        } catch (error) {
+          console.error('Error loading events:', error);
+          setEvents([]);
+        }
+      };
+      loadEvents();
+    }
+  }, [currentPage, role]);
 
   const awardPoints = async (eventId: number, userId: string | null, points: number) => {
     try {
