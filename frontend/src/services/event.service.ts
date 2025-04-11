@@ -11,3 +11,12 @@ export const updateEvent = async (eventId: number, eventData: Record<string, any
 export const createEvent = async (eventData: Record<string, any>) => {
   return apiCall(`/events`, 'POST', eventData);
 };
+
+export async function isUserOrganizer(userId: number): Promise<boolean> {
+  const response = await fetch(`/api/events/is-organizer/${userId}`);
+  if (!response.ok) {
+    throw new Error('Failed to check organizer status');
+  }
+  const data = await response.json();
+  return data.isOrganizer;
+}

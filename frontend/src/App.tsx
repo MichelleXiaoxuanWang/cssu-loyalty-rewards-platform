@@ -1,5 +1,5 @@
 import './App.css'
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import VerifyEmailPage from './pages/VerifyEmail';
@@ -13,6 +13,7 @@ import CreateUser from './pages/CreateUser.tsx';
 import Navbar from './components/NavBar.tsx';
 import { hasAccess } from './utils/auth.utils';
 import CreateTransaction from './pages/CreateTransaction.tsx';
+import { isUserOrganizer } from './services/event.service';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -33,6 +34,20 @@ function ProtectedRoute({ children, page }: ProtectedRouteProps) {
 }
 
 function App() {
+  const [isOrganizer, setIsOrganizer] = useState(false);
+
+  useEffect(() => {
+    const checkOrganizerStatus = async () => {
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        const isOrganizer = await isUserOrganizer(parseInt(userId));
+        setIsOrganizer(isOrganizer);
+      }
+    };
+
+    checkOrganizerStatus();
+  }, []);
+
   // login: the page to login, uses /auth/tokens
   // verifyEmail: the page to send verify email, uses /auth/resets
   // resetPassword: the page to reset password, uses /auth/resets/:resetToken
@@ -71,7 +86,9 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/organizer-events" element={<OrganizerEventsPage />} />
+        {isOrganizer && (
+          <Route path="/organizer-events" element={<OrganizerEventsPage />} />
+        )}
         <Route path="/create-user" element={<CreateUser/>} />
       </Routes>
     </div>

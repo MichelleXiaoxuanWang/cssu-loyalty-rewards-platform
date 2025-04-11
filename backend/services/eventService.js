@@ -1255,6 +1255,29 @@ async function createEventTransaction(transactionData) {
     }
 }
 
+/**
+ * Check if a user is an organizer of any event
+ * @param {number} userId - The ID of the user
+ * @returns {Promise<boolean>} True if the user is an organizer, otherwise false
+ */
+async function isUserOrganizer(userId) {
+  const isOrganizer = await prisma.event.findFirst({
+    where: {
+      published: true,
+      organizers: {
+        some: {
+          id: userId,
+        },
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return Boolean(isOrganizer);
+}
+
 module.exports = {
     createEvent,
     updateEvent,
@@ -1267,5 +1290,6 @@ module.exports = {
     getEvents,
     getEventById,
     deleteEvent,
-    createEventTransaction
+    createEventTransaction,
+    isUserOrganizer
 };
