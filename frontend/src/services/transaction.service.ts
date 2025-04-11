@@ -1,12 +1,13 @@
 import { apiCall } from '../utils/api.utils';
 
 type TransferTransactionData = {
-    userId: string;
+    type: string;
     amount: number;
     remark?: string;
 };
 
 type RedeemTransactionData = {
+    type: string;
     amount: number;
     remark?: string;
 };
@@ -30,11 +31,11 @@ type AdjustmentTransactionData = {
 };
 
 const transferPoints = async (userId: string, transactionData: TransferTransactionData) => {
-  return apiCall(`/users/${userId}/transactions`, 'POST', { transactionData });
+  return apiCall(`/users/${userId}/transactions`, 'POST', transactionData );
 };
 
 const redeemPoints = async (transactionData: RedeemTransactionData) => {
-  return apiCall('/users/me/transactions', 'POST', { transactionData });
+  return apiCall('/users/me/transactions', 'POST', transactionData);
 };
 
 const purchaseTransaction = async (transactionData: PurchaseTransactionData) => {

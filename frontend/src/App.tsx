@@ -20,8 +20,9 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ children, page }: ProtectedRouteProps) {
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
+  const currentUser = localStorage.getItem('currentUser');
+  const token = localStorage.getItem(`token_${currentUser}`);
+  const role = localStorage.getItem(`role_${currentUser}`);
   // const role = 'superuser'; // For testing purposes, set role to superuser
 
   if (!token || !role || !hasAccess(role, page)) {

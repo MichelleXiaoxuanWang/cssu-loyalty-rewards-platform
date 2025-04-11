@@ -60,11 +60,13 @@ async function login(utorid, password) {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24);
     const userRole = user.role;
+    const userId = user.id;
 
     return {
         token,
         expiresAt,
-        userRole
+        userRole,
+        userId
     };
 }
 
@@ -197,4 +199,4 @@ module.exports = {
     login,
     requestPasswordResetToken,
     resetPassword
-}; 
+};

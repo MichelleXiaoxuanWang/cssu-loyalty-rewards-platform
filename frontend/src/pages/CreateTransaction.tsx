@@ -13,24 +13,39 @@ const CreateTransaction: React.FC = () => {
   const [relatedId, setRelatedId] = useState('');
   const [promotionIds, setPromotionIds] = useState('');
   const [remark, setRemark] = useState('');
-  const role = localStorage.getItem('role');
+  const currentUser = localStorage.getItem('currentUser');
+  const role = localStorage.getItem(`role_${currentUser}`);
+  const currentUserId = localStorage.getItem(`userId_${currentUser}`);
 
-    const handleTabChange = (tab: 'qrCode' | 'transfer' | 'redemption' | 'purchase' | 'adjustment'): void => {
-        setActiveTab(tab);
-    };
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleTransactionSuccess = (message: string) => {
+    setSuccessMessage(message);
+    setErrorMessage(null);
+  };
+
+  const handleTransactionError = (message: string) => {
+    setErrorMessage(message);
+    setSuccessMessage(null);
+  };
+
+  const handleTabChange = (tab: 'qrCode' | 'transfer' | 'redemption' | 'purchase' | 'adjustment'): void => {
+    setActiveTab(tab);
+  };
 
   const handleTransfer = async () => {
     try {
-      const currentUserId = localStorage.getItem('userId') || '';
       const transactionData = {
-        userId,
         type: 'transfer',
         amount: Number(points),
         remark: remark || '',
       };
-      const result = await transferPoints(currentUserId, transactionData);
+      const result = await transferPoints(userId, transactionData);
+      handleTransactionSuccess('Transfer successful!');
       console.log('Transfer successful:', result);
     } catch (error) {
+      handleTransactionError('Transfer failed. Please try again.');
       console.error('Transfer failed:', error);
     }
   };
@@ -38,13 +53,16 @@ const CreateTransaction: React.FC = () => {
   const handleRedemption = async () => {
     try {
       const transactionData = {
+        type: 'redemption',
         amount: Number(points),
         remark: remark || '',
       };
       const result = await redeemPoints(transactionData);
       setQrCodeData(JSON.stringify(result));
+      handleTransactionSuccess('Redemption successful!');
       console.log('Redemption successful:', result);
     } catch (error) {
+      handleTransactionError('Redemption failed. Please try again.');
       console.error('Redemption failed:', error);
     }
   };
@@ -55,12 +73,14 @@ const CreateTransaction: React.FC = () => {
         utorid: userId,
         type: 'purchase',
         spent: Number(spent),
-        promotionIds: promotionIds.split(',').map(Number),
+        promotionIds: promotionIds ? promotionIds.split(',').map(Number) : undefined,
         remark: remark || '',
       };
       const result = await purchaseTransaction(transactionData);
+      handleTransactionSuccess('Purchase successful!');
       console.log('Purchase successful:', result);
     } catch (error) {
+      handleTransactionError('Purchase failed. Please try again.');
       console.error('Purchase failed:', error);
     }
   };
@@ -72,22 +92,26 @@ const CreateTransaction: React.FC = () => {
         type: 'adjustment',
         amount: Number(amount),
         relatedId: Number(relatedId),
-        promotionIds: promotionIds.split(',').map(Number),
+        promotionIds: promotionIds ? promotionIds.split(',').map(Number) : undefined,
         remark: remark || '',
       };
       const result = await adjustmentTransaction(transactionData);
+      handleTransactionSuccess('Adjustment successful!');
       console.log('Adjustment successful:', result);
     } catch (error) {
+      handleTransactionError('Adjustment failed. Please try again.');
       console.error('Adjustment failed:', error);
     }
   };
 
   return (
     <div className="create-transaction">
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       <div className="tabs">
         {role === 'regular' && (
           <button onClick={() => handleTabChange('qrCode')} className={activeTab === 'qrCode' ? 'active' : ''}>
-            QR Code
+            Transaction QR Code
           </button>
         )}
         <button onClick={() => handleTabChange('transfer')} className={activeTab === 'transfer' ? 'active' : ''}>
@@ -98,7 +122,7 @@ const CreateTransaction: React.FC = () => {
         </button>
         {role !== 'regular' && (
           <button onClick={() => handleTabChange('purchase')} className={activeTab === 'purchase' ? 'active' : ''}>
-            Purchase Points
+            Purchase
           </button>
         )}
         {role !== 'regular' && (
@@ -111,8 +135,9 @@ const CreateTransaction: React.FC = () => {
       <div className="tab-content">
         {activeTab === 'qrCode' && role === 'regular' && (
           <div>
-            <h2>QR Code</h2>
-            <QRCode value="Quick Initiate Transaction" />
+            <h2>Initiate Transaction</h2>
+            <h3>Current User ID</h3>
+            <QRCode value={`User ID: ${String(currentUserId)}`} />
           </div>
         )}
 
@@ -124,6 +149,18 @@ const CreateTransaction: React.FC = () => {
               placeholder="Enter User ID"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Enter Points"
+              value={points}
+              onChange={(e) => setPoints(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Enter Remark"
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
             />
             <button onClick={handleTransfer}>Transfer</button>
           </div>
@@ -138,17 +175,27 @@ const CreateTransaction: React.FC = () => {
               value={points}
               onChange={(e) => setPoints(e.target.value)}
             />
+            <input
+              type="text"
+              placeholder="Enter Remark"
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
+            />
             <button onClick={handleRedemption}>Redeem</button>
-            {qrCodeData && <QRCode value={qrCodeData} />}
+            {qrCodeData && (
+              <div style={{ marginTop: '1rem' }}>
+                <QRCode value={qrCodeData} />
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === 'purchase' && role !== 'regular' && (
           <div>
-            <h2>Purchase Points</h2>
+            <h2>Purchase</h2>
             <input
               type="text"
-              placeholder="Enter User ID"
+              placeholder="Enter User utorid"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
             />
@@ -191,7 +238,7 @@ const CreateTransaction: React.FC = () => {
             />
             <input
               type="number"
-              placeholder="Enter Related ID"
+              placeholder="Enter ID of Related Transaction"
               value={relatedId}
               onChange={(e) => setRelatedId(e.target.value)}
             />
