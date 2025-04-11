@@ -14,24 +14,19 @@ interface Event {
 const OrganizerEventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [currentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const role = 'organizer'; // Assuming role is 'organizer' for this example
 
   useEffect(() => {
-    if (role === 'organizer') {
-      const loadEvents = async () => {
-        try {
-          const data = await fetchEvents(currentPage, {}, '');
-          setEvents(data.events || []);
-          setTotalPages(data.totalPages || 1);
-        } catch (error) {
-          console.error('Error loading events:', error);
-          setEvents([]);
-        }
-      };
-      loadEvents();
-    }
-  }, [currentPage, role]);
+    const loadEvents = async () => {
+      try {
+        const data = await fetchEvents(currentPage, {}, '');
+        setEvents(data.events || []);
+      } catch (error) {
+        console.error('Error loading events:', error);
+        setEvents([]);
+      }
+    };
+    loadEvents();
+  }, [currentPage]);
 
   const awardPoints = async (eventId: number, userId: string | null, points: number) => {
     try {
