@@ -1,10 +1,11 @@
 .item-box {
-  border: 1px solid #ccc;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
-  margin: 8px 0;
+  margin-bottom: 16px;
   cursor: pointer;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s;
 }
 
 .item-box:hover {
@@ -13,7 +14,7 @@
 
 .item-box h3 {
   margin: 0 0 8px;
-  font-size: 1.2em;
+  font-size: 18px;
 }
 
 .item-box p {

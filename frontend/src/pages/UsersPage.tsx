@@ -4,6 +4,7 @@ import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchUsers, updateUser, createUser } from '../services/user.service';
+import '../App.css';
 
 interface User {
   id: number;
@@ -23,9 +24,14 @@ const UsersPage: React.FC = () => {
   useEffect(() => {
     if (role === 'manager' || role === 'superuser') {
       const loadUsers = async () => {
-        const data = await fetchUsers(currentPage, {}, '');
-        setUsers(data.users);
-        setTotalPages(data.totalPages);
+        try {
+          const data = await fetchUsers(currentPage, {}, '');
+          setUsers(data.users || []);
+          setTotalPages(data.totalPages || 1);
+        } catch (error) {
+          console.error('Error loading users:', error);
+          setUsers([]);
+        }
       };
       loadUsers();
     }
@@ -86,7 +92,7 @@ const UsersPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Users Page</h1>
+      <h1>Users</h1>
       <FilterAndSort
         filters={[
           { label: 'Name', value: 'name' },
@@ -97,6 +103,7 @@ const UsersPage: React.FC = () => {
         sortOptions={[{ label: 'Name', value: 'name' }, { label: 'Role', value: 'role' }]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
+        disabled={users.length === 0}
       />
       {users.length === 0 ? (
         <div style={{ margin: '20px 0' }}>

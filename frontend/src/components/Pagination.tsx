@@ -1,4 +1,5 @@
 import React from 'react';
+import './Pagination.css';
 
 type PaginationProps = {
   currentPage: number;
@@ -29,15 +30,17 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
 
   return (
     <div className="pagination">
-      <button onClick={handlePrevious} disabled={currentPage === 1}>
-        Previous
-      </button>
-      <span>
-        Page {currentPage} of {totalPages}
-      </span>
-      <button onClick={handleNext} disabled={currentPage === totalPages}>
-        Next
-      </button>
+      <div>
+        <button onClick={handlePrevious} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button onClick={handleNext} disabled={currentPage === totalPages}>
+          Next
+        </button>
+      </div>
       {onLimitChange && (
         <div>
           <label htmlFor="limit-select">Items per page:</label>

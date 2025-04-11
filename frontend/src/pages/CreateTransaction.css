@@ -60,3 +60,130 @@
 .tab-content button:hover {
   background-color: #0056b3;
 }
+
+/* Styling for FilterAndSort component */
+.create-transaction-tab {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.create-transaction-tab label {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.create-transaction-tab select,
+.create-transaction-tab input,
+.create-transaction-tab button {
+  padding: 8px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.create-transaction-tab button {
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-transaction-tab button:hover {
+  background-color: #0056b3;
+}
+
+/* Styling for ItemBox component */
+.item-box {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+}
+
+.item-box:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.item-box h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.item-box p {
+  margin: 0;
+  color: #666;
+}
+
+/* Styling for Form component */
+.create-transaction-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.create-transaction-form label {
+  font-weight: bold;
+}
+
+.create-transaction-form input,
+.create-transaction-form select,
+.create-transaction-form button {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.create-transaction-form button {
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-transaction-form button:hover {
+  background-color: #218838;
+}
+
+/* Styling for Pagination component */
+.create-transaction-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.create-transaction-pagination button {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-transaction-pagination button:disabled {
+  background-color: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.create-transaction-pagination button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.create-transaction-pagination select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}

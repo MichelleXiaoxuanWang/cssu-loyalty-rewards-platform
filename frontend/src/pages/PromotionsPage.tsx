@@ -4,6 +4,7 @@ import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchPromotions, updatePromotion, createPromotion } from '../services/promotion.service';
+import '../App.css';
 
 interface Promotion {
   id: number;
@@ -23,9 +24,14 @@ const PromotionsPage: React.FC = () => {
   useEffect(() => {
     if (role === 'manager' || role === 'superuser') {
       const loadPromotions = async () => {
-        const data = await fetchPromotions(currentPage, {}, '');
-        setPromotions(data.promotions);
-        setTotalPages(data.totalPages);
+        try {
+          const data = await fetchPromotions(currentPage, {}, '');
+          setPromotions(data.promotions || []);
+          setTotalPages(data.totalPages || 1);
+        } catch (error) {
+          console.error('Error loading promotions:', error);
+          setPromotions([]);
+        }
       };
       loadPromotions();
     }
@@ -91,7 +97,7 @@ const PromotionsPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Promotions Page</h1>
+      <h1>Promotions</h1>
       <button onClick={handleCreate}>Create New Promotion</button>
       {(creatingPromotion) && (
         <Form
@@ -112,6 +118,7 @@ const PromotionsPage: React.FC = () => {
         sortOptions={[{ label: 'Title', value: 'title' }, { label: 'Discount', value: 'discount' }]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
+        disabled={promotions.length === 0}
       />
       {promotions.length === 0 ? (
         <div style={{ margin: '20px 0' }}>
