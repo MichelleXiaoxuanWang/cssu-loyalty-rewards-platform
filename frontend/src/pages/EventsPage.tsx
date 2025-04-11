@@ -17,7 +17,8 @@ const EventsPage: React.FC = () => {
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const role = localStorage.getItem('role');
+  const currentUser = localStorage.getItem('currentUser');
+  const role = localStorage.getItem(`role_${currentUser}`);
 
   useEffect(() => {
     if (role === 'manager' || role === 'superuser') {

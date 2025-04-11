@@ -34,8 +34,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onError }) => {
       localStorage.setItem(`resetExpiresAt_${utorid}`, data.expiresAt);
       localStorage.setItem(`token_${utorid}`, data.token);
       localStorage.setItem(`role_${utorid}`, data.userRole);
+      localStorage.setItem(`userId_${utorid}`, data.userId);
       //TODO:just use this for now, maybe delete this later
+      //LaterNote: used at many places, do not delete
       localStorage.setItem(`currentUser`, utorid);
+
       onLoginSuccess();
     } catch (error: any) {
       onError(error.message);
