@@ -1,35 +1,99 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { ReactNode, useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/Login';
+import VerifyEmailPage from './pages/VerifyEmail';
+import ResetPasswordPage from './pages/ResetPassword';
+import TransactionDetailPage from './pages/TransactionDetail';
+import UsersPage from './pages/UsersPage.tsx';
+import PromotionsPage from './pages/PromotionsPage.tsx';
+import EventsPage from './pages/EventsPage.tsx';
+import OrganizerEventsPage from './pages/OrganizerEventsPage.tsx';
+import CreateUser from './pages/CreateUser.tsx';
+import Navbar from './components/NavBar.tsx';
+import { hasAccess } from './utils/auth.utils';
+import CreateTransaction from './pages/CreateTransaction.tsx';
+import { isUserOrganizer } from './services/event.service';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface ProtectedRouteProps {
+  children: ReactNode;
+  page: string;
 }
 
-export default App
+function ProtectedRoute({ children, page }: ProtectedRouteProps) {
+  const currentUser = localStorage.getItem('currentUser');
+  const token = localStorage.getItem(`token_${currentUser}`);
+  const role = localStorage.getItem(`role_${currentUser}`);
+  // const role = 'superuser'; // For testing purposes, set role to superuser
+
+  if (!token || !role || !hasAccess(role, page)) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function App() {
+  const [isOrganizer, setIsOrganizer] = useState(false);
+
+  useEffect(() => {
+    const checkOrganizerStatus = async () => {
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        const isOrganizer = await isUserOrganizer(parseInt(userId));
+        setIsOrganizer(isOrganizer);
+      }
+    };
+
+    checkOrganizerStatus();
+  }, []);
+
+  // login: the page to login, uses /auth/tokens
+  // verifyEmail: the page to send verify email, uses /auth/resets
+  // resetPassword: the page to reset password, uses /auth/resets/:resetToken
+  return (
+  <Router>
+    <Navbar />
+    <div>
+      <Routes>
+        <Route path="/" element={<div>Home</div>} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/verifyEmail" element={<VerifyEmailPage />} />
+        <Route path="/resetPassword" element={<ResetPasswordPage />} />
+        <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />
+        <Route path="/createTransaction" element={<CreateTransaction />} />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute page="UsersPage">
+              <UsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/promotions"
+          element={
+            <ProtectedRoute page="PromotionsPage">
+              <PromotionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/events"
+          element={
+            <ProtectedRoute page="EventsPage">
+              <EventsPage />
+            </ProtectedRoute>
+          }
+        />
+        {isOrganizer && (
+          <Route path="/organizer-events" element={<OrganizerEventsPage />} />
+        )}
+        <Route path="/create-user" element={<CreateUser/>} />
+      </Routes>
+    </div>
+  </Router>
+);
+};
+
+export default App;
