@@ -1,0 +1,93 @@
+/* Navbar.css */
+.div{
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    align-items: center;
+}
+.navbar {
+    position: fixed;       /* if you want it fixed */
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* center items horizontally (or use flex-start for left alignment) */
+    padding: 1rem;
+    padding-top: 2rem;
+    background: #4d4b52;
+    min-height: 100vh;     /* Full viewport height */
+    width: 10%;          /* Define the width of your navbar */
+  }
+  
+  /* Ensure the child elements take the full width */
+  .navbar img {
+    width: 100%;
+    max-width: 100%;       /* Prevent overflow */
+    height: auto;          /* Let the browser calculate the height */
+    margin-bottom: 0;
+  }
+  
+  .navbar a {
+    display: block;        /* Make link behave like a block-level element */
+    width: 100%;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    color: #bcbbbe;
+    font-weight: 500;
+    padding: 0.5rem;
+    text-align: center;
+    max-width: 100%;
+  }
+  .navbar p {
+    font-weight:700;
+    color: #ffffff;
+    font-size: 1.3rem;
+  }
+  /* Optional: Add a hover effect for links */
+  .navbar a:hover {
+    background-color: #212023;
+    color: #ffffff;
+  }
+
+  @media screen and (max-width: 800px) {
+    .navbar {
+        padding-top: 1rem;
+        flex-direction: row;
+        height: 10vh;        
+        width: 100vw;      
+        min-height: unset;  
+        position: fixed;  
+        top: 0;
+        left: 0;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0.5rem;
+        justify-content: flex-start; 
+      }
+      .navbar a {
+        display: block;
+        flex: 1;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;  
+        text-align: center;
+        margin: 0 4px;   
+        margin-right: 5px;
+        margin-left: 0px;     
+        box-sizing: border-box; 
+      }
+    
+      .navbar img {
+        width: 40px;  
+        height: auto;
+        margin-bottom: 0; 
+        margin-right: 2px; 
+        margin-top: 20px;
+      }
+      .navbar p {
+        font-weight:700;
+        color: #ffffff;
+        font-size: 0.7rem;
+        margin-bottom: 20px;
+        margin-top: 0px;
+      }
+  }

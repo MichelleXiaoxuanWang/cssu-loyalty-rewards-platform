@@ -40,3 +40,73 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Merged styles from CreateTransaction.css */
+
+/* General button styles */
+button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  margin-bottom: 16px;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+}
+
+button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+button:disabled {
+  background-color: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+/* Tab styles */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  background-color: #f0f0f0;
+}
+
+.tabs button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.tabs button:hover {
+  background-color: #e0e0e0;
+}
+
+.tab-content {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.tab-content input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.no-entries {
+  font-weight: semi-bold;
+  font-size: 20px;
+}
