@@ -62,6 +62,7 @@ model Transaction {
   type          TransactionType
   remark        String?
   suspicious    Boolean           @default(false) // for purchase, if cashier suspicious, true and not add points to accounts
+  createdAt     DateTime          @default(now()) // Add timestamp for transaction creation
 
   // Type specific fields
   spent         Float?            // Purchase: dollar amount spent in this transaction
@@ -91,7 +92,7 @@ model Transaction {
   relatedId     Int?              
 
   // Purchase and Adjustment only: promotion (both types) used in this transaction.
-  // For Adjustment, simply add the promotions to the list of promotion ids, and don’t preform any calculations with them
+  // For Adjustment, simply add the promotions to the list of promotion ids, and don't preform any calculations with them
   promotionUsed Promotion[]       @relation("PromotionsApplied")
 }
 
