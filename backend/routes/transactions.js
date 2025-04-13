@@ -247,41 +247,4 @@ router.patch('/:transactionId/processed', jwtAuth, checkRole(ROLES.CASHIER_OR_HI
     }
 });
 
-// GET /transactions/user-statistics - Get statistics about users
-// Clearance: Manager or higher
-router.get('/user-statistics', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) => {
-    try {
-        // Count total users
-        const totalUsers = await prisma.user.count();
-        
-        // Count users by role
-        const regularUsers = await prisma.user.count({
-            where: { role: 'regular' }
-        });
-        
-        const cashierUsers = await prisma.user.count({
-            where: { role: 'cashier' }
-        });
-        
-        const managerUsers = await prisma.user.count({
-            where: { role: 'manager' }
-        });
-        
-        const superuserUsers = await prisma.user.count({
-            where: { role: 'superuser' }
-        });
-        
-        return res.json({
-            total: totalUsers,
-            regular: regularUsers,
-            cashier: cashierUsers,
-            manager: managerUsers,
-            superuser: superuserUsers,
-        });
-    } catch (error) {
-        console.error('Error retrieving user statistics:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
 module.exports = router;

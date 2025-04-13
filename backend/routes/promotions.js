@@ -106,6 +106,54 @@ router.get('/', jwtAuth, async (req, res) => {
     }
 });
 
+
+// GET /promotions/statistics - Get statistics about promotions
+// Clearance: Manager or higher
+router.get('/statistics', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) => {
+    try {
+        const now = new Date();
+        
+        // Count total promotions
+        const totalPromotions = await prisma.promotion.count();
+        
+        // Count ongoing promotions (started but not ended)
+        const ongoingPromotions = await prisma.promotion.count({
+            where: {
+                startTime: { lte: now },
+                endTime: { gte: now }
+            }
+        });
+        
+        // Count automatic promotions
+        const automaticPromotions = await prisma.promotion.count({
+            where: {
+                type: 'automatic',
+                startTime: { lte: now },
+                endTime: { gte: now }
+            }
+        });
+        
+        // Count one-time promotions
+        const oneTimePromotions = await prisma.promotion.count({
+            where: {
+                type: 'one_time',
+                startTime: { lte: now },
+                endTime: { gte: now }
+            }
+        });
+        
+        return res.json({
+            total: totalPromotions,
+            ongoing: ongoingPromotions,
+            automatic: automaticPromotions,
+            oneTime: oneTimePromotions
+        });
+    } catch (error) {
+        console.error('Error retrieving promotion statistics:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // GET /promotions/:promotionId - Retrieve a single promotion
 // Clearance: Regular or higher
 router.get('/:promotionId', jwtAuth, async (req, res) => {
@@ -204,53 +252,6 @@ router.delete('/:promotionId', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), asyn
             return res.status(error.statusCode).json({ error: error.message });
         }
         console.error('Error deleting promotion:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// GET /promotions/statistics - Get statistics about promotions
-// Clearance: Manager or higher
-router.get('/statistics', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) => {
-    try {
-        const now = new Date();
-        
-        // Count total promotions
-        const totalPromotions = await prisma.promotion.count();
-        
-        // Count ongoing promotions (started but not ended)
-        const ongoingPromotions = await prisma.promotion.count({
-            where: {
-                startTime: { lte: now },
-                endTime: { gte: now }
-            }
-        });
-        
-        // Count automatic promotions
-        const automaticPromotions = await prisma.promotion.count({
-            where: {
-                type: 'automatic',
-                startTime: { lte: now },
-                endTime: { gte: now }
-            }
-        });
-        
-        // Count one-time promotions
-        const oneTimePromotions = await prisma.promotion.count({
-            where: {
-                type: 'one_time',
-                startTime: { lte: now },
-                endTime: { gte: now }
-            }
-        });
-        
-        return res.json({
-            total: totalPromotions,
-            ongoing: ongoingPromotions,
-            automatic: automaticPromotions,
-            oneTime: oneTimePromotions
-        });
-    } catch (error) {
-        console.error('Error retrieving promotion statistics:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 });

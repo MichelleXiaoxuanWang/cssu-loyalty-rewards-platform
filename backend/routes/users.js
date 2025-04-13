@@ -6,6 +6,9 @@ const { validateRequest } = require('../utils/validationUtils');
 const { jwtAuth, checkRole, ROLES } = require('../utils/authMiddleware');
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
 
 // POST /users - Register a new user
 // Clearance: Cashier or higher
@@ -65,6 +68,38 @@ router.get('/', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) =>
     }
 });
 
+// GET /users/statistics - Get statistics about users
+// Clearance: Manager or higher
+router.get('/statistics', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) => {
+    try {
+        // Get user counts directly from the database using Prisma
+        const [
+            totalUsers,
+            regularUsers,
+            cashierUsers, 
+            managerUsers,
+            superuserUsers
+        ] = await Promise.all([
+            prisma.user.count(),
+            prisma.user.count({ where: { role: 'regular' }}),
+            prisma.user.count({ where: { role: 'cashier' }}),
+            prisma.user.count({ where: { role: 'manager' }}),
+            prisma.user.count({ where: { role: 'superuser' }})
+        ]);
+        
+        // Return the formatted statistics
+        return res.json({
+            total: totalUsers,
+            regular: regularUsers,
+            cashier: cashierUsers,
+            manager: managerUsers,
+            superuser: superuserUsers
+        });
+    } catch (error) {
+        console.error('Error retrieving user statistics:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 // GET /users/me - Retrieve the current logged-in user's information
 // Clearance: Regular or higher
