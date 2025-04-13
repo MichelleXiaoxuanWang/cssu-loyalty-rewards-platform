@@ -6,6 +6,7 @@ import VerifyEmailPage from './pages/VerifyEmail';
 import ResetPasswordPage from './pages/ResetPassword';
 import TransactionDetailPage from './pages/TransactionDetail';
 import TransactionPreviewPage from './pages/TransactionPreviewPage';
+import RegularLandingPage from './pages/RegularLandingPage';
 import UsersPage from './pages/UsersPage.tsx';
 import PromotionsPage from './pages/PromotionsPage.tsx';
 import EventsPage from './pages/EventsPage.tsx';
@@ -25,13 +26,41 @@ function ProtectedRoute({ children, page }: ProtectedRouteProps) {
   const currentUser = localStorage.getItem('currentUser');
   const token = localStorage.getItem(`token_${currentUser}`);
   const role = localStorage.getItem(`role_${currentUser}`);
-  // const role = 'superuser'; // For testing purposes, set role to superuser
-
-  if (!token || !role || !hasAccess(role, page)) {
+  
+  // Debug authentication issues - remove in production
+  console.log('Protected Route Check:', { currentUser, role, page, hasAccess: role ? hasAccess(role, page) : false });
+  
+  // Check if user is authenticated and has access
+  if (!token || !currentUser || !role || !hasAccess(role, page)) {
+    console.log('Access denied, redirecting to login page');
     return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
+}
+
+// Component to redirect based on user role
+function HomeRedirect() {
+  const currentUser = localStorage.getItem('currentUser');
+  const token = localStorage.getItem(`token_${currentUser}`);
+  const role = localStorage.getItem(`role_${currentUser}`);
+  
+  // If not authenticated, redirect to login
+  if (!currentUser || !token || !role) {
+    console.log('Not authenticated, redirecting to login');
+    return <Navigate to="/login" replace />;
+  }
+  
+  console.log('Current user role:', role);
+  
+  // Return appropriate landing page based on role
+  if (role === 'regular') {
+    return <RegularLandingPage />;
+  }
+  
+  // For now, higher roles redirect to regular landing page
+  // This will be replaced with AdminLandingPage when implemented
+  return <RegularLandingPage />;
 }
 
 function App() {
@@ -57,7 +86,7 @@ function App() {
     <Navbar />
     <div>
       <Routes>
-        <Route path="/" element={<div>Home</div>} />
+        <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/verifyEmail" element={<VerifyEmailPage />} />
         <Route path="/resetPassword" element={<ResetPasswordPage />} />
