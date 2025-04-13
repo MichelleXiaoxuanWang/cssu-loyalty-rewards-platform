@@ -84,7 +84,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
   const handleClick = () => {
     // Get the current user ID from localStorage
     const userId = getUserId();
-    // Navigate to the transaction detail page
+    // Navigate to the transaction detail page using the correct route pattern
     navigate(`/${userId}/transactions/${transaction.id}`);
   };
   

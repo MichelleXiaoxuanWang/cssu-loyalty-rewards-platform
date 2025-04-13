@@ -24,6 +24,7 @@ CREATE TABLE "Transaction" (
     "type" TEXT NOT NULL,
     "remark" TEXT,
     "suspicious" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "spent" REAL,
     "amount" INTEGER,
     "isSender" BOOLEAN NOT NULL DEFAULT true,
