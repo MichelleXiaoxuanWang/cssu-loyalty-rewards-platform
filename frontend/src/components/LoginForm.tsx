@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config/api.config';
 
 interface LoginFormProps {
   onLoginSuccess: () => void;
@@ -16,7 +17,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onError }) => {
     onError(''); // clear previous errors
 
     try {
-      const response = await fetch('http://localhost:8000/auth/tokens', {
+      const response = await fetch(`${API_BASE_URL}/auth/tokens`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

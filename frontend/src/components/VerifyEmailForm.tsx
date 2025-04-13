@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { API_BASE_URL } from '../config/api.config';
 
 interface ResetFormProps{
     onResetSuccess: ()=>void;
@@ -14,7 +15,7 @@ const VerifyEmailForm: React.FC<ResetFormProps> = ({ onResetSuccess, onError})=>
         setLoading(true);
         onError('');
         try{
-            const response = await fetch('http://localhost:8000/auth/resets', {
+            const response = await fetch(`${API_BASE_URL}/auth/resets`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ utorid})

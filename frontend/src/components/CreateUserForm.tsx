@@ -1,5 +1,6 @@
 // src/components/CreateUserForm.tsx
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config/api.config';
 
 interface CreateUserFormProps {
   onUserCreated: (user: any) => void; // You can later define a proper type for the user
@@ -18,7 +19,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ onUserCreated, onError 
     onError(''); // Clear previous errors
     const currentUser = localStorage.getItem("currentUser");
     try {
-      const response = await fetch('http://localhost:8000/users', {
+      const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
