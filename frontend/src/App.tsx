@@ -5,6 +5,7 @@ import LoginPage from './pages/Login';
 import VerifyEmailPage from './pages/VerifyEmail';
 import ResetPasswordPage from './pages/ResetPassword';
 import TransactionDetailPage from './pages/TransactionDetail';
+import TransactionPreviewPage from './pages/TransactionPreviewPage';
 import UsersPage from './pages/UsersPage.tsx';
 import PromotionsPage from './pages/PromotionsPage.tsx';
 import EventsPage from './pages/EventsPage.tsx';
@@ -62,6 +63,14 @@ function App() {
         <Route path="/resetPassword" element={<ResetPasswordPage />} />
         <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />
         <Route path="/createTransaction" element={<CreateTransaction />} />
+        <Route
+          path="/transactions"
+          element={
+            <ProtectedRoute page="TransactionsPage">
+              <TransactionPreviewPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/users"
           element={
