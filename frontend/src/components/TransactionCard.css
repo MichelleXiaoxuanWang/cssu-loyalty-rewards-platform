@@ -1,0 +1,165 @@
+:root {
+  /* Lighter, more vibrant colors for better icon visibility */
+  --purchase-color: rgba(76, 175, 80, 0.2);   /* Light Green */
+  --purchase-border: #4CAF50;                 /* Green border */
+  
+  --redemption-color: rgba(244, 67, 54, 0.2); /* Light Red */
+  --redemption-border: #F44336;               /* Red border */
+  
+  --transfer-color: rgba(33, 150, 243, 0.2);  /* Light Blue */
+  --transfer-border: #2196F3;                 /* Blue border */
+  
+  --adjustment-color: rgba(156, 39, 176, 0.2); /* Light Purple */
+  --adjustment-border: #9C27B0;                /* Purple border */
+  
+  --event-color: rgba(0, 150, 136, 0.2);       /* Light Teal */
+  --event-border: #009688;                     /* Teal border */
+}
+
+.transaction-card {
+  display: flex;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.transaction-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.transaction-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  padding: 16px;
+  position: relative;
+}
+
+/* Add colored border indicator */
+.transaction-icon-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  background-color: var(--purchase-border);
+}
+
+/* Style for purchase transaction */
+.transaction-icon-container[style*="--purchase-color"]::after {
+  background-color: var(--purchase-border);
+}
+
+/* Style for redemption transaction */
+.transaction-icon-container[style*="--redemption-color"]::after {
+  background-color: var(--redemption-border);
+}
+
+/* Style for transfer transaction */
+.transaction-icon-container[style*="--transfer-color"]::after {
+  background-color: var(--transfer-border);
+}
+
+/* Style for adjustment transaction */
+.transaction-icon-container[style*="--adjustment-color"]::after {
+  background-color: var(--adjustment-border);
+}
+
+/* Style for event transaction */
+.transaction-icon-container[style*="--event-color"]::after {
+  background-color: var(--event-border);
+}
+
+.transaction-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.transaction-details {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.transaction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.transaction-type {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.transaction-amount {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.transaction-amount.positive {
+  color: var(--purchase-border);
+}
+
+.transaction-amount.negative {
+  color: var(--redemption-border);
+}
+
+.transaction-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: #666;
+  font-size: 14px;
+}
+
+.transaction-id, .transaction-created-by {
+  color: #888;
+}
+
+.transaction-remark {
+  font-style: italic;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .transaction-card {
+    flex-direction: column;
+  }
+  
+  .transaction-icon-container {
+    width: 100%;
+    padding: 12px;
+    height: 60px;
+  }
+  
+  .transaction-icon-container::after {
+    width: 100%;
+    height: 6px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+  }
+  
+  .transaction-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .transaction-amount {
+    margin-top: 4px;
+  }
+}
