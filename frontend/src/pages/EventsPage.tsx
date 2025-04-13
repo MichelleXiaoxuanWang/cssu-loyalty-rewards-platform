@@ -10,6 +10,10 @@ interface Event {
   id: number;
   title: string;
   description: string;
+  startTime: string;
+  endTime: string;
+  capacity: number | null;
+  points: number;
 }
 
 const EventsPage: React.FC = () => {
@@ -18,6 +22,7 @@ const EventsPage: React.FC = () => {
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`role_${currentUser}`);
 
@@ -46,15 +51,20 @@ const EventsPage: React.FC = () => {
   };
 
   const handleSubmit = async (formData: Record<string, any>) => {
-    if (creatingEvent) {
-      await createEvent(formData);
-      setCreatingEvent(false);
-    } else if (editingEvent) {
-      await updateEvent(editingEvent.id, formData);
-      setEditingEvent(null);
+    try {
+      if (creatingEvent) {
+        await createEvent(formData);
+        setCreatingEvent(false);
+      } else if (editingEvent) {
+        await updateEvent(editingEvent.id, formData);
+        setEditingEvent(null);
+      }
+      const data = await fetchEvents(currentPage, {}, '');
+      setEvents(data.events);
+      setFeedbackMessage('Submission successful!');
+    } catch (error) {
+      setFeedbackMessage('Submission failed. Please try again.');
     }
-    const data = await fetchEvents(currentPage, {}, '');
-    setEvents(data.events);
   };
 
   const handleFilterChange = async (filter: { name?: string; location?: string; started?: boolean; ended?: boolean; showFull?: boolean; published?: boolean }) => {
@@ -79,10 +89,10 @@ const EventsPage: React.FC = () => {
     return (
       <div>
         <h1>Events</h1>
-        {events.length === 0 ? (
+        {events && events.length === 0 ? (
           <div className="no-entries">No events available</div>
         ) : (
-          events.map((event) => (
+          events?.map((event) => (
             <ItemBox
               key={event.id}
               title={event.title}
@@ -98,6 +108,7 @@ const EventsPage: React.FC = () => {
   return (
     <div>
       <h1>Events</h1>
+      {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
       <button onClick={handleCreate}>Create New Event</button>
       {creatingEvent && (
         <Form
@@ -105,6 +116,10 @@ const EventsPage: React.FC = () => {
             { name: 'name', label: 'Name', type: 'text' },
             { name: 'description', label: 'Description', type: 'text' },
             { name: 'location', label: 'Location', type: 'text' },
+            { name: 'startTime', label: 'Start Time', type: 'datetime-local' },
+            { name: 'endTime', label: 'End Time', type: 'datetime-local' },
+            { name: 'capacity', label: 'Capacity', type: 'number' },
+            { name: 'points', label: 'Points', type: 'number' },
           ]}
           onSubmit={handleSubmit}
         />
@@ -120,14 +135,14 @@ const EventsPage: React.FC = () => {
         sortOptions={[{ label: 'Title', value: 'title' }, { label: 'Date', value: 'date' }]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
-        disabled={events.length === 0}
+        disabled={!Array.isArray(events) || events.length === 0}
       />
-      {events.length === 0 ? (
+      {events && events.length === 0 ? (
         <div className="no-entries">
           <p>No events available</p>
         </div>
       ) : (
-        events.map((event) => (
+        events?.map((event) => (
           <ItemBox
             key={event.id}
             title={event.title}
@@ -141,6 +156,10 @@ const EventsPage: React.FC = () => {
           fields={[
             { name: 'title', label: 'Title', type: 'text', value: editingEvent?.title || '' },
             { name: 'description', label: 'Description', type: 'text', value: editingEvent?.description || '' },
+            { name: 'startTime', label: 'Start Time', type: 'datetime-local', value: editingEvent?.startTime || '' },
+            { name: 'endTime', label: 'End Time', type: 'datetime-local', value: editingEvent?.endTime || '' },
+            { name: 'capacity', label: 'Capacity', type: 'number', value: editingEvent?.capacity || '' },
+            { name: 'points', label: 'Points', type: 'number', value: editingEvent?.points || '' },
           ]}
           onSubmit={handleSubmit}
         />
