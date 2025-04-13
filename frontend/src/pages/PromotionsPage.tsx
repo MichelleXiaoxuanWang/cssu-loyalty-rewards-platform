@@ -8,8 +8,14 @@ import '../App.css';
 
 interface Promotion {
   id: number;
-  title: string;
+  name: string;
   description: string;
+  type: string;
+  startTime: string;
+  endTime: string;
+  minSpending?: number;
+  rate?: number;
+  points?: number;
 }
 
 const PromotionsPage: React.FC = () => {
@@ -18,6 +24,7 @@ const PromotionsPage: React.FC = () => {
   const [creatingPromotion, setCreatingPromotion] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`role_${currentUser}`);
 
@@ -46,15 +53,20 @@ const PromotionsPage: React.FC = () => {
   };
 
   const handleSubmit = async (formData: Record<string, any>) => {
-    if (creatingPromotion) {
-      await createPromotion(formData);
-      setCreatingPromotion(false);
-    } else if (editingPromotion) {
-      await updatePromotion(editingPromotion.id, formData);
-      setEditingPromotion(null);
+    try {
+      if (creatingPromotion) {
+        await createPromotion(formData);
+        setCreatingPromotion(false);
+      } else if (editingPromotion) {
+        await updatePromotion(editingPromotion.id, formData);
+        setEditingPromotion(null);
+      }
+      const data = await fetchPromotions(currentPage, {}, '');
+      setPromotions(data.promotions);
+      setFeedbackMessage('Submission successful!');
+    } catch (error) {
+      setFeedbackMessage('Submission failed. Please try again.');
     }
-    const data = await fetchPromotions(currentPage, {}, '');
-    setPromotions(data.promotions);
   };
 
   const handleFilterChange = async (filter: { name?: string; type?: string; started?: boolean; ended?: boolean }) => {
@@ -79,13 +91,13 @@ const PromotionsPage: React.FC = () => {
     return (
       <div>
         <h1>Promotions</h1>
-        {promotions.length === 0 ? (
+        {promotions && promotions.length === 0 ? (
           <div>No promotions available</div>
         ) : (
-          promotions.map((promotion) => (
+          promotions?.map((promotion) => (
             <ItemBox
               key={promotion.id}
-              title={promotion.title}
+              title={promotion.name}
               description={promotion.description}
               onClick={() => handleEdit(promotion)}
             />
@@ -98,12 +110,19 @@ const PromotionsPage: React.FC = () => {
   return (
     <div>
       <h1>Promotions</h1>
+      {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
       <button onClick={handleCreate}>Create New Promotion</button>
       {(creatingPromotion) && (
         <Form
           fields={[
-            { name: 'title', label: 'Title', type: 'text', value: editingPromotion?.title || '' },
-            { name: 'description', label: 'Description', type: 'text', value: editingPromotion?.description || '' },
+            { name: 'name', label: 'Name', type: 'text' },
+            { name: 'description', label: 'Description', type: 'text' },
+            { name: 'type', label: 'Type', type: 'select', options: ['automatic', 'one-time'] },
+            { name: 'startTime', label: 'Start Time', type: 'datetime-local' },
+            { name: 'endTime', label: 'End Time', type: 'datetime-local' },
+            { name: 'minSpending', label: 'Minimum Spending', type: 'number' },
+            { name: 'rate', label: 'Rate', type: 'number' },
+            { name: 'points', label: 'Points', type: 'number' },
           ]}
           onSubmit={handleSubmit}
         />
@@ -115,20 +134,20 @@ const PromotionsPage: React.FC = () => {
           { label: 'Started', value: 'started', options: ['true', 'false'] },
           { label: 'Ended', value: 'ended', options: ['true', 'false'] },
         ]}
-        sortOptions={[{ label: 'Title', value: 'title' }, { label: 'Discount', value: 'discount' }]}
+        sortOptions={[{ label: 'Name', value: 'name' }, { label: 'Discount', value: 'discount' }]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
-        disabled={promotions.length === 0}
+        disabled={!Array.isArray(promotions) || promotions.length === 0}
       />
-      {promotions.length === 0 ? (
+      {promotions && promotions.length === 0 ? (
         <div style={{ margin: '20px 0' }}>
           <p>There are currently no entries</p>
         </div>
       ) : (
-        promotions.map((promotion) => (
+        promotions?.map((promotion) => (
           <ItemBox
             key={promotion.id}
-            title={promotion.title}
+            title={promotion.name}
             description={promotion.description}
             onClick={() => handleEdit(promotion)}
           />
@@ -137,8 +156,14 @@ const PromotionsPage: React.FC = () => {
       {(editingPromotion) && (
         <Form
           fields={[
-            { name: 'title', label: 'Title', type: 'text', value: editingPromotion?.title || '' },
+            { name: 'name', label: 'Name', type: 'text', value: editingPromotion?.name || '' },
             { name: 'description', label: 'Description', type: 'text', value: editingPromotion?.description || '' },
+            { name: 'type', label: 'Type', type: 'select', options: ['automatic', 'one-time'], value: editingPromotion?.type || '' },
+            { name: 'startTime', label: 'Start Time', type: 'datetime-local', value: editingPromotion?.startTime || '' },
+            { name: 'endTime', label: 'End Time', type: 'datetime-local', value: editingPromotion?.endTime || '' },
+            { name: 'minSpending', label: 'Minimum Spending', type: 'number', value: editingPromotion?.minSpending || 0},
+            { name: 'rate', label: 'Rate', type: 'number', value: editingPromotion?.rate || 0 },
+            { name: 'points', label: 'Points', type: 'number', value: editingPromotion?.points || 0 },
           ]}
           onSubmit={handleSubmit}
         />
