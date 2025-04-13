@@ -3,6 +3,9 @@ const router = express.Router();
 const transactionService = require('../services/transactionService');
 const { validateRequest } = require('../utils/validationUtils');
 const { jwtAuth, checkRole, ROLES } = require('../utils/authMiddleware');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
 
 // DEBUG: Case 78 Piazza @358 In your POST /transactions, you should return earned: 0. 
 // In your GET /transactions/:transactionId, you should return amount: 60

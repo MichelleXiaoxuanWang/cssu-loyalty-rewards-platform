@@ -7,6 +7,7 @@ import ResetPasswordPage from './pages/ResetPassword';
 import TransactionDetailPage from './pages/TransactionDetail';
 import TransactionPreviewPage from './pages/TransactionPreviewPage';
 import RegularLandingPage from './pages/RegularLandingPage';
+import AdminLandingPage from './pages/AdminLandingPage';
 import UsersPage from './pages/UsersPage.tsx';
 import PromotionsPage from './pages/PromotionsPage.tsx';
 import EventsPage from './pages/EventsPage.tsx';
@@ -58,8 +59,12 @@ function HomeRedirect() {
     return <RegularLandingPage />;
   }
   
-  // For now, higher roles redirect to regular landing page
-  // This will be replaced with AdminLandingPage when implemented
+  // For higher roles (manager, superuser), show admin dashboard
+  if (role === 'manager' || role === 'superuser') {
+    return <AdminLandingPage />;
+  }
+  
+  // For cashier role or any other role, use regular landing page
   return <RegularLandingPage />;
 }
 
@@ -121,6 +126,14 @@ function App() {
           element={
             <ProtectedRoute page="EventsPage">
               <EventsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute page="AdminPage">
+              <AdminLandingPage />
             </ProtectedRoute>
           }
         />

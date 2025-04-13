@@ -123,7 +123,8 @@ async function createPurchaseTransaction(transactionData) {
             earned: isSuspicious ? 0 : result.amount,   // if suspicious, not awarded points
             remark: result.remark || "",
             promotionIds: result.promotionUsed.map(p => p.id),
-            createdBy: result.createdBy
+            createdBy: result.createdBy,
+            createdAt: result.createdAt.toISOString()
         };
         
         return response;
@@ -229,7 +230,8 @@ async function createAdjustmentTransaction(transactionData) {
             relatedId: result.relatedId,
             remark: result.remark || "",
             promotionIds: result.promotionUsed.map(p => p.id),
-            createdBy: result.createdBy
+            createdBy: result.createdBy,
+            createdAt: result.createdAt.toISOString()
         };
         
         return response;
@@ -349,7 +351,8 @@ async function createTransferTransaction(transactionData) {
             type: 'transfer',
             sent: amount, // Use positive value in response
             remark: result.sender.remark || "",
-            createdBy: result.sender.createdBy
+            createdBy: result.sender.createdBy,
+            createdAt: result.sender.createdAt.toISOString()
         };
     } catch (error) {
         if (!error.statusCode) {
@@ -416,7 +419,8 @@ async function createRedemptionTransaction(transactionData) {
             processedBy: null, // Not processed yet
             amount: transaction.amount,
             remark: transaction.remark || "",
-            createdBy: transaction.createdBy
+            createdBy: transaction.createdBy,
+            createdAt: transaction.createdAt.toISOString()
         };
     } catch (error) {
         if (!error.statusCode) {
@@ -737,7 +741,8 @@ function formatTransactionResponse(transaction) {
         promotionIds: transaction.promotionUsed.map(p => p.id),
         suspicious: transaction.suspicious,
         remark: transaction.remark || "",
-        createdBy: transaction.createdBy
+        createdBy: transaction.createdBy,
+        createdAt: transaction.createdAt.toISOString()
     };
     
     // Add type-specific fields
@@ -948,7 +953,8 @@ async function processRedemptionTransaction(transactionId, cashierUtorid) {
             processedBy: cashierUtorid,
             redeemed: result.amount, // Show positive amount as "redeemed"
             remark: result.remark || "",
-            createdBy: result.createdBy
+            createdBy: result.createdBy,
+            createdAt: result.createdAt.toISOString()
         };
         
         return response;

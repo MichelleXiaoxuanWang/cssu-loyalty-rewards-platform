@@ -1,0 +1,83 @@
+.statistics-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.statistics-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.statistics-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.statistics-card-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: white;
+}
+
+.statistics-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.statistics-card-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.statistics-item {
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+}
+
+.statistics-item-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.statistics-item-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Colors for different statistics types */
+.events-color {
+  background-color: var(--event-color, #4CAF50);
+}
+
+.promotions-color {
+  background-color: var(--purchase-color, #2196F3);
+}
+
+.users-color {
+  background-color: var(--transfer-color, #FF9800);
+}
+
+.transactions-color {
+  background-color: var(--redemption-color, #9C27B0);
+}
+
+@media (max-width: 768px) {
+  .statistics-card-content {
+    grid-template-columns: 1fr;
+  }
+}

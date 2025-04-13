@@ -3,6 +3,9 @@ const router = express.Router();
 const eventService = require('../services/eventService');
 const { validateRequest } = require('../utils/validationUtils');
 const { jwtAuth, checkRole, ROLES } = require('../utils/authMiddleware');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
 
 // POST /events - Create a new event
 // Clearance: Manager or higher
@@ -47,6 +50,49 @@ router.post('/', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) =
             return res.status(error.statusCode).json({ error: error.message });
         }
         console.error('Error creating event:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// GET /events/statistics - Get statistics about events
+// Clearance: Manager or higher
+router.get('/statistics', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) => {
+    try {
+        const now = new Date();
+        
+        // Count total events
+        const totalEvents = await prisma.event.count();
+        
+        // Count ongoing events (started but not ended)
+        const ongoingEvents = await prisma.event.count({
+            where: {
+                startTime: { lte: now },
+                endTime: { gte: now }
+            }
+        });
+        
+        // Count upcoming events (not started yet)
+        const upcomingEvents = await prisma.event.count({
+            where: {
+                startTime: { gt: now }
+            }
+        });
+        
+        // Count ended events
+        const endedEvents = await prisma.event.count({
+            where: {
+                endTime: { lt: now }
+            }
+        });
+        
+        return res.json({
+            total: totalEvents,
+            ongoing: ongoingEvents,
+            upcoming: upcomingEvents,
+            ended: endedEvents
+        });
+    } catch (error) {
+        console.error('Error retrieving event statistics:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 });

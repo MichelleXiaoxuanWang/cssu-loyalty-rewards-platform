@@ -172,7 +172,7 @@ const TransactionDetailPage: React.FC = () => {
       {updateMsg && <p style={{ marginTop: '1rem', color: 'green' }}>{updateMsg}</p>}
       
       <p style={{ marginTop: '1rem' }}>
-        <a href={`/${transaction.utorid}/transactions`}>Back to Transactions List</a>
+        <a href={`/transactions`}>Back to Transactions List</a>
       </p>
     </div>
   );
