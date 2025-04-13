@@ -1,9 +1,5 @@
 .regular-landing-page {
   display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-  gap: 24px;
 }
 
 .left-panel {
