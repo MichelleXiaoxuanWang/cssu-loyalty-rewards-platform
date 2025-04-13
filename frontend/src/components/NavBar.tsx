@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
     setUtorid(currentUser);
     
     if (currentUser) {
-      const userRole = localStorage.getItem(`role_${currentUser}`);
+      const userRole = localStorage.getItem(`current_role_${currentUser}`);
       setRole(userRole);
     }
   }, [location]);

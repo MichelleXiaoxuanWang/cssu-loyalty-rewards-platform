@@ -44,7 +44,7 @@ function ProtectedRoute({ children, page }: ProtectedRouteProps) {
 function HomeRedirect() {
   const currentUser = localStorage.getItem('currentUser');
   const token = localStorage.getItem(`token_${currentUser}`);
-  const role = localStorage.getItem(`role_${currentUser}`);
+  const role = localStorage.getItem(`current_role_${currentUser}`); // the current role that the user is using
   
   // If not authenticated, redirect to login
   if (!currentUser || !token || !role) {
