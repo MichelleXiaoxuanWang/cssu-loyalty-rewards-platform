@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Transaction } from '../services/transaction.service';
 import './TransactionCard.css';
+import { getUserId } from '../services/auth.service';
 
 // Import transaction type icons
 import purchaseIcon from '../assets/purchase.png';
@@ -82,7 +83,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
   // Handle click to navigate to the transaction details page
   const handleClick = () => {
     // Get the current user ID from localStorage
-    const userId = localStorage.getItem('userId') || 'me';
+    const userId = getUserId();
     // Navigate to the transaction detail page
     navigate(`/${userId}/transactions/${transaction.id}`);
   };

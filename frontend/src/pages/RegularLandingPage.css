@@ -1,0 +1,181 @@
+.regular-landing-page {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 24px;
+}
+
+.left-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.right-panel {
+  flex: 2;
+}
+
+/* Points Card Styles */
+.points-card {
+  background-color: #2196F3; /* Blue */
+  color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.points-card h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.points-amount {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.points-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.points-meta p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.view-transactions-link {
+  color: white;
+  text-decoration: none;
+  padding: 6px 12px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.view-transactions-link:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* QR Code Card Styles */
+.qr-code-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.qr-code-card h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 20px;
+  color: #333;
+}
+
+.qr-code-card p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.qr-code-container {
+  background-color: white;
+  padding: 16px;
+  display: inline-block;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qr-instructions {
+  font-size: 14px;
+  color: #666;
+  margin-top: 16px;
+}
+
+/* Recent Transactions Styles */
+.recent-transactions {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.transactions-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.see-all-link {
+  color: #2196F3;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.see-all-link:hover {
+  text-decoration: underline;
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.no-transactions {
+  padding: 40px 0;
+  text-align: center;
+  color: #666;
+}
+
+/* Loading and Error states */
+.loading, .error {
+  text-align: center;
+  padding: 100px 0;
+  font-size: 18px;
+  color: #666;
+}
+
+.error {
+  color: #F44336;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .regular-landing-page {
+    flex-direction: column;
+  }
+  
+  .points-amount {
+    font-size: 36px;
+  }
+  
+  .points-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .qr-code-container canvas {
+    max-width: 100%;
+    height: auto;
+  }
+} 
