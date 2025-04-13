@@ -41,3 +41,13 @@ export const getUserUtorid = (): string | null => {
   const currentUser = localStorage.getItem('currentUser');
   return currentUser;
 };
+
+export const logout = (): void => {
+  const currentUser = localStorage.getItem('currentUser');
+  if (!currentUser) return;
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem(`token_${currentUser}`);
+  localStorage.removeItem(`role_${currentUser}`);
+  localStorage.removeItem(`userId_${currentUser}`);
+  localStorage.removeItem(`resetExpiresAt_${currentUser}`);
+};
