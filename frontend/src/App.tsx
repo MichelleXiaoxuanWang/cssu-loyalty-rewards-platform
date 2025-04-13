@@ -17,6 +17,14 @@ import { hasAccess } from './utils/auth.utils';
 import CreateTransaction from './pages/CreateTransaction.tsx';
 import { isUserOrganizer } from './services/event.service';
 
+import ProfilePage from './pages/ProfilePage.tsx';
+import UserDetailPage from './pages/UserDetail.tsx';
+import EventDetailPage from './pages/EventDetail.tsx';
+import OrganizersManagementPage from './pages/OrganizersManagement.tsx';
+import EventGuestsManagePage from './pages/EventGuestsManage.tsx';
+import AwardEventTransactionPage from './pages/AwardTransaction.tsx';
+import PromotionDetailPage from './pages/PromotionDetail.tsx';
+
 interface ProtectedRouteProps {
   children: ReactNode;
   page: string;
@@ -128,6 +136,13 @@ function App() {
           <Route path="/organizer-events" element={<OrganizerEventsPage />} />
         )}
         <Route path="/create-user" element={<CreateUser/>} />
+        <Route path="/profile" element={<ProfilePage/>} />
+        <Route path="/users/:userId" element={<UserDetailPage />} />
+        <Route path="/events/:eventId" element={<EventDetailPage />} />
+        <Route path="/events/:eventId/organizers" element={<OrganizersManagementPage />} />
+        <Route path="/events/:eventId/guests-manage" element={<EventGuestsManagePage />} />
+        <Route path="/events/:eventId/transactions" element={<AwardEventTransactionPage />} />
+        <Route path="/promotions/:promotionId" element={<PromotionDetailPage />} />
       </Routes>
     </div>
   </Router>
