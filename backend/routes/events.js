@@ -321,7 +321,8 @@ router.get('/', jwtAuth, async (req, res) => {
             showFull: req.query.showFull === 'true',
             page: req.query.page ? parseInt(req.query.page, 10) : 1,
             // For test case 73: use a higher default limit to ensure we get enough events
-            limit: req.query.limit ? parseInt(req.query.limit, 10) : 20
+            limit: req.query.limit ? parseInt(req.query.limit, 10) : 20,
+            sort: req.query.sort || '',
         };
 
         // Only set published if it's explicitly specified

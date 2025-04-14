@@ -58,7 +58,7 @@ async function createUser(userData) {
  * @returns {Promise<Object>} results with pagination
  */
 async function filterUsers(req, filters = {}) {
-    const { name, role, verified, activated } = filters;
+    const { name, role, verified, activated, sort } = filters;
     
     // build where filter
     const where = {};
@@ -90,7 +90,7 @@ async function filterUsers(req, filters = {}) {
 
     /// Determine orderBy clause based on filters.sort
     let orderBy = {};
-    switch (filters.sort) {
+    switch (sort) {
         case 'id-asc':
             orderBy = { id: 'asc' };
             break;

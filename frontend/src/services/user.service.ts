@@ -33,3 +33,8 @@ export interface UserFilters {
 export const fetchUsers = async (filters?: UserFilters): Promise<UserResponse> => {
   return apiCall(`/users`, 'GET', filters);
 };
+
+export const getCurrentUser = async (): Promise<User> => {
+  return apiCall('/users/me', 'GET');
+};
+

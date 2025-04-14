@@ -28,35 +28,7 @@ const PromotionsPage: React.FC = () => {
         setLoading(true);
         try {
           const response: PromotionResponse = await fetchPromotions(filters);
-          let fetchedPromotions = response.results;
-
-          // Apply sorting after fetching
-          if (filters.sort) {
-            fetchedPromotions = fetchedPromotions.sort((a, b) => {
-              switch (filters.sort) {
-                case 'id-asc':
-                  return a.id - b.id;
-                case 'id-desc':
-                  return b.id - a.id;
-                case 'name-asc':
-                  return a.name.localeCompare(b.name);
-                case 'name-desc':
-                  return b.name.localeCompare(a.name);
-                case 'starttime-asc':
-                  return new Date(a.startTime || '').getTime() - new Date(b.startTime || '').getTime();
-                case 'starttime-desc':
-                  return new Date(b.startTime || '').getTime() - new Date(a.startTime || '').getTime();
-                case 'endtime-asc':
-                  return new Date(a.endTime || '').getTime() - new Date(b.endTime || '').getTime();
-                case 'endtime-desc':
-                  return new Date(b.endTime || '').getTime() - new Date(a.endTime || '').getTime();
-                default:
-                  return 0;
-              }
-            });
-          }
-
-          setPromotions(fetchedPromotions);
+          setPromotions(response.results);
           setTotalPromotions(response.count);
           setCurrentPage(filters.page || 1);
           setItemsPerPage(filters.limit || 10);

@@ -24,31 +24,7 @@ const UsersPage: React.FC = () => {
       setLoading(true);
       try {
         const response: UserResponse = await fetchUsers(filters);
-        let fetchedUsers = response.results;
-
-        // Apply sorting after fetching
-        if (filters.sort) {
-          fetchedUsers = fetchedUsers.sort((a, b) => {
-            switch (filters.sort) {
-              case 'id-asc':
-                return a.id - b.id;
-              case 'id-desc':
-                return b.id - a.id;
-              case 'utorid-asc':
-                return a.utorid.localeCompare(b.utorid);
-              case 'utorid-desc':
-                return b.utorid.localeCompare(a.utorid);
-              case 'name-asc':
-                return a.name.localeCompare(b.name);
-              case 'name-desc':
-                return b.name.localeCompare(a.name);
-              default:
-                return 0;
-            }
-          });
-        }
-
-        setUsers(fetchedUsers);
+        setUsers(response.results);
         setTotalUsers(response.count);
         setCurrentPage(filters.page || 1);
         setItemsPerPage(filters.limit || 10);
