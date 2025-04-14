@@ -93,7 +93,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
       <form onSubmit={handleSubmit}>
         <div className="filters-grid">
           {/* Transaction Type Filter */}
-          <div className="filter-group">
+          <div className="filter-group type-filter">
             <label htmlFor="type">Transaction Type</label>
             <select 
               id="type" 
@@ -110,8 +110,8 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
           </div>
 
           {/* Related ID Filter - Conditionally rendered based on transaction type */}
-          {filters.type && filters.type !== 'purchase' && (
-            <div className="filter-group">
+          {filters.type && filters.type !== 'purchase' ? (
+            <div className="filter-group related-filter">
               <label htmlFor="relatedId">
                 {filters.type === 'transfer' && 'Other User ID'}
                 {filters.type === 'adjustment' && 'Adjusted Transaction ID'}
@@ -134,10 +134,12 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
                 min="1"
               />
             </div>
+          ) : (
+            <div className="filter-group related-filter"></div>
           )}
 
           {/* Promotion ID Filter */}
-          <div className="filter-group">
+          <div className="filter-group promotion-filter">
             <label htmlFor="promotionId">
               Promotion Involved
               <span className="hint-text">(promotion ID)</span>
@@ -185,7 +187,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
           </div>
 
           {/* Sort Filter */}
-          <div className="filter-group">
+          <div className="filter-group sort-filter">
             <label htmlFor="sort">Sort By</label>
             <select 
               id="sort" 
@@ -201,6 +203,9 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
               ))}
             </select>
           </div>
+
+          {/* Empty space next to sort */}
+          <div className="filter-group empty-filter"></div>
         </div>
 
         {/* Additional Checkbox Filters */}

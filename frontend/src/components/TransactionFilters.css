@@ -15,7 +15,11 @@
 
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-areas: 
+    "type related"
+    "promotion amount"
+    "sort empty";
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 16px;
 }
@@ -24,6 +28,30 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.filter-group.type-filter {
+  grid-area: type;
+}
+
+.filter-group.related-filter {
+  grid-area: related;
+}
+
+.filter-group.promotion-filter {
+  grid-area: promotion;
+}
+
+.filter-group.amount-filter {
+  grid-area: amount;
+}
+
+.filter-group.sort-filter {
+  grid-area: sort;
+}
+
+.filter-group.empty-filter {
+  grid-area: empty;
 }
 
 .filter-group label {
@@ -44,19 +72,20 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .amount-filter-group {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
+  width: 100%;
 }
 
-.amount-filter-group select {
-  flex: 1;
-}
-
+.amount-filter-group select,
 .amount-filter-group input {
-  flex: 1;
+  width: 100%;
 }
 
 /* New checkbox filters styles */
@@ -126,6 +155,12 @@
 /* Responsive styles */
 @media (max-width: 768px) {
   .filters-grid {
+    grid-template-areas: 
+      "type"
+      "related"
+      "promotion"
+      "amount"
+      "sort";
     grid-template-columns: 1fr;
   }
   
