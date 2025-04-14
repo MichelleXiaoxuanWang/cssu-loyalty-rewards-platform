@@ -20,7 +20,9 @@ const ItemBox: React.FC<ItemBoxProps> = ({ title, description, navigateTo }) => 
   return (
     <div className="item-box" onClick={handleClick}>
       <h3>{title}</h3>
-      <p>{description}</p>
+      <p className={`description ${description === 'Published' ? 'published' : 'unpublished'}`}>
+        {description}
+      </p>
     </div>
   );
 };

@@ -362,8 +362,6 @@ router.get('/', jwtAuth, async (req, res) => {
             filters.organizerId = req.query.organizer;
         }
 
-        console.log('Filters received in GET /events:', filters);
-
         // Add user info for permissions check
         const userInfo = {
             userId: req.user.id,
