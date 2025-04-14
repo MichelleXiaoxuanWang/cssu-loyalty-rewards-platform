@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import { getCurrentUser, User } from '../services/user.service';
 import { getMyTransactions, Transaction } from '../services/transaction.service';
-import { isUserVerified } from '../services/auth.service';
+import { isUserVerified, getUserId, getUserUtorid } from '../services/auth.service';
 import TransactionCard from '../components/TransactionCard';
 import './RegularLandingPage.css';
 
@@ -17,8 +17,9 @@ const RegularLandingPage: React.FC = () => {
   const userVerified = isUserVerified();
   
   // Generate a random QR code value for the user (placeholder)
-  const userId = localStorage.getItem('userId') || 'user';
-  const qrCodeValue = `uoft-points-user-${userId}-${Date.now()}`;
+  const userId = getUserId();
+  const utorid = getUserUtorid();
+  const qrCodeValue = `uoft-points-user-${userId}-${utorid}-${Date.now()}`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,21 +72,23 @@ const RegularLandingPage: React.FC = () => {
           <div className="points-amount">{user?.points || 0}</div>
           <div className="points-meta">
             <p>Last updated: {new Date().toLocaleString()}</p>
-            <Link to="/transactions" className="view-transactions-link">
-              View All Transactions
-            </Link>
           </div>
         </div>
         
         <div className="qr-code-card">
           <h2>My QR Code</h2>
-          <p>Use this code when making purchases to earn points</p>
+          <p>Show this QR code to a cashier to earn points on your purchase</p>
           <div className="qr-code-container">
             <QRCode value={qrCodeValue} size={200} />
           </div>
-          <p className="qr-instructions">
-            Show this QR code to a cashier to earn points on your purchase
-          </p>
+          <div className="user-identifiers">
+            <h2>My IDs</h2>
+            <p>You can also use these IDs for transactions and activities</p>
+            <div className="regular-id-container">
+              <p>User ID: {userId}</p>
+              <p>UTORid: {utorid}</p>
+            </div>
+          </div>
         </div>
       </div>
       
