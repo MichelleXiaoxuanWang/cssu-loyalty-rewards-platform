@@ -78,8 +78,53 @@ const Navbar: React.FC = () => {
     return false;
   };
   
+  // Cashier navbar
+  if (currentRole === 'cashier') {
+    return (
+      <nav className="navbar">
+        <div className="user-info">
+          <div className="username">Welcome back, {userName || utorid}!</div>
+          
+          <div className="role-switcher">
+            <div className="role-label">Current role:</div>
+            <div 
+              className="current-role" 
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              {currentRole} ▼
+            </div>
+            
+            {dropdownOpen && (
+              <div className="role-dropdown">
+                {availableRoles.map(role => (
+                  <div 
+                    key={role} 
+                    className={`role-option ${role === currentRole ? 'active' : ''}`}
+                    onClick={() => handleRoleChange(role)}
+                  >
+                    {role}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <Link to="/createTransaction" className={isActiveLink('/createTransaction') ? 'active-link' : ''}>Services</Link>
+        <Link to="/promotions" className={isActiveLink('/promotions') ? 'active-link' : ''}>Promotions</Link>
+        <Link to="/events" className={isActiveLink('/events') ? 'active-link' : ''}>Events</Link>
+        <Link to="/create-user" className={isActiveLink('/create-user') ? 'active-link' : ''}>Register Users</Link>
+        
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+          <img src={logoutIcon} alt="Logout" className="logout-icon" />
+        </button>
+      </nav>
+    );
+  }
+  
   // Different navbar for managers and above
-  if (currentRole !== 'regular'){
+  if (currentRole === 'manager' || currentRole === 'superuser'){
     return (
       <nav className="navbar">
         <div className="user-info">

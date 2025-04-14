@@ -75,12 +75,17 @@ function HomeRedirect() {
     return <RegularLandingPage key={role} />;
   }
   
+  // For cashier role, redirect to CreateTransaction page
+  if (role === 'cashier') {
+    return <Navigate to="/createTransaction" replace />;
+  }
+  
   // For higher roles (manager, superuser), show admin dashboard
   if (role === 'manager' || role === 'superuser') {
     return <AdminLandingPage key={role} />;
   }
   
-  // For cashier role or any other role, use regular landing page
+  // For any other role, use regular landing page
   return <RegularLandingPage key={role} />;
 }
 
@@ -112,7 +117,16 @@ function App() {
         <Route path="/verifyEmail" element={<VerifyEmailPage />} />
         <Route path="/resetPassword" element={<ResetPasswordPage />} />
         <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />
-        <Route path="/createTransaction" element={<CreateTransaction />} />
+        
+        <Route
+          path="/createTransaction"
+          element={
+            <ProtectedRoute page="CreateTransactionPage">
+              <CreateTransaction />
+            </ProtectedRoute>
+          }
+        />
+        
         <Route
           path="/transactions"
           element={
@@ -156,7 +170,16 @@ function App() {
         {isOrganizer && (
           <Route path="/organizer-events" element={<OrganizerEventsPage />} />
         )}
-        <Route path="/create-user" element={<CreateUser/>} />
+        
+        <Route
+          path="/create-user"
+          element={
+            <ProtectedRoute page="CreateUserPage">
+              <CreateUser />
+            </ProtectedRoute>
+          }
+        />
+        
         <Route path="/profile" element={<ProfilePage/>} />
         <Route path="/users/:userId" element={<UserDetailPage />} />
         <Route path="/events/:eventId" element={<EventDetailPage />} />
