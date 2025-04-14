@@ -1,3 +1,18 @@
+div {
+  display: block;
+  unicode-bidi: isolate;
+}
+
+.transaction-preview-page {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  align-items: center;
+  margin: 0;
+  max-width: 100%;
+  width: 100%;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;

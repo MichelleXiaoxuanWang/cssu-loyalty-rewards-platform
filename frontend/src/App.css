@@ -1,8 +1,17 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 100%;
+  margin-left: 20%;
+  margin-right: 10%;
+  padding: 0;
   text-align: center;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 0;
 }
 
 .logo {
