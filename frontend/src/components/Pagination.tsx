@@ -6,9 +6,16 @@ type PaginationProps = {
   totalPages: number;
   onPageChange: (page: number) => void;
   onLimitChange?: (limit: number) => void;
+  itemsPerPage?: number;
 };
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange, onLimitChange }) => {
+const Pagination: React.FC<PaginationProps> = ({ 
+  currentPage, 
+  totalPages, 
+  onPageChange, 
+  onLimitChange,
+  itemsPerPage = 10 
+}) => {
   const handlePrevious = () => {
     if (currentPage > 1) {
       onPageChange(currentPage - 1);
@@ -44,7 +51,11 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
       {onLimitChange && (
         <div>
           <label htmlFor="limit-select">Items per page:</label>
-          <select id="limit-select" onChange={handleLimitChange}>
+          <select 
+            id="limit-select" 
+            onChange={handleLimitChange}
+            value={itemsPerPage}
+          >
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
