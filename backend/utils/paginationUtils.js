@@ -10,7 +10,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function paginate(req, where, modelName, options = {}) {
+async function paginate(req, where, modelName, options = {}, orderBy) {
     // Ensure page and limit are positive integers
     let page = parseInt(req.query.page, 10) || 1;
     let limit = parseInt(req.query.limit, 10) || 10;
@@ -29,7 +29,8 @@ async function paginate(req, where, modelName, options = {}) {
         where,
         skip,
         take: limit,
-        ...options  // include select or include if provided
+        ...options,  // include select or include if provided,
+        orderBy: orderBy
     };
     
     // query the database

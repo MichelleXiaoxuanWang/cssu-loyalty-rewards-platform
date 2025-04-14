@@ -154,13 +154,44 @@ async function getPromotions(filters, userInfo) {
         }
         
         const skip = (page - 1) * limit;
+
+        // Determine orderBy clause based on filters.sort
+        let orderBy = {};
+        switch (filters.sort) {
+          case 'id-asc':
+            orderBy = { id: 'asc' };
+            break;
+          case 'id-desc':
+            orderBy = { id: 'desc' };
+            break;
+          case 'name-asc':
+            orderBy = { name: 'asc' };
+            break;
+          case 'name-desc':
+            orderBy = { name: 'desc' };
+            break;
+          case 'starttime-asc':
+            orderBy = { startTime: 'asc' };
+            break;
+          case 'starttime-desc':
+            orderBy = { startTime: 'desc' };
+            break;
+          case 'endtime-asc':
+            orderBy = { endTime: 'asc' };
+            break;
+          case 'endtime-desc':
+            orderBy = { endTime: 'desc' };
+            break;
+          default:
+            orderBy = { id: 'asc' }; // Default ordering
+        }
         
         // Get promotions
         const promotions = await prisma.promotion.findMany({
             where,
             skip,
             take: limit,
-            orderBy: { startTime: 'asc' }
+            orderBy
         });
         
         // Format response, one_time -> one-time

@@ -60,7 +60,8 @@ router.get('/', jwtAuth, async (req, res) => {
             name: req.query.name,
             type: req.query.type,
             page: req.query.page ? parseInt(req.query.page, 10) : undefined,
-            limit: req.query.limit ? parseInt(req.query.limit, 10) : undefined
+            limit: req.query.limit ? parseInt(req.query.limit, 10) : undefined,
+            sort: req.query.sort || '',
         };
         
         // For managers, add started/ended filters
