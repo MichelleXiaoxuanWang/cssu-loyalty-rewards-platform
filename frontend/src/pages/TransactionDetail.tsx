@@ -1,14 +1,14 @@
 // src/pages/TransactionDetailPage.tsx
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api.config';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import './TransactionDetail.css';
+import Form from '../components/Form';
 
 export interface TransactionDetailData {
   id: number;
   utorid: string;
-  userId: number;
   type: string;
   spent?: number;
   amount: number;
@@ -24,8 +24,7 @@ export interface TransactionDetailData {
 }
 
 const TransactionDetailPage: React.FC = () => {
-  const { userId, transactionId } = useParams<{ userId: string; transactionId: string }>();
-  const navigate = useNavigate();
+  const { transactionId } = useParams<{ transactionId: string }>();
   
   const [transaction, setTransaction] = useState<TransactionDetailData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -35,7 +34,7 @@ const TransactionDetailPage: React.FC = () => {
   
   // For redemption processing state (if needed)
   const [processing, setProcessing] = useState<boolean>(false);
-  
+
   // Retrieve current user info from localStorage
   const currentUser = localStorage.getItem('currentUser');
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
@@ -153,6 +152,42 @@ const TransactionDetailPage: React.FC = () => {
            !isRedemptionProcessed();
   };
 
+  const [creatingAdjustment, setCreatingAdjustment] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+
+  const handleCreateAdjustmentClick = () => {
+    setCreatingAdjustment(true);
+  };
+
+  const handleAdjustmentSubmit = async (formData: Record<string, any>) => {
+    try {
+      if (!transaction) return;
+      const response = await fetch(`${API_BASE_URL}/transactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || ''}`
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          type: 'adjustment',
+          amount: formData.amount,
+          remark: formData.remark,
+          relatedId: transaction.id,
+          utorid: transaction.utorid
+        })
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create adjustment transaction');
+      }
+      setFeedbackMessage('Adjustment transaction created successfully!');
+      setCreatingAdjustment(false);
+    } catch (err: any) {
+      setFeedbackMessage('Failed to create adjustment transaction. Please try again.');
+    }
+  };
+
   if (loading) return <p>Loading transaction details...</p>;
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
   if (!transaction) return <p>No transaction found.</p>;
@@ -236,6 +271,25 @@ const TransactionDetailPage: React.FC = () => {
             <button onClick={handleProcessRedemption} disabled={processing} className="action-button">
               {processing ? 'Processing...' : 'Process Redemption'}
             </button>
+          </div>
+        )}
+
+        {/* Add the button in the JSX */}
+        {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
+          <div className="action-section">
+            <button onClick={handleCreateAdjustmentClick} className="action-button">
+              Create Adjustment
+            </button>
+            {creatingAdjustment && (
+              <Form
+                fields={[
+                  { name: 'amount', label: 'Amount', type: 'number' },
+                  { name: 'remark', label: 'Remark', type: 'text' }
+                ]}
+                onSubmit={handleAdjustmentSubmit}
+              />
+            )}
+            {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
           </div>
         )}
 
