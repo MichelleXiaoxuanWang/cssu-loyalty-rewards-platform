@@ -6,13 +6,9 @@
 .transaction-preview-page {
   display: flex;
   flex-direction: column;
-  padding: 5px;
   align-items: center;
-  margin: 0;
-  max-width: 100%;
-  width: 100%;
 }
-
+/* 
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -24,7 +20,7 @@
   margin: 0;
   color: #333;
   font-size: 28px;
-}
+} */
 
 .create-transaction-button {
   background-color: #4CAF50;
@@ -46,17 +42,17 @@
   padding: 8px 12px;
   margin-top: 10px;
 }
-
+/* 
 .transactions-container {
   margin-top: 24px;
-}
-
+} */
+/* 
 .loading-spinner {
   text-align: center;
   padding: 40px;
   color: #666;
   font-size: 18px;
-}
+} */
 
 .error-message {
   background-color: #FFEBEE;
