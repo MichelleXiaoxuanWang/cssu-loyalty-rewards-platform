@@ -4,6 +4,11 @@
   padding: 2rem;
   text-align: center;
 }
+@media screen and (max-width: 800px){
+  .app-container{
+    margin-top: 100px;
+  }
+}
 
 .logo {
   height: 6em;
