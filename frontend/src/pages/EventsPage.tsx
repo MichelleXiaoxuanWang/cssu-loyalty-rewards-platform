@@ -43,6 +43,12 @@ const EventsPage: React.FC = () => {
     loadEvents();
   }, [filters]);
 
+  useEffect(() => {
+    if (role === 'regular') {
+      setFilters((prevFilters) => ({ ...prevFilters, published: true }));
+    }
+  }, [role]);
+
   const handleCreate = () => {
     setCreatingEvent(true);
   };
@@ -90,31 +96,24 @@ const EventsPage: React.FC = () => {
 
   const totalPages = Math.ceil(totalEvents / itemsPerPage);
 
-  if (role === 'regular' || role === 'cashier') {
-    return (
-      <div>
-        <h1>Events</h1>
-        {events && events.length === 0 ? (
-          <div className="no-entries">No events available</div>
-        ) : (
-          events?.map((event) => (
-            <ItemBox
-              key={event.id}
-              title={`ID: ${event.id}, Name: ${event.name}`}
-              description={`Description: ${event.description || 'No description available'}`}
-              navigateTo={`/events/${event.id}`}
-            />
-          ))
-        )}
-      </div>
-    );
+  const filterOptions = [
+    { label: 'Name', value: 'name' },
+    { label: 'Location', value: 'location' },
+    { label: 'Started', value: 'started', options: ['true', 'false'] },
+    { label: 'Ended', value: 'ended', options: ['true', 'false'] },
+  ];
+
+  if (role !== 'regular') {
+    filterOptions.push({ label: 'Published', value: 'published', options: ['true', 'false'] });
   }
 
   return (
     <div>
       <h1>Events</h1>
       {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
-      <button onClick={handleCreate}>Create New Event</button>
+      {role !== 'regular' && role !== 'cashier' && (
+        <button onClick={handleCreate}>Create New Event</button>
+      )}
       {creatingEvent && (
         <Form
           fields={[
@@ -130,13 +129,7 @@ const EventsPage: React.FC = () => {
         />
       )}
       <FilterAndSort
-        filters={[
-          { label: 'Name', value: 'name' },
-          { label: 'Location', value: 'location' },
-          { label: 'Started', value: 'started', options: ['true', 'false'] },
-          { label: 'Ended', value: 'ended', options: ['true', 'false'] },
-          { label: 'Published', value: 'published', options: ['true', 'false'] },
-        ]}
+        filters={filterOptions}
         sortOptions={[
           { label: 'ID (Ascending)', value: 'id-asc' },
           { label: 'ID (Descending)', value: 'id-desc' },

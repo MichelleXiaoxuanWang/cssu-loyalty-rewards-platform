@@ -55,16 +55,6 @@ type PurchaseTransactionData = {
   remark?: string;
 };
 
-// Fields for adjustment transaction
-type AdjustmentTransactionData = {
-  utorid: string;
-  type: string;
-  amount: number;
-  relatedId: number;
-  promotionIds?: number[];
-  remark?: string;
-};
-
 // Functions for creating transactions
 const transferPoints = async (userId: string, transactionData: TransferTransactionData) => {
   return apiCall(`/users/${userId}/transactions`, 'POST', transactionData );
@@ -78,8 +68,9 @@ const purchaseTransaction = async (transactionData: PurchaseTransactionData) => 
   return apiCall('/transactions', 'POST', transactionData);
 };
 
-const adjustmentTransaction = async (transactionData: AdjustmentTransactionData) => {
-  return apiCall('/transactions', 'POST', transactionData);
+// Function for processing redemption transactions
+const processRedemptionTransaction = async (transactionId: number): Promise<Transaction> => {
+  return apiCall(`/transactions/${transactionId}/processed`, 'PATCH', { processed: true });
 };
 
 // Functions for retrieving transactions
@@ -110,7 +101,7 @@ export {
   transferPoints, 
   redeemPoints, 
   purchaseTransaction, 
-  adjustmentTransaction,
+  processRedemptionTransaction,
   getMyTransactions,
   getAllTransactions,
   getTransactionById
