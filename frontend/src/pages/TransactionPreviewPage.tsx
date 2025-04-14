@@ -17,6 +17,8 @@ const TransactionPreviewPage: React.FC = () => {
     limit: 10
   });
   const [totalPages, setTotalPages] = useState(1);
+  const [hasSuspiciousTransactions, setHasSuspiciousTransactions] = useState(false);
+  const [hasPendingRedemptions, setHasPendingRedemptions] = useState(false);
 
   // Get current user role and ID
   const currentRole = getCurrentRole();
@@ -42,8 +44,17 @@ const TransactionPreviewPage: React.FC = () => {
       const response: TransactionResponse = isAdminRole 
         ? await getAllTransactions(filters)
         : await getMyTransactions(filters);
+      
       setTransactions(response.results);
       setTotalPages(Math.ceil(response.count / (filters.limit || 10)));
+
+      // Check for suspicious transactions and pending redemptions
+      if (isAdminRole) {
+        setHasSuspiciousTransactions(response.results.some(t => t.suspicious));
+        setHasPendingRedemptions(response.results.some(t => 
+          t.type === 'redemption' && t.relatedId === undefined
+        ));
+      }
     } catch (err) {
       setError('Failed to fetch transactions');
       console.error('Error fetching transactions:', err);
@@ -90,6 +101,22 @@ const TransactionPreviewPage: React.FC = () => {
         onApplyFilters={handleFilterChange}
         initialFilters={filters}
       />
+
+      {/* Alert banners for managers/superusers */}
+      {isAdminRole && (
+        <div className="transactions-alerts">
+          {hasSuspiciousTransactions && (
+            <div className="suspicious-alert">
+              ⚠️ Some transactions are flagged as suspicious
+            </div>
+          )}
+          {hasPendingRedemptions && (
+            <div className="pending-redemptions-alert">
+              🔔 There are pending redemptions to process
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="transactions-list">
         {transactions.map(transaction => (
