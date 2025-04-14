@@ -5,6 +5,7 @@ import { API_BASE_URL } from '../config/api.config';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import './TransactionDetail.css';
 import Form from '../components/Form';
+import { AdjustmentTransactionData, createAdjustmentTransaction } from '../services/transaction.service';
 
 export interface TransactionDetailData {
   id: number;
@@ -162,25 +163,26 @@ const TransactionDetailPage: React.FC = () => {
   const handleAdjustmentSubmit = async (formData: Record<string, any>) => {
     try {
       if (!transaction) return;
-      const response = await fetch(`${API_BASE_URL}/transactions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token || ''}`
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          type: 'adjustment',
-          amount: formData.amount,
-          remark: formData.remark,
-          relatedId: transaction.id,
-          utorid: transaction.utorid
-        })
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create adjustment transaction');
+      const requestBody: AdjustmentTransactionData = {
+        type: 'adjustment',
+        amount: formData.amount,
+        remark: formData.remark,
+        relatedId: transaction.id,
+        utorid: transaction.utorid
+      };
+
+      // Include promotionIds if the transaction type is 'purchase' and promotionIds are provided
+      if (transaction.type === 'purchase' && formData.promotionIds) {
+        // Ensure promotionIds is parsed as an array of numbers
+        const parsedPromotionIds = formData.promotionIds
+          .split(',')
+          .map((id: string) => parseInt(id.trim(), 10))
+          .filter((id: number) => !isNaN(id));
+
+        requestBody.promotionIds = parsedPromotionIds;
       }
+
+      await createAdjustmentTransaction(requestBody);
       setFeedbackMessage('Adjustment transaction created successfully!');
       setCreatingAdjustment(false);
     } catch (err: any) {
@@ -284,12 +286,13 @@ const TransactionDetailPage: React.FC = () => {
               <Form
                 fields={[
                   { name: 'amount', label: 'Amount', type: 'number' },
-                  { name: 'remark', label: 'Remark', type: 'text' }
+                  { name: 'remark', label: 'Remark', type: 'text' },
+                  ...(transaction?.type === 'purchase' ? [{ name: 'promotionIds', label: 'Promotion IDs', type: 'text' }] : [])
                 ]}
                 onSubmit={handleAdjustmentSubmit}
               />
             )}
-            {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
+            {feedbackMessage && <p style={{ color: feedbackMessage.includes('Failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
           </div>
         )}
 

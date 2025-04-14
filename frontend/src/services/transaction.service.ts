@@ -51,6 +51,15 @@ type PurchaseTransactionData = {
   remark?: string;
 };
 
+export type AdjustmentTransactionData = {
+  type: string;
+  amount: number;
+  remark: string;
+  relatedId: number;
+  utorid: string;
+  promotionIds?: number[];
+};
+
 // Functions for creating transactions
 const transferPoints = async (userId: string, transactionData: TransferTransactionData) => {
   return apiCall(`/users/${userId}/transactions`, 'POST', transactionData );
@@ -61,6 +70,10 @@ const redeemPoints = async (transactionData: RedeemTransactionData) => {
 };
 
 const purchaseTransaction = async (transactionData: PurchaseTransactionData) => {
+  return apiCall('/transactions', 'POST', transactionData);
+};
+
+export const createAdjustmentTransaction = async (transactionData: AdjustmentTransactionData) => {
   return apiCall('/transactions', 'POST', transactionData);
 };
 
