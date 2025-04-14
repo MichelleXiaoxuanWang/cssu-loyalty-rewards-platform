@@ -156,7 +156,7 @@ const Navbar: React.FC = () => {
         </div>
         
         <Link to="/" className={isActiveLink('/') ? 'active-link' : ''}>Home</Link>
-        <Link to="/transactions" className={isActiveLink('/transactions') ? 'active-link' : ''}>My Transactions</Link>
+        <Link to="/transactions" className={isActiveLink('/transactions') ? 'active-link' : ''}>Transactions</Link>
         <Link to="/events" className={isActiveLink('/events') ? 'active-link' : ''}>Events</Link>
         <Link to="/promotions" className={isActiveLink('/promotions') ? 'active-link' : ''}>Promotions</Link>
         {(currentRole === 'manager' || currentRole === 'superuser') && 

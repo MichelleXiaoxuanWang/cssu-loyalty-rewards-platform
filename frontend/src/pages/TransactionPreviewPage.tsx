@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TransactionFilters from '../components/TransactionFilters';
 import TransactionCard from '../components/TransactionCard';
 import Pagination from '../components/Pagination';
-import { getMyTransactions, TransactionFilters as FiltersType, TransactionResponse, Transaction } from '../services/transaction.service';
+import { getMyTransactions, getAllTransactions, TransactionFilters as FiltersType, TransactionResponse, Transaction } from '../services/transaction.service';
 import './TransactionPreviewPage.css';
 
 const TransactionPreviewPage: React.FC = () => {
@@ -18,13 +18,30 @@ const TransactionPreviewPage: React.FC = () => {
     page: 1,
     limit: 10
   });
+  
+  // Get current user role
+  const currentUser = localStorage.getItem('currentUser');
+  const currentRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) : null;
+  
+  // Determine if admin role (manager or superuser) to show all transactions
+  const isAdminRole = currentRole === 'manager' || currentRole === 'superuser';
 
   // Fetch transactions when filters change
   useEffect(() => {
     const fetchTransactions = async () => {
       setLoading(true);
       try {
-        const response: TransactionResponse = await getMyTransactions(filters);
+        let response: TransactionResponse;
+        
+        // Use different endpoints based on user role
+        if (isAdminRole) {
+          // For admin roles, fetch all transactions
+          response = await getAllTransactions(filters);
+        } else {
+          // For regular users and cashiers, fetch only their transactions
+          response = await getMyTransactions(filters);
+        }
+        
         setTransactions(response.results);
         setTotalTransactions(response.count);
         setCurrentPage(filters.page || 1);
@@ -38,7 +55,7 @@ const TransactionPreviewPage: React.FC = () => {
     };
 
     fetchTransactions();
-  }, [filters]);
+  }, [filters, isAdminRole]);
 
   // Handle filter changes
   const handleApplyFilters = (newFilters: FiltersType) => {
@@ -67,7 +84,7 @@ const TransactionPreviewPage: React.FC = () => {
   return (
     <div className="transaction-preview-page">
       <div className="page-header">
-        <h1>My Transactions</h1>
+        <h1>{isAdminRole ? 'All Transactions' : 'My Transactions'}</h1>
         <button 
           className="create-transaction-button"
           onClick={handleCreateTransaction}
