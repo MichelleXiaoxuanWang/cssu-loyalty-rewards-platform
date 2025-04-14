@@ -51,32 +51,39 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Create a copy of the filters to modify
+    const submittedFilters = { ...filters };
+    
     // Validate amount is positive integer if provided
-    if (filters.amount !== undefined) {
-      if (filters.amount < 0) {
+    if (submittedFilters.amount !== undefined) {
+      if (submittedFilters.amount < 0) {
         alert('Amount must be a positive integer');
         return;
       }
-      if (!Number.isInteger(filters.amount)) {
+      if (!Number.isInteger(submittedFilters.amount)) {
         alert('Amount must be a whole number (integer)');
         return;
       }
       
       // If amount is provided, ensure operator is set
-      if (!filters.operator) {
-        filters.operator = 'gte'; // Default to gte if not set
+      if (!submittedFilters.operator) {
+        submittedFilters.operator = 'gte'; // Default to gte if not set
       }
     } else {
       // If amount is not provided, remove operator
-      delete filters.operator;
+      delete submittedFilters.operator;
     }
     
+    // Remove relatedId if type is empty (all types) or purchase
+    if (!submittedFilters.type || submittedFilters.type === 'purchase') {
+      delete submittedFilters.relatedId;
+    }
     // Ensure relatedId is a number if provided
-    if (filters.relatedId !== undefined) {
-      filters.relatedId = Number(filters.relatedId);
+    else if (submittedFilters.relatedId !== undefined) {
+      submittedFilters.relatedId = Number(submittedFilters.relatedId);
     }
     
-    onApplyFilters(filters);
+    onApplyFilters(submittedFilters);
   };
 
   // Reset filters
