@@ -323,10 +323,10 @@ async function main() {
     // For redemption, relatedId is the user ID of the cashier who processed it
     const redemptions = await prisma.transaction.createMany({
         data: [
-            { id: 23, utorid: 'diana123', type: 'redemption', amount: 100, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3}, // relatedId points to Alice cashier (id 3)
-            { id: 24, utorid: 'ethan123', type: 'redemption', amount: 50, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3}, // relatedId points to Alice cashier (id 3)
-            { id: 25, utorid: 'fiona123', type: 'redemption', amount: 20, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4}, // relatedId points to Charlie cashier (id 4)
-            { id: 26, utorid: 'george12', type: 'redemption', amount: 10, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4}, // relatedId points to Charlie cashier (id 4)
+            { id: 23, utorid: 'diana123', type: 'redemption', amount: -100, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3}, // relatedId points to Alice cashier (id 3)
+            { id: 24, utorid: 'ethan123', type: 'redemption', amount: -50, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3}, // relatedId points to Alice cashier (id 3)
+            { id: 25, utorid: 'fiona123', type: 'redemption', amount: -20, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4}, // relatedId points to Charlie cashier (id 4)
+            { id: 26, utorid: 'george12', type: 'redemption', amount: -10, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4}, // relatedId points to Charlie cashier (id 4)
         ]
     });
 
