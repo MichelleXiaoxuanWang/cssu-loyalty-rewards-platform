@@ -34,7 +34,7 @@ const EventGuestsManagePage: React.FC = () => {
   const currentUser = localStorage.getItem('currentUser');
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
 
-  // Fetch event details
+  // Fetch event details (only need guests, capacity, and endTime) from the backend
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -42,9 +42,9 @@ const EventGuestsManagePage: React.FC = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token || ''}`,
+            'Authorization': `Bearer ${token || ''}`
           },
-          credentials: 'include',
+          credentials: 'include'
         });
         if (!response.ok) {
           const data = await response.json();
@@ -64,27 +64,38 @@ const EventGuestsManagePage: React.FC = () => {
     }
   }, [eventId, token]);
 
-  // Handler for adding a guest using POST /events/:eventId/guests
+  // Handler for adding a guest using POST /events/:eventId/guests.
   const handleAddGuest = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setAdding(true);
     setError(null);
+    setUpdateMsg('');
+
     try {
       const response = await fetch(`${API_BASE_URL}/events/${eventId}/guests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token || ''}`,
+          'Authorization': `Bearer ${token || ''}`
         },
         credentials: 'include',
-        body: JSON.stringify({ utorid }),
+        body: JSON.stringify({ utorid })
       });
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to add guest');
       }
-      const updatedEvent = await response.json();
-      setEventData(updatedEvent);
+      const data = await response.json();
+      const newGuest: Guest = data.guestAdded;
+
+      // Append the new guest to the existing eventData.guests list
+      setEventData(prev => {
+        if (prev) {
+          return { ...prev, guests: [...(prev.guests || []), newGuest] };
+        }
+        return prev;
+      });
+
       setUpdateMsg('Guest added successfully!');
       setUtorid('');
     } catch (err: any) {
@@ -101,19 +112,18 @@ const EventGuestsManagePage: React.FC = () => {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token || ''}`,
+          'Authorization': `Bearer ${token || ''}`
         },
-        credentials: 'include',
+        credentials: 'include'
       });
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to remove guest');
       }
-      // After successful deletion, update the event data to get rid of the removed ones
+      // Update the eventData state that get rid of the removed guest
       setEventData(prev => {
         if (prev) {
-          const newGuests = prev.guests?.filter(guest => guest.id !== guestId) || [];
-          return { ...prev, guests: newGuests };
+          return { ...prev, guests: prev.guests?.filter(guest => guest.id !== guestId) || [] };
         }
         return prev;
       });
@@ -128,50 +138,50 @@ const EventGuestsManagePage: React.FC = () => {
   if (!eventData) return <p>No event information available.</p>;
 
   return (
-    <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem', border: '1px solid #ddd' }}>
-      <h1>Manage Guests for Event: {eventData.name} (ID: {eventData.id})</h1>
-      <h3>Current Guests</h3>
-      {eventData.guests && eventData.guests.length > 0 ? (
-        eventData.guests.map(guest => (
-          <div key={guest.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <p style={{ margin: 0 }}>
-              <strong>ID:</strong> {guest.id} | <strong>Name:</strong> {guest.name}
-            </p>
-            <button
-              style={{ marginLeft: '1rem', fontSize: '0.8rem' }}
-              onClick={() => handleRemoveGuest(guest.id)}
-            >
-              Remove
-            </button>
+      <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem', border: '1px solid #ddd' }}>
+        <h1>Manage Guests for Event: {eventData.name} (ID: {eventData.id})</h1>
+        <h3>Current Guests</h3>
+        {eventData.guests && eventData.guests.length > 0 ? (
+            eventData.guests.map(guest => (
+                <div key={guest.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <p style={{ margin: 0 }}>
+                    <strong>ID:</strong> {guest.id} | <strong>Name:</strong> {guest.name}
+                  </p>
+                  <button
+                      style={{ marginLeft: '1rem', fontSize: '0.8rem' }}
+                      onClick={() => handleRemoveGuest(guest.id)}
+                  >
+                    Remove
+                  </button>
+                </div>
+            ))
+        ) : (
+            <p>No guests have RSVPed yet.</p>
+        )}
+
+        <h3>Add a Guest</h3>
+        <form onSubmit={handleAddGuest}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label htmlFor="guestUtorid"><strong>UTORid:</strong></label>
+            <input
+                type="text"
+                id="guestUtorid"
+                value={utorid}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setUtorid(e.target.value)}
+                required
+                style={{ width: '100%' }}
+            />
           </div>
-        ))
-      ) : (
-        <p>No guests have RSVPed yet.</p>
-      )}
+          <button type="submit" disabled={adding}>
+            {adding ? 'Adding...' : 'Add Guest'}
+          </button>
+        </form>
 
-      <h3>Add a Guest</h3>
-      <form onSubmit={handleAddGuest}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="guestUtorid"><strong>UTORid:</strong></label>
-          <input
-            type="text"
-            id="guestUtorid"
-            value={utorid}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setUtorid(e.target.value)}
-            required
-            style={{ width: '100%' }}
-          />
-        </div>
-        <button type="submit" disabled={adding}>
-          {adding ? 'Adding...' : 'Add Guest'}
+        {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
+        <button style={{ marginTop: '1rem' }} onClick={() => navigate(`/events/${eventData.id}`)}>
+          Back to Event Details
         </button>
-      </form>
-
-      {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
-      <button style={{ marginTop: '1rem' }} onClick={() => navigate(`/events/${eventData.id}`)}>
-        Back to Event Details
-      </button>
-    </div>
+      </div>
   );
 };
 

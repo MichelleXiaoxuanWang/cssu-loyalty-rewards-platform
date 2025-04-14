@@ -41,7 +41,7 @@ const EventDetailPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [updateMsg, setUpdateMsg] = useState<string>('');
-  
+
   // For inline editing: store form data for updating event details
   const [editMode, setEditMode] = useState<boolean>(false);
   const [formData, setFormData] = useState<{
@@ -62,10 +62,10 @@ const EventDetailPage: React.FC = () => {
     capacity: ''
   });
 
-  // Retrieve current user's information (e.g., UTORid, token, role) from localStorage
+  // Retrieve current user's information (e.g., UTORid, token, role) from localStorage.
   const currentUser = localStorage.getItem('currentUser');
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
-  const currentUserRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) || '' : '';
+  const currentUserRole = currentUser ? localStorage.getItem(`role_${currentUser}`) || '' : '';
 
   // Helper: check if the current user has full access (manager, superuser, or is in organizers)
   const hasFullAccess = (ev: EventData): boolean => {
@@ -78,7 +78,7 @@ const EventDetailPage: React.FC = () => {
     return false;
   };
 
-  // Fetch the event details
+  // Fetch the event details on mount.
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -97,12 +97,12 @@ const EventDetailPage: React.FC = () => {
         const data: EventData = await response.json();
         setEventData(data);
 
-        // Pre-fill the edit form with the existing event data
+        // Pre-fill the edit form with the existing event data.
         setFormData({
           name: data.name,
           description: data.description,
           location: data.location,
-          startTime: data.startTime.substring(0, 16),
+          startTime: data.startTime.substring(0, 16), // e.g., "2025-05-10T09:00"
           endTime: data.endTime.substring(0, 16),
           capacity: data.capacity === null ? '' : String(data.capacity),
           ...(data.pointsRemain !== undefined && {
@@ -148,16 +148,16 @@ const EventDetailPage: React.FC = () => {
     setEditMode(false);
   };
 
-  // Handle form field changes
+  // Handle form field changes.
   const handleFormChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  // Handle update submission using PATCH
+  // Handle update submission using PATCH.
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!eventData) return;
@@ -230,175 +230,175 @@ const EventDetailPage: React.FC = () => {
   const fullAccess = hasFullAccess(eventData);
 
   return (
-    <div style={{ maxWidth: '900px', margin: '2rem auto', padding: '1rem', border: '1px solid #ddd' }}>
-      <h1>Event Details (ID: {eventData.id})</h1>
-      
-      {/* two bottons here */}
-      {fullAccess && (
-        <div style={{ marginBottom: '1rem' }}>
-          <button onClick={handleEditClick} style={{ marginRight: '1rem' }}>
-            Edit Event Details
-          </button>
-          <button onClick={() => navigate(`/events/${eventData.id}/transactions`)}>
-            Add Event Transaction
-          </button>
-        </div>
-      )}
+      <div style={{ maxWidth: '900px', margin: '2rem auto', padding: '1rem', border: '1px solid #ddd' }}>
+        <h1>Event Details (ID: {eventData.id})</h1>
 
-      {/* Display mode */}
-      {!editMode ? (
-        <div>
-          <p><strong>Name:</strong> {eventData.name}</p>
-          <p><strong>Description:</strong> {eventData.description}</p>
-          <p><strong>Location:</strong> {eventData.location}</p>
-          <p>
-            <strong>Start Time:</strong> {new Date(eventData.startTime).toLocaleString()}
-          </p>
-          <p>
-            <strong>End Time:</strong> {new Date(eventData.endTime).toLocaleString()}
-          </p>
-          <p>
-            <strong>Capacity:</strong> {eventData.capacity !== null ? eventData.capacity : 'Unlimited'}
-          </p>
-
-          {fullAccess ? (
-            <>
-              <p><strong>Points Remain:</strong> {eventData.pointsRemain}</p>
-              <p><strong>Points Awarded:</strong> {eventData.pointsAwarded}</p>
-              <p><strong>Published:</strong> {eventData.published ? 'Yes' : 'No'}</p>
-              <h3>Organizers</h3>
-              {eventData.organizers.map(org => (
-                <p key={org.id}>
-                  <strong>ID:</strong> {org.id} | <strong>Name:</strong> {org.name}
-                </p>
-              ))}
-              <h3>Guests</h3>
-              {eventData.guests && eventData.guests.length > 0 ? (
-                eventData.guests.map(guest => (
-                  <p key={guest.id}>
-                    <strong>ID:</strong> {guest.id} | <strong>Name:</strong> {guest.name}
-                  </p>
-                ))
-              ) : (
-                <p>No guests yet.</p>
-              )}
-            </>
-          ) : (
-            <p><strong>Number of Guests:</strong> {eventData.numGuests}</p>
-          )}
-
-          <div style={{ marginTop: '2rem' }}>
-            {fullAccess && (
-              <button
-                onClick={() => navigate(`/events/${eventData.id}/organizers`)}
-                style={{ marginRight: '1rem' }}
-              >
-                Manage Organizers
+        {/* two bottons here */}
+        {fullAccess && (
+            <div style={{ marginBottom: '1rem' }}>
+              <button onClick={handleEditClick} style={{ marginRight: '1rem' }}>
+                Edit Event Details
               </button>
-            )}
-            <button onClick={() => navigate('/events')}>Back to Events List</button>
-          </div>
-          {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
-        </div>
-      ) : (
-        // edit form
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label><strong>Name:</strong></label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleFormChange}
-              style={{ width: '100%' }}
-            />
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label><strong>Description:</strong></label>
-            <input
-              type="text"
-              name="description"
-              value={formData.description}
-              onChange={handleFormChange}
-              style={{ width: '100%' }}
-            />
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label><strong>Location:</strong></label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleFormChange}
-              style={{ width: '100%' }}
-            />
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label><strong>Start Time:</strong></label>
-            <input
-              type="datetime-local"
-              name="startTime"
-              value={formData.startTime}
-              onChange={handleFormChange}
-              style={{ width: '100%' }}
-            />
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label><strong>End Time:</strong></label>
-            <input
-              type="datetime-local"
-              name="endTime"
-              value={formData.endTime}
-              onChange={handleFormChange}
-              style={{ width: '100%' }}
-            />
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label><strong>Capacity:</strong></label>
-            <input
-              type="number"
-              name="capacity"
-              value={formData.capacity}
-              onChange={handleFormChange}
-              style={{ width: '100%' }}
-              placeholder="Leave blank for unlimited"
-            />
-          </div>
-          {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
-            <>
+              <button onClick={() => navigate(`/events/${eventData.id}/transactions`)}>
+                Add Event Transaction
+              </button>
+            </div>
+        )}
+
+        {/* Display mode */}
+        {!editMode ? (
+            <div>
+              <p><strong>Name:</strong> {eventData.name}</p>
+              <p><strong>Description:</strong> {eventData.description}</p>
+              <p><strong>Location:</strong> {eventData.location}</p>
+              <p>
+                <strong>Start Time:</strong> {new Date(eventData.startTime).toLocaleString()}
+              </p>
+              <p>
+                <strong>End Time:</strong> {new Date(eventData.endTime).toLocaleString()}
+              </p>
+              <p>
+                <strong>Capacity:</strong> {eventData.capacity !== null ? eventData.capacity : 'Unlimited'}
+              </p>
+
+              {fullAccess ? (
+                  <>
+                    <p><strong>Points Remain:</strong> {eventData.pointsRemain}</p>
+                    <p><strong>Points Awarded:</strong> {eventData.pointsAwarded}</p>
+                    <p><strong>Published:</strong> {eventData.published ? 'Yes' : 'No'}</p>
+                    <h3>Organizers</h3>
+                    {eventData.organizers.map(org => (
+                        <p key={org.id}>
+                          <strong>ID:</strong> {org.id} | <strong>Name:</strong> {org.name}
+                        </p>
+                    ))}
+                    <h3>Guests</h3>
+                    {eventData.guests && eventData.guests.length > 0 ? (
+                        eventData.guests.map(guest => (
+                            <p key={guest.id}>
+                              <strong>ID:</strong> {guest.id} | <strong>Name:</strong> {guest.name}
+                            </p>
+                        ))
+                    ) : (
+                        <p>No guests yet.</p>
+                    )}
+                  </>
+              ) : (
+                  <p><strong>Number of Guests:</strong> {eventData.numGuests}</p>
+              )}
+
+              <div style={{ marginTop: '2rem' }}>
+                {fullAccess && (
+                    <button
+                        onClick={() => navigate(`/events/${eventData.id}/organizers`)}
+                        style={{ marginRight: '1rem' }}
+                    >
+                      Manage Organizers
+                    </button>
+                )}
+                <button onClick={() => navigate(`/events/${eventId}/guests-manage`)}>Manage Guests</button>
+              </div>
+              {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
+            </div>
+        ) : (
+            // edit form
+            <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: '1rem' }}>
-                <label><strong>Total Points Allocated:</strong></label>
+                <label><strong>Name:</strong></label>
                 <input
-                  type="number"
-                  name="points"
-                  value={formData.points || ''}
-                  onChange={handleFormChange}
-                  style={{ width: '100%' }}
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleFormChange}
+                    style={{ width: '100%' }}
                 />
               </div>
               <div style={{ marginBottom: '1rem' }}>
-                <label>
-                  <strong>Published:</strong>
-                  <input
-                    type="checkbox"
-                    name="published"
-                    checked={!!formData.published}
-                    onChange={(e) =>
-                      setFormData({ ...formData, published: e.target.checked })
-                    }
-                    style={{ marginLeft: '1rem' }}
-                  />
-                </label>
+                <label><strong>Description:</strong></label>
+                <input
+                    type="text"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleFormChange}
+                    style={{ width: '100%' }}
+                />
               </div>
-            </>
-          )}
-          <button type="submit" style={{ marginRight: '1rem' }}>Save Changes</button>
-          <button type="button" onClick={handleCancel}>Cancel</button>
-          {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
-          {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
-        </form>
-      )}
-    </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label><strong>Location:</strong></label>
+                <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleFormChange}
+                    style={{ width: '100%' }}
+                />
+              </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label><strong>Start Time:</strong></label>
+                <input
+                    type="datetime-local"
+                    name="startTime"
+                    value={formData.startTime}
+                    onChange={handleFormChange}
+                    style={{ width: '100%' }}
+                />
+              </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label><strong>End Time:</strong></label>
+                <input
+                    type="datetime-local"
+                    name="endTime"
+                    value={formData.endTime}
+                    onChange={handleFormChange}
+                    style={{ width: '100%' }}
+                />
+              </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label><strong>Capacity:</strong></label>
+                <input
+                    type="number"
+                    name="capacity"
+                    value={formData.capacity}
+                    onChange={handleFormChange}
+                    style={{ width: '100%' }}
+                    placeholder="Leave blank for unlimited"
+                />
+              </div>
+              {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
+                  <>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label><strong>Total Points Allocated:</strong></label>
+                      <input
+                          type="number"
+                          name="points"
+                          value={formData.points || ''}
+                          onChange={handleFormChange}
+                          style={{ width: '100%' }}
+                      />
+                    </div>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <label>
+                        <strong>Published:</strong>
+                        <input
+                            type="checkbox"
+                            name="published"
+                            checked={!!formData.published}
+                            onChange={(e) =>
+                                setFormData({ ...formData, published: e.target.checked })
+                            }
+                            style={{ marginLeft: '1rem' }}
+                        />
+                      </label>
+                    </div>
+                  </>
+              )}
+              <button type="submit" style={{ marginRight: '1rem' }}>Save Changes</button>
+              <button type="button" onClick={handleCancel}>Cancel</button>
+              {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+              {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
+            </form>
+        )}
+      </div>
   );
 };
 
