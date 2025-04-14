@@ -799,94 +799,96 @@ function formatTransactionResponse(transaction) {
  * @param {Object} filters - Filter criteria
  * @returns {Promise<Object>} Paginated transactions with count
  */
-async function getUserTransactions(utorid, filters) {
+async function getUserTransactions(utorid, filters = {}) {
     try {
-        // Build where clause based on filters
-        const where = { utorid };
-        
-        // Filter by transaction type
-        if (filters.type) {
-            where.type = filters.type;
-            
-            // If relatedId is provided with type
-            if (filters.relatedId) {
-                where.relatedId = filters.relatedId;
+        // Build the base query
+        let query = {
+            where: {
+                utorid: utorid
+            },
+            include: {
+                user: true,
+                creater: true,
+                promotionUsed: true
             }
-        } else if (filters.relatedId) {
-            // relatedId without type is not allowed
-            const error = new Error('relatedId must be used with type');
-            error.statusCode = 400;
-            throw error;
+        };
+
+        // Add type filter if specified
+        if (filters.type) {
+            query.where.type = filters.type;
         }
-        
-        // Filter by promotionId
+
+        // Add promotion ID filter if specified
         if (filters.promotionId) {
-            where.promotionUsed = {
-                some: { id: filters.promotionId }
+            query.where.promotionUsed = {
+                some: {
+                    id: filters.promotionId
+                }
             };
         }
-        
-        // Filter by amount with operator
-        if (filters.amount !== undefined) {
-            if (!filters.operator) {
-                const error = new Error('operator must be provided with amount');
-                error.statusCode = 400;
-                throw error;
-            }
-            
-            switch (filters.operator) {
-                case 'gte':
-                    where.amount = { gte: filters.amount };
-                    break;
-                case 'lte':
-                    where.amount = { lte: filters.amount };
-                    break;
-                default:
-                    const error = new Error('operator must be "gte" or "lte"');
-                    error.statusCode = 400;
-                    throw error;
-            }
-        } else if (filters.operator) {
-            // operator without amount is not allowed
-            const error = new Error('amount must be provided with operator');
-            error.statusCode = 400;
-            throw error;
+
+        // Add related ID filter if specified
+        if (filters.relatedId) {
+            query.where.relatedId = filters.relatedId;
         }
-        
-        // Count total transactions matching where clause
-        const totalTransactions = await prisma.transaction.count({ where });
-        
-        // Pagination
+
+        // Add amount filter with absolute value comparison
+        if (filters.amount !== undefined) {
+            const operator = filters.operator || 'gte';
+            if (operator === 'gte') {
+                query.where.OR = [
+                    { amount: { gte: filters.amount } },
+                    { amount: { lte: -filters.amount } }
+                ];
+            } else if (operator === 'lte') {
+                query.where.OR = [
+                    { amount: { lte: filters.amount } },
+                    { amount: { gte: -filters.amount } }
+                ];
+            }
+        }
+
+        // Add suspicious filter if specified
+        if (filters.suspicious !== undefined) {
+            query.where.suspicious = filters.suspicious;
+        }
+
+        // Add sorting
+        if (filters.sort) {
+            const [field, direction] = filters.sort.split('-');
+            query.orderBy = {
+                [field]: direction
+            };
+        } else {
+            // Default sorting by ID descending
+            query.orderBy = {
+                id: 'desc'
+            };
+        }
+
+        // Add pagination
         const page = filters.page || 1;
         const limit = filters.limit || 10;
         const skip = (page - 1) * limit;
-        
-        // Get transactions
-        const transactions = await prisma.transaction.findMany({
-            where,
-            skip,
-            take: limit,
-            orderBy: { id: 'desc' },
-            include: {
-                promotionUsed: {
-                    select: { id: true }
-                }
-            }
+
+        // Get total count
+        const count = await prisma.transaction.count({
+            where: query.where
         });
-        
-        // Format response
-        const results = transactions.map(formatTransactionResponse);
-        
+
+        // Get paginated results
+        const results = await prisma.transaction.findMany({
+            ...query,
+            skip,
+            take: limit
+        });
+
         return {
-            count: totalTransactions,
+            count,
             results
         };
     } catch (error) {
-        if (!error.statusCode) {
-            console.error('Database error getting user transactions:', error);
-            error.statusCode = 500;
-            error.message = 'Error retrieving transactions from database';
-        }
+        console.error('Error in getUserTransactions:', error);
         throw error;
     }
 }

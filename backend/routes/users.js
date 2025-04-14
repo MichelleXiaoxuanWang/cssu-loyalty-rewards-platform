@@ -352,16 +352,24 @@ router.post('/me/transactions', jwtAuth, checkRole(ROLES.REGULAR_OR_HIGHER), asy
 // Clearance: Regular or higher
 router.get('/me/transactions', jwtAuth, checkRole(ROLES.REGULAR_OR_HIGHER), async (req, res) => {
     try {
-        // complex rule check so not using validator heloper
+        // Parse query parameters
         const filters = {};
         
         // String filters
+        if (req.query.name) filters.name = req.query.name;
+        if (req.query.createdBy) filters.createdBy = req.query.createdBy;
         if (req.query.type) filters.type = req.query.type;
+        if (req.query.sort) filters.sort = req.query.sort;
         
         // Numeric filters
         if (req.query.promotionId) filters.promotionId = parseInt(req.query.promotionId, 10);
         if (req.query.relatedId) filters.relatedId = parseInt(req.query.relatedId, 10);
         if (req.query.amount !== undefined) filters.amount = parseInt(req.query.amount, 10);
+        
+        // Boolean filters
+        if (req.query.suspicious !== undefined) {
+            filters.suspicious = req.query.suspicious === 'true';
+        }
         
         // Special filters
         if (req.query.operator) {
