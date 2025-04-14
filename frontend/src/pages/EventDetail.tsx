@@ -288,13 +288,13 @@ const EventDetailPage: React.FC = () => {
               )}
 
               <div style={{ marginTop: '2rem' }}>
-                {fullAccess && (
-                    <button
-                        onClick={() => navigate(`/events/${eventData.id}/organizers`)}
-                        style={{ marginRight: '1rem' }}
-                    >
-                      Manage Organizers
-                    </button>
+                {fullAccess && (currentUserRole === 'manager' || currentUserRole === 'superuser') && (
+                  <button
+                      onClick={() => navigate(`/events/${eventData.id}/organizers`)}
+                      style={{ marginRight: '1rem' }}
+                  >
+                    Manage Organizers
+                  </button>
                 )}
                 <button onClick={() => navigate(`/events/${eventId}/guests-manage`)}>Manage Guests</button>
               </div>
