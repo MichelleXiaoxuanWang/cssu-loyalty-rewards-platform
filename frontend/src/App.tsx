@@ -32,17 +32,25 @@ interface ProtectedRouteProps {
 }
 
 // Protected route to check if user is authenticated and has access to the page
-// This should check highest role that the user has, instead of the current role the user is using.
 function ProtectedRoute({ children, page }: ProtectedRouteProps) {
   const currentUser = localStorage.getItem('currentUser');
   const token = localStorage.getItem(`token_${currentUser}`);
-  const role = localStorage.getItem(`role_${currentUser}`);
+  
+  // Check the current role the user is using, not their highest possible role
+  const currentRole = localStorage.getItem(`current_role_${currentUser}`);
+  const highestRole = localStorage.getItem(`role_${currentUser}`);
   
   // Debug authentication issues - remove in production
-  console.log('Protected Route Check:', { currentUser, role, page, hasAccess: role ? hasAccess(role, page) : false });
+  console.log('Protected Route Check:', { 
+    currentUser, 
+    currentRole, 
+    highestRole,
+    page, 
+    hasAccess: currentRole ? hasAccess(currentRole, page) : false 
+  });
   
-  // Check if user is authenticated and has access
-  if (!token || !currentUser || !role || !hasAccess(role, page)) {
+  // Check if user is authenticated and has access based on their current role
+  if (!token || !currentUser || !currentRole || !hasAccess(currentRole, page)) {
     console.log('Access denied, redirecting to login page');
     return <Navigate to="/login" replace />;
   }
@@ -116,7 +124,15 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/verifyEmail" element={<VerifyEmailPage />} />
         <Route path="/resetPassword" element={<ResetPasswordPage />} />
-        <Route path="/:userId/transactions/:transactionId" element={<TransactionDetailPage />} />
+        
+        <Route
+          path="/:userId/transactions/:transactionId"
+          element={
+            <ProtectedRoute page="TransactionsPage">
+              <TransactionDetailPage />
+            </ProtectedRoute>
+          }
+        />
         
         <Route
           path="/createTransaction"
