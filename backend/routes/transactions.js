@@ -149,7 +149,7 @@ router.get('/', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) =>
 
 // GET /transactions/:transactionId - Retrieve a single transaction
 // Clearance: Manager or higher
-router.get('/:transactionId', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) => {
+router.get('/:transactionId', jwtAuth, checkRole(ROLES.REGULAR_OR_HIGHER), async (req, res) => {
     try {
         // Parse transaction ID
         const transactionId = parseInt(req.params.transactionId, 10);
