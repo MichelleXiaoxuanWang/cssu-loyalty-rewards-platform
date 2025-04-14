@@ -95,6 +95,54 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
     navigate(`/${userId}/transactions/${transaction.id}`);
   };
   
+  // Function to format the date
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Function to get related entity description
+  const getRelatedEntityInfo = () => {
+    console.log('Transaction data:', {
+      type: transaction.type,
+      relatedUtorid: transaction.relatedUtorid,
+      relatedId: transaction.relatedId,
+      fullTransaction: transaction
+    });
+
+    switch (transaction.type) {
+      case 'transfer':
+        return {
+          label: transaction.amount > 0 ? 'Sender' : 'Receiver',
+          value: transaction.relatedUtorid || 'N/A'
+        };
+      case 'redemption':
+        return {
+          label: 'Processed by',
+          value: transaction.relatedUtorid || 'N/A'
+        };
+      case 'event':
+        return {
+          label: 'Event ID',
+          value: transaction.relatedId || 'N/A'
+        };
+      case 'adjustment':
+        return {
+          label: 'Adjusted Transaction ID',
+          value: transaction.relatedId || 'N/A'
+        };
+      default:
+        return null;
+    }
+  };
+  
   return (
     <div 
       className="transaction-card" 
@@ -140,11 +188,18 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
         </div>
         
         <div className="transaction-info">
-          <span className="transaction-id">ID: {transaction.id}</span>
-          {transaction.remark && (
-            <span className="transaction-remark">{transaction.remark}</span>
-          )}
-          <span className="transaction-created-by">Created by: {transaction.createdBy}</span>
+          <div className="transaction-info-row">
+            <span className="transaction-id">ID: {transaction.id}</span>
+            <span className="transaction-created-by">Created by: {transaction.createdBy}</span>
+            {getRelatedEntityInfo() && (
+              <span className="transaction-related">
+                {getRelatedEntityInfo()?.label}: {getRelatedEntityInfo()?.value}
+              </span>
+            )}
+          </div>
+          <div className="transaction-info-row">
+            <span className="transaction-date">Date: {formatDate(transaction.createdAt)}</span>
+          </div>
         </div>
       </div>
     </div>

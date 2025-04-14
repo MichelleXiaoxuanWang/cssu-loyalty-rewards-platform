@@ -176,13 +176,19 @@
 
 .transaction-info {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
   color: #666;
   font-size: 14px;
 }
 
-.transaction-id, .transaction-created-by {
+.transaction-info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.transaction-id, .transaction-created-by, .transaction-date, .transaction-related {
   color: #888;
 }
 
@@ -220,3 +226,4 @@
     margin-top: 4px;
   }
 }
+

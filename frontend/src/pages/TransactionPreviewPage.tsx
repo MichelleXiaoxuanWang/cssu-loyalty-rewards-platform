@@ -45,6 +45,12 @@ const TransactionPreviewPage: React.FC = () => {
         ? await getAllTransactions(filters)
         : await getMyTransactions(filters);
       
+      console.log('API Response:', {
+        count: response.count,
+        sampleTransaction: response.results[0],
+        allTransactions: response.results
+      });
+      
       setTransactions(response.results);
       setTotalPages(Math.ceil(response.count / (filters.limit || 10)));
 

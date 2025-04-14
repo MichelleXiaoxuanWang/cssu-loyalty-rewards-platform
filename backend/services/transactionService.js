@@ -780,7 +780,7 @@ function formatTransactionResponse(transaction) {
         suspicious: transaction.suspicious,
         remark: transaction.remark || "",
         createdBy: transaction.createdBy,
-        createdAt: transaction.createdAt.toISOString()
+        createdAt: transaction.createdAt.toISOString(),
     };
     
     // Add type-specific fields
@@ -794,6 +794,9 @@ function formatTransactionResponse(transaction) {
         case 'event':
             if (transaction.relatedId !== null) {
                 formatted.relatedId = transaction.relatedId;
+            }
+            if (transaction.relatedUtorid !== null) {
+                formatted.relatedUtorid = transaction.relatedUtorid;
             }
             
             // For redemption, include redeemed points (same as amount but positive)

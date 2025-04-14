@@ -8,6 +8,7 @@ export interface Transaction {
   amount: number;
   spent?: number;
   relatedId?: number; // Will be populated with the processor's user ID when a redemption is processed
+  relatedUtorid?: string; // Add this field for transfer and redemption transactions
   promotionIds: number[];
   suspicious?: boolean;
   remark?: string;
@@ -76,15 +77,21 @@ const processRedemptionTransaction = async (transactionId: number): Promise<Tran
 
 // Functions for retrieving transactions
 const getMyTransactions = async (filters?: TransactionFilters): Promise<TransactionResponse> => {
-  return apiCall('/users/me/transactions', 'GET', filters);
+  const response = await apiCall('/users/me/transactions', 'GET', filters);
+  console.log('getMyTransactions response:', response);
+  return response;
 };
 
 const getAllTransactions = async (filters?: TransactionFilters): Promise<TransactionResponse> => {
-  return apiCall('/transactions', 'GET', filters);
+  const response = await apiCall('/transactions', 'GET', filters);
+  console.log('getAllTransactions response:', response);
+  return response;
 };
 
 const getTransactionById = async (id: number): Promise<Transaction> => {
-  return apiCall(`/transactions/${id}`, 'GET');
+  const response = await apiCall(`/transactions/${id}`, 'GET');
+  console.log('getTransactionById response:', response);
+  return response;
 };
 
 export const SORT_OPTIONS = [
