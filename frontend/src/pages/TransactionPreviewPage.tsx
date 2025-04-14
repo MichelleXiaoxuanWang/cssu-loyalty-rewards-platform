@@ -4,7 +4,6 @@ import TransactionFilters from '../components/TransactionFilters';
 import TransactionCard from '../components/TransactionCard';
 import Pagination from '../components/Pagination';
 import { getMyTransactions, getAllTransactions, TransactionFilters as FiltersType, TransactionResponse, Transaction } from '../services/transaction.service';
-import { getUserId } from '../services/auth.service';
 import './TransactionPreviewPage.css';
 
 const TransactionPreviewPage: React.FC = () => {
@@ -23,7 +22,6 @@ const TransactionPreviewPage: React.FC = () => {
   // Get current user role and ID
   const currentUser = localStorage.getItem('currentUser');
   const currentRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) : null;
-  const userId = getUserId();
   
   // Determine if admin role (manager or superuser) to show all transactions
   const isAdminRole = currentRole === 'manager' || currentRole === 'superuser';
@@ -76,11 +74,6 @@ const TransactionPreviewPage: React.FC = () => {
     setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
   };
 
-  // Navigate to create transaction page
-  const handleCreateTransaction = () => {
-    navigate('/createTransaction');
-  };
-
   // Get page title based on user role
   const getPageTitle = () => {
     if (isAdminRole) return 'All Transactions';
@@ -95,12 +88,11 @@ const TransactionPreviewPage: React.FC = () => {
     <div className="transaction-preview-page">
       <div className="page-header">
         <h1>{getPageTitle()}</h1>
-        <button 
-          className="create-transaction-button"
-          onClick={handleCreateTransaction}
-        >
-          Create Transaction
-        </button>
+        {(currentRole === 'regular' || currentRole === 'cashier') && (
+          <button onClick={() => navigate('/createTransaction')} className="action-button">
+            Create Transaction
+          </button>
+        )}
       </div>
 
       <TransactionFilters 
@@ -116,12 +108,11 @@ const TransactionPreviewPage: React.FC = () => {
         ) : transactions.length === 0 ? (
           <div className="no-transactions">
             <p>No transactions found. Try adjusting your filters or create a new transaction.</p>
-            <button 
-              className="create-transaction-button small"
-              onClick={handleCreateTransaction}
-            >
-              Create Transaction
-            </button>
+            {(currentRole === 'regular' || currentRole === 'cashier') && (
+              <button onClick={() => navigate('/createTransaction')} className="action-button">
+                Create Transaction
+              </button>
+            )}
           </div>
         ) : (
           <>
