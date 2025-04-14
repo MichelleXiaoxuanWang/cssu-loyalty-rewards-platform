@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import './CreateTransaction.css';
-import { transferPoints, redeemPoints, purchaseTransaction, adjustmentTransaction } from '../services/transaction.service';
+import { transferPoints, redeemPoints, purchaseTransaction, processRedemptionTransaction } from '../services/transaction.service';
 import { isUserVerified } from '../services/auth.service';
 
 const CreateTransaction: React.FC = () => {
@@ -10,7 +10,6 @@ const CreateTransaction: React.FC = () => {
   const [points, setPoints] = useState('');
   const [qrCodeData, setQrCodeData] = useState('');
   const [spent, setSpent] = useState('');
-  const [amount, setAmount] = useState('');
   const [relatedId, setRelatedId] = useState('');
   const [promotionIds, setPromotionIds] = useState('');
   const [remark, setRemark] = useState('');
@@ -41,7 +40,7 @@ const CreateTransaction: React.FC = () => {
     setSuccessMessage(null);
   };
 
-  const handleTabChange = (tab: 'qrCode' | 'transfer' | 'redemption' | 'purchase' | 'adjustment'): void => {
+  const handleTabChange = (tab: 'qrCode' | 'transfer' | 'redemption' | 'purchase' | 'processRedemption'): void => {
     // For unverified regular users, disable transfer and redemption
     if (role === 'regular' && !userVerified && (tab === 'transfer' || tab === 'redemption')) {
       setErrorMessage('You need to be verified by a manager before you can transfer or redeem points');
@@ -103,22 +102,19 @@ const CreateTransaction: React.FC = () => {
     }
   };
 
-  const handleAdjustment = async () => {
+  const handleProcessRedemption = async () => {
     try {
-      const transactionData = {
-        utorid: userId,
-        type: 'adjustment',
-        amount: Number(amount),
-        relatedId: Number(relatedId),
-        promotionIds: promotionIds ? promotionIds.split(',').map(Number) : undefined,
-        remark: remark || '',
-      };
-      const result = await adjustmentTransaction(transactionData);
-      handleTransactionSuccess('Adjustment successful!');
-      console.log('Adjustment successful:', result);
+      if (!relatedId) {
+        setErrorMessage('Transaction ID is required to process redemption.');
+        return;
+      }
+
+      const result = await processRedemptionTransaction(Number(relatedId));
+      handleTransactionSuccess('Redemption processed successfully!');
+      console.log('Redemption processed:', result);
     } catch (error) {
-      handleTransactionError('Adjustment failed. Please try again.');
-      console.error('Adjustment failed:', error);
+      handleTransactionError('Process redemption failed. Please try again.');
+      console.error('Error processing redemption:', error);
     }
   };
 
@@ -140,28 +136,28 @@ const CreateTransaction: React.FC = () => {
             Transaction QR Code
           </button>
         )}
-        <button 
+        {role === 'regular' && (<button 
           onClick={() => handleTabChange('transfer')} 
           className={`${activeTab === 'transfer' ? 'active' : ''} ${role === 'regular' && !userVerified ? 'disabled' : ''}`}
           disabled={role === 'regular' && !userVerified}
         >
           Transfer Points
-        </button>
-        <button 
+        </button>)}
+        {role === 'regular' && (<button 
           onClick={() => handleTabChange('redemption')} 
           className={`${activeTab === 'redemption' ? 'active' : ''} ${role === 'regular' && !userVerified ? 'disabled' : ''}`}
           disabled={role === 'regular' && !userVerified}
         >
           Redeem Points
-        </button>
+        </button>)}
         {role !== 'regular' && (
           <button onClick={() => handleTabChange('purchase')} className={activeTab === 'purchase' ? 'active' : ''}>
             Purchase
           </button>
         )}
-        {role !== 'regular' && (
-          <button onClick={() => handleTabChange('adjustment')} className={activeTab === 'adjustment' ? 'active' : ''}>
-            Adjustment
+        {role === 'cashier' && (
+          <button onClick={() => handleTabChange('processRedemption')} className={activeTab === 'processRedemption' ? 'active' : ''}>
+            Process Redemption
           </button>
         )}
       </div>
@@ -255,40 +251,16 @@ const CreateTransaction: React.FC = () => {
           </div>
         )}
 
-        {activeTab === 'adjustment' && role !== 'regular' && (
+        {activeTab === 'processRedemption' && role === 'cashier' && (
           <div>
-            <h2>Adjustment</h2>
-            <input
-              type="text"
-              placeholder="Enter User ID"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-            />
+            <h2>Process Redemption</h2>
             <input
               type="number"
-              placeholder="Enter Adjustment Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Enter ID of Related Transaction"
+              placeholder="Enter Transaction ID"
               value={relatedId}
               onChange={(e) => setRelatedId(e.target.value)}
             />
-            <input
-              type="text"
-              placeholder="Enter Promotion IDs (comma-separated)"
-              value={promotionIds}
-              onChange={(e) => setPromotionIds(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Enter Remark"
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-            />
-            <button onClick={handleAdjustment}>Adjust</button>
+            <button onClick={handleProcessRedemption}>Process</button>
           </div>
         )}
       </div>
