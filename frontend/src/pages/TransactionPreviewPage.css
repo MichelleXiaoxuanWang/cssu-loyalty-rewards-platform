@@ -1,7 +1,7 @@
-div {
+/* div {
   display: block;
   unicode-bidi: isolate;
-}
+} */
 
 .transaction-preview-page {
   display: flex;
