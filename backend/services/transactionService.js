@@ -402,7 +402,7 @@ async function createRedemptionTransaction(transactionData) {
         const transaction = await prisma.transaction.create({
             data: {
                 type: 'redemption',
-                amount: amount, // Store positive value in database
+                amount: -amount, // Store negative value in database
                 remark: remark || null,
                 suspicious: false,
                 utorid: utorid,
@@ -1031,7 +1031,7 @@ async function processRedemptionTransaction(transactionId, cashierUtorid) {
                 where: { utorid: transaction.utorid },
                 data: {
                     points: {
-                        decrement: transaction.amount
+                        increment: transaction.amount
                     }
                 }
             });
