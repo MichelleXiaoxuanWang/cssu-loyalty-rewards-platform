@@ -107,23 +107,39 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             </select>
           </div>
 
-          {/* Related ID Filter */}
-          <div className="filter-group">
-            <label htmlFor="relatedId">Related ID</label>
-            <input 
-              type="number" 
-              id="relatedId" 
-              name="relatedId" 
-              value={filters.relatedId || ''} 
-              onChange={handleChange} 
-              placeholder="Enter ID"
-              min="1"
-            />
-          </div>
+          {/* Related ID Filter - Conditionally rendered based on transaction type */}
+          {filters.type && filters.type !== 'purchase' && (
+            <div className="filter-group">
+              <label htmlFor="relatedId">
+                {filters.type === 'transfer' && 'Other User ID'}
+                {filters.type === 'adjustment' && 'Adjusted Transaction ID'}
+                {filters.type === 'redemption' && 'Cashier ID'}
+                {filters.type === 'event' && 'Event ID'}
+                <span className="hint-text">
+                  {filters.type === 'transfer' && '(receiver/sender)'}
+                  {filters.type === 'adjustment' && ''}
+                  {filters.type === 'redemption' && '(who processed redemption)'}
+                  {filters.type === 'event' && '(which awarded the points)'}
+                </span>
+              </label>
+              <input 
+                type="number" 
+                id="relatedId" 
+                name="relatedId" 
+                value={filters.relatedId || ''} 
+                onChange={handleChange} 
+                placeholder="Enter ID"
+                min="1"
+              />
+            </div>
+          )}
 
           {/* Promotion ID Filter */}
           <div className="filter-group">
-            <label htmlFor="promotionId">Promotion ID</label>
+            <label htmlFor="promotionId">
+              Promotion Involved
+              <span className="hint-text">(promotion ID)</span>
+            </label>
             <input 
               type="number" 
               id="promotionId" 
