@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import './CreateTransaction.css';
-import { transferPoints, redeemPoints, purchaseTransaction, adjustmentTransaction } from '../services/transaction.service';
+import { transferPoints, redeemPoints, purchaseTransaction, adjustmentTransaction, processRedemptionTransaction } from '../services/transaction.service';
 import { isUserVerified } from '../services/auth.service';
 
 const CreateTransaction: React.FC = () => {
@@ -41,7 +41,7 @@ const CreateTransaction: React.FC = () => {
     setSuccessMessage(null);
   };
 
-  const handleTabChange = (tab: 'qrCode' | 'transfer' | 'redemption' | 'purchase' | 'adjustment'): void => {
+  const handleTabChange = (tab: 'qrCode' | 'transfer' | 'redemption' | 'purchase' | 'adjustment' | 'processRedemption'): void => {
     // For unverified regular users, disable transfer and redemption
     if (role === 'regular' && !userVerified && (tab === 'transfer' || tab === 'redemption')) {
       setErrorMessage('You need to be verified by a manager before you can transfer or redeem points');
@@ -122,6 +122,22 @@ const CreateTransaction: React.FC = () => {
     }
   };
 
+  const handleProcessRedemption = async () => {
+    try {
+      if (!relatedId) {
+        setErrorMessage('Transaction ID is required to process redemption.');
+        return;
+      }
+
+      const result = await processRedemptionTransaction(Number(relatedId));
+      handleTransactionSuccess('Redemption processed successfully!');
+      console.log('Redemption processed:', result);
+    } catch (error) {
+      handleTransactionError('Process redemption failed. Please try again.');
+      console.error('Error processing redemption:', error);
+    }
+  };
+
   return (
     <div className="create-transaction">
       {!userVerified && role === 'regular' && (
@@ -140,28 +156,33 @@ const CreateTransaction: React.FC = () => {
             Transaction QR Code
           </button>
         )}
-        <button 
+        {role === 'regular' && (<button 
           onClick={() => handleTabChange('transfer')} 
           className={`${activeTab === 'transfer' ? 'active' : ''} ${role === 'regular' && !userVerified ? 'disabled' : ''}`}
           disabled={role === 'regular' && !userVerified}
         >
           Transfer Points
-        </button>
-        <button 
+        </button>)}
+        {role === 'regular' && (<button 
           onClick={() => handleTabChange('redemption')} 
           className={`${activeTab === 'redemption' ? 'active' : ''} ${role === 'regular' && !userVerified ? 'disabled' : ''}`}
           disabled={role === 'regular' && !userVerified}
         >
           Redeem Points
-        </button>
+        </button>)}
         {role !== 'regular' && (
           <button onClick={() => handleTabChange('purchase')} className={activeTab === 'purchase' ? 'active' : ''}>
             Purchase
           </button>
         )}
-        {role !== 'regular' && (
+        {role !== 'regular' && role !== 'cashier' && (
           <button onClick={() => handleTabChange('adjustment')} className={activeTab === 'adjustment' ? 'active' : ''}>
             Adjustment
+          </button>
+        )}
+        {role === 'cashier' && (
+          <button onClick={() => handleTabChange('processRedemption')} className={activeTab === 'processRedemption' ? 'active' : ''}>
+            Process Redemption
           </button>
         )}
       </div>
@@ -289,6 +310,19 @@ const CreateTransaction: React.FC = () => {
               onChange={(e) => setRemark(e.target.value)}
             />
             <button onClick={handleAdjustment}>Adjust</button>
+          </div>
+        )}
+
+        {activeTab === 'processRedemption' && role === 'cashier' && (
+          <div>
+            <h2>Process Redemption</h2>
+            <input
+              type="number"
+              placeholder="Enter Transaction ID"
+              value={relatedId}
+              onChange={(e) => setRelatedId(e.target.value)}
+            />
+            <button onClick={handleProcessRedemption}>Process</button>
           </div>
         )}
       </div>

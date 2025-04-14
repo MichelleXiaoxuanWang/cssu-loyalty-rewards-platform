@@ -78,6 +78,11 @@ const adjustmentTransaction = async (transactionData: AdjustmentTransactionData)
   return apiCall('/transactions', 'POST', transactionData);
 };
 
+// Function for processing redemption transactions
+const processRedemptionTransaction = async (transactionId: number): Promise<Transaction> => {
+  return apiCall(`/transactions/${transactionId}/processed`, 'PATCH', { processed: true });
+};
+
 // Functions for retrieving transactions
 const getMyTransactions = async (filters?: TransactionFilters): Promise<TransactionResponse> => {
   return apiCall('/users/me/transactions', 'GET', filters);
@@ -96,6 +101,7 @@ export {
   redeemPoints, 
   purchaseTransaction, 
   adjustmentTransaction,
+  processRedemptionTransaction,
   getMyTransactions,
   getAllTransactions,
   getTransactionById
