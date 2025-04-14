@@ -10,6 +10,7 @@ export interface Event {
   capacity?: number;
   numGuests?: number;
   points?: number;
+  published?: boolean;
 }
 
 export interface EventResponse {

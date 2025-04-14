@@ -948,7 +948,9 @@ async function getEvents(filters, userInfo) {
                 startTime: event.startTime.toISOString(),
                 endTime: event.endTime.toISOString(),
                 capacity: event.capacity,
-                numGuests: event._count.guests
+                numGuests: event._count.guests,
+                description: event.description,
+                published: event.published,
             };
             
             // Additional info for managers
