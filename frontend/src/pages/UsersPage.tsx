@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ItemBox from '../components/ItemBox';
-import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
-import { fetchUsers, updateUser, createUser, User, UserFilters, UserResponse } from '../services/user.service';
+import { fetchUsers, User, UserFilters, UserResponse } from '../services/user.service';
 import '../App.css';
 
 const UsersPage: React.FC = () => {
@@ -15,17 +14,41 @@ const UsersPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<UserFilters>({
     page: 1,
-    limit: 10
+    limit: 5
   });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
 
   useEffect(() => {
-    const loadEvents = async () => {
+    const loadUsers = async () => {
       setLoading(true);
       try {
         const response: UserResponse = await fetchUsers(filters);
-        setUsers(response.results);
+        let fetchedUsers = response.results;
+
+        // Apply sorting after fetching
+        if (filters.sort) {
+          fetchedUsers = fetchedUsers.sort((a, b) => {
+            switch (filters.sort) {
+              case 'id-asc':
+                return a.id - b.id;
+              case 'id-desc':
+                return b.id - a.id;
+              case 'utorid-asc':
+                return a.utorid.localeCompare(b.utorid);
+              case 'utorid-desc':
+                return b.utorid.localeCompare(a.utorid);
+              case 'name-asc':
+                return a.name.localeCompare(b.name);
+              case 'name-desc':
+                return b.name.localeCompare(a.name);
+              default:
+                return 0;
+            }
+          });
+        }
+
+        setUsers(fetchedUsers);
         setTotalUsers(response.count);
         setCurrentPage(filters.page || 1);
         setItemsPerPage(filters.limit || 10);
@@ -37,17 +60,15 @@ const UsersPage: React.FC = () => {
       }
     };
 
-    loadEvents();
-  }, [currentPage, filters, role]);
+    loadUsers();
+  }, [filters, role]);
 
   const handleFilterChange = async (newFilters: UserFilters) => {
     setFilters({ ...newFilters, page: 1 });
   };
 
-  const handleSortChange = async (sort: string) => {
-    const data = await fetchUsers(filters);
-    setUsers(data.results);
-    setTotalUsers(data.count);
+  const handleSortChange = (sort: string) => {
+    setFilters(prev => ({ ...prev, sort }));
   };
 
   const handlePageChange = (newPage: number) => {
@@ -74,7 +95,14 @@ const UsersPage: React.FC = () => {
           { label: 'Verified', value: 'verified', options: ['true', 'false'] },
           { label: 'Activated', value: 'activated', options: ['true', 'false'] },
         ]}
-        sortOptions={[{ label: 'Name', value: 'name' }, { label: 'Role', value: 'role' }]}
+        sortOptions={[
+          { label: 'ID (Ascending)', value: 'id-asc' },
+          { label: 'ID (Descending)', value: 'id-desc' },
+          { label: 'UTORID (A-Z)', value: 'utorid-asc' },
+          { label: 'UTORID (Z-A)', value: 'utorid-desc' },
+          { label: 'Name (A-Z)', value: 'name-asc' },
+          { label: 'Name (Z-A)', value: 'name-desc' },
+        ]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />

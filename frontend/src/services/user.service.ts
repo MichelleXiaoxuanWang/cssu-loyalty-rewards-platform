@@ -27,21 +27,9 @@ export interface UserFilters {
   activated?: boolean;
   page?: number;
   limit?: number;
+  sort?: string;
 }
 
 export const fetchUsers = async (filters?: UserFilters): Promise<UserResponse> => {
   return apiCall(`/users`, 'GET', filters);
 };
-
-export const updateUser = async (userId: number, userData: Record<string, any>) => {
-  return apiCall(`/users/${userId}`, 'PUT', userData);
-};
-
-export const createUser = async (userData: Record<string, any>) => {
-  return apiCall(`/users`, 'POST', userData);
-};
-
-export const getCurrentUser = async (): Promise<User> => {
-  return apiCall('/users/me', 'GET');
-};
-

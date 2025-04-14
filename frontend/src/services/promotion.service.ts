@@ -24,6 +24,7 @@ export interface PromotionFilters {
   ended?: boolean;
   page?: number;
   limit?: number;
+  sort?: string;
 }
 
 export const fetchPromotions = async (filters?: PromotionFilters): Promise<PromotionResponse> => {
