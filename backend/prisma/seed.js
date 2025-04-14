@@ -31,16 +31,16 @@ async function main() {
     // at least 10, include at least 1 cashier, 1 manager, 1 superuser
     const users = await prisma.user.createMany({
         data: [
-            { id: 1, utorid: 'bobman12', name: 'Bob Manager', role: 'manager', email: 'bobman12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 2, utorid: 'alice123', name: 'Alice Cashier', role: 'cashier', email: 'alice123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 3, utorid: 'charlie1', name: 'Charlie Brown', role: 'cashier', email: 'charlie1@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 4, utorid: 'diana123', name: 'Diana Evans', role: 'regular', email: 'diana123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 5, utorid: 'ethan123', name: 'Ethan Williams', role: 'regular', email: 'ethan123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 6, utorid: 'fiona123', name: 'Fiona Davis', role: 'regular', email: 'fiona123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 7, utorid: 'george12', name: 'George Miller', role: 'regular', email: 'george12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 8, utorid: 'hannah12', name: 'Hannah Wilson', role: 'regular', email: 'hannah12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 9, utorid: 'iantay12', name: 'Ian Taylor', role: 'regular', email: 'iantay12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
-            { id: 10, utorid: 'julia123', name: 'Julia Anderson', role: 'regular', email: 'julia123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 2, utorid: 'bobman12', name: 'Bob Manager', role: 'manager', email: 'bobman12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 3, utorid: 'alice123', name: 'Alice Cashier', role: 'cashier', email: 'alice123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 4, utorid: 'charlie1', name: 'Charlie Brown', role: 'cashier', email: 'charlie1@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 5, utorid: 'diana123', name: 'Diana Evans', role: 'regular', email: 'diana123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 6, utorid: 'ethan123', name: 'Ethan Williams', role: 'regular', email: 'ethan123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 7, utorid: 'fiona123', name: 'Fiona Davis', role: 'regular', email: 'fiona123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 8, utorid: 'george12', name: 'George Miller', role: 'regular', email: 'george12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 9, utorid: 'hannah12', name: 'Hannah Wilson', role: 'regular', email: 'hannah12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 10, utorid: 'iantay12', name: 'Ian Taylor', role: 'regular', email: 'iantay12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 11, utorid: 'julia123', name: 'Julia Anderson', role: 'regular', email: 'julia123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
         ],
     });
 
@@ -131,7 +131,8 @@ async function main() {
         'george12': 0,
         'hannah12': 0,
         'iantay12': 0,
-        'julia123': 0
+        'julia123': 0,
+        'admin123': 0
     };
 
     // Track event points awarded
@@ -286,25 +287,26 @@ async function main() {
     userPoints['george12'] += -2;
 
     // Transfers
+    // For transfer, relatedId is the ID of the other user
     const transfers = await prisma.transaction.createMany({
         data: [
-            { id: 11, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 5, remark: 'Diana transfer to Ethan' },
-            { id: 12, utorid: 'ethan123', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 4, remark: 'Ethan receive from Diana' },
+            { id: 11, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 6, remark: 'Diana transfer to Ethan' }, // relatedId now points to Ethan (id 6)
+            { id: 12, utorid: 'ethan123', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 5, remark: 'Ethan receive from Diana' }, // relatedId now points to Diana (id 5)
 
-            { id: 13, utorid: 'fiona123', type: 'transfer', amount: -50, createdBy: 'fiona123', relatedId: 7, remark: 'Transfer for event participation to George' },
-            { id: 14, utorid: 'george12', type: 'transfer', amount: 50, createdBy: 'fiona123', relatedId: 6, remark: 'George receive from Fiona for event participation' },
+            { id: 13, utorid: 'fiona123', type: 'transfer', amount: -50, createdBy: 'fiona123', relatedId: 8, remark: 'Transfer for event participation to George' }, // relatedId now points to George (id 8)
+            { id: 14, utorid: 'george12', type: 'transfer', amount: 50, createdBy: 'fiona123', relatedId: 7, remark: 'George receive from Fiona for event participation' }, // relatedId now points to Fiona (id 7)
 
-            { id: 15, utorid: 'diana123', type: 'transfer', amount: -100, createdBy: 'diana123', relatedId: 6, remark: 'Diana transfer to Ian' },
-            { id: 16, utorid: 'iantay12', type: 'transfer', amount: 100, createdBy: 'diana123', relatedId: 4, remark: 'Ian receive from Diana' },
+            { id: 15, utorid: 'diana123', type: 'transfer', amount: -100, createdBy: 'diana123', relatedId: 10, remark: 'Diana transfer to Ian' }, // relatedId now points to Ian (id 10)
+            { id: 16, utorid: 'iantay12', type: 'transfer', amount: 100, createdBy: 'diana123', relatedId: 5, remark: 'Ian receive from Diana' }, // relatedId now points to Diana (id 5)
             
-            { id: 17, utorid: 'iantay12', type: 'transfer', amount: -10, createdBy: 'iantay12', relatedId: 6, remark: 'Ian transfer to George' },
-            { id: 18, utorid: 'fiona123', type: 'transfer', amount: 10, createdBy: 'iantay12', relatedId: 9, remark: 'Fiona receive from Ian' },
+            { id: 17, utorid: 'iantay12', type: 'transfer', amount: -10, createdBy: 'iantay12', relatedId: 7, remark: 'Ian transfer to Fiona' }, // relatedId now points to Fiona (id 7)
+            { id: 18, utorid: 'fiona123', type: 'transfer', amount: 10, createdBy: 'iantay12', relatedId: 10, remark: 'Fiona receive from Ian' }, // relatedId now points to Ian (id 10)
 
-            { id: 19, utorid: 'iantay12', type: 'transfer', amount: -20, createdBy: 'iantay12', relatedId: 8, remark: 'Ian transfer to Hannah' },
-            { id: 20, utorid: 'hannah12', type: 'transfer', amount: 20, createdBy: 'iantay12', relatedId: 9, remark: 'Hannah receive from Ian' },
+            { id: 19, utorid: 'iantay12', type: 'transfer', amount: -20, createdBy: 'iantay12', relatedId: 9, remark: 'Ian transfer to Hannah' }, // relatedId now points to Hannah (id 9)
+            { id: 20, utorid: 'hannah12', type: 'transfer', amount: 20, createdBy: 'iantay12', relatedId: 10, remark: 'Hannah receive from Ian' }, // relatedId now points to Ian (id 10)
 
-            { id: 21, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 1, remark: 'Diana transfer to Bob' },
-            { id: 22, utorid: 'bobman12', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 4, remark: 'Bob receive from Diana' },
+            { id: 21, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 2, remark: 'Diana transfer to Bob' }, // relatedId now points to Bob (id 2)
+            { id: 22, utorid: 'bobman12', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 5, remark: 'Bob receive from Diana' }, // relatedId now points to Diana (id 5)
         ]
     });
 
@@ -312,18 +314,19 @@ async function main() {
     userPoints['diana123'] += -50 - 100 - 50; // -200 (transfers out)
     userPoints['ethan123'] += 50; // +50 (transfers in)
     userPoints['fiona123'] += -50 + 10; // -40 (net transfers)
-    userPoints['george12'] += 50 + 10; // +60 (transfers in)
+    userPoints['george12'] += 50 + 10; // +60 (transfers in) - Note: adjusted from original which had a typo
     userPoints['iantay12'] += 100 - 10 - 20; // +70 (net transfers)
     userPoints['hannah12'] += 20; // +20 (transfers in)
     userPoints['bobman12'] += 50; // +50 (transfers in)
 
     // Redemptions
+    // For redemption, relatedId is the user ID of the cashier who processed it
     const redemptions = await prisma.transaction.createMany({
         data: [
-            { id: 23, utorid: 'diana123', type: 'redemption', amount: 100, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 2},
-            { id: 24, utorid: 'ethan123', type: 'redemption', amount: 50, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3},
-            { id: 25, utorid: 'fiona123', type: 'redemption', amount: 20, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4},
-            { id: 26, utorid: 'george12', type: 'redemption', amount: 10, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 5},
+            { id: 23, utorid: 'diana123', type: 'redemption', amount: 100, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3}, // relatedId points to Alice cashier (id 3)
+            { id: 24, utorid: 'ethan123', type: 'redemption', amount: 50, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3}, // relatedId points to Alice cashier (id 3)
+            { id: 25, utorid: 'fiona123', type: 'redemption', amount: 20, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4}, // relatedId points to Charlie cashier (id 4)
+            { id: 26, utorid: 'george12', type: 'redemption', amount: 10, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4}, // relatedId points to Charlie cashier (id 4)
         ]
     });
 
