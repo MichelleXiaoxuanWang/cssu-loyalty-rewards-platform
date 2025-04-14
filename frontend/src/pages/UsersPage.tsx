@@ -3,91 +3,65 @@ import ItemBox from '../components/ItemBox';
 import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
-import { fetchUsers, updateUser, createUser } from '../services/user.service';
+import { fetchUsers, updateUser, createUser, User, UserFilters, UserResponse } from '../services/user.service';
 import '../App.css';
-
-interface User {
-  id: number;
-  name: string;
-  role: string;
-  verified: boolean;
-}
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<UserFilters>({
+    page: 1,
+    limit: 10
+  });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
 
   useEffect(() => {
-    if (role === 'manager' || role === 'superuser') {
-      const loadUsers = async () => {
-        try {
-          const data = await fetchUsers(currentPage, {}, '');
-          setUsers(data.users || []);
-          setTotalPages(data.totalPages || 1);
-        } catch (error) {
-          console.error('Error loading users:', error);
-          setUsers([]);
-        }
-      };
-      loadUsers();
-    }
-  }, [currentPage, role]);
+    const loadEvents = async () => {
+      setLoading(true);
+      try {
+        const response: UserResponse = await fetchUsers(filters);
+        setUsers(response.results);
+        setTotalUsers(response.count);
+        setCurrentPage(filters.page || 1);
+        setItemsPerPage(filters.limit || 10);
+      } catch (err) {
+        setError('Failed to load users. Please try again later.');
+        console.error('Error fetching users:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleEdit = (user: User) => {
-    setEditingUser(user);
-  };
+    loadEvents();
+  }, [currentPage, filters, role]);
 
-  const handleSubmit = async (formData: Record<string, any>) => {
-    if (editingUser) {
-      await updateUser(editingUser.id, formData);
-    } else {
-      await createUser(formData);
-    }
-    setEditingUser(null);
-    const data = await fetchUsers(currentPage, {}, '');
-    setUsers(data.users);
-  };
-
-  const handleFilterChange = async (filter: { name?: string; role?: string; verified?: boolean; activated?: boolean }) => {
-    const data = await fetchUsers(currentPage, filter, '');
-    setUsers(data.users);
-    setTotalPages(data.totalPages);
+  const handleFilterChange = async (newFilters: UserFilters) => {
+    setFilters({ ...newFilters, page: 1 });
   };
 
   const handleSortChange = async (sort: string) => {
-    const data = await fetchUsers(currentPage, {}, sort);
-    setUsers(data.users);
-    setTotalPages(data.totalPages);
+    const data = await fetchUsers(filters);
+    setUsers(data.results);
+    setTotalUsers(data.count);
   };
 
-  const handleLimitChange = async (newLimit: number) => {
-    const data = await fetchUsers(currentPage, {}, '', newLimit);
-    setUsers(data.users);
-    setTotalPages(data.totalPages);
+  const handlePageChange = (newPage: number) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
   };
 
-  if (role === 'regular') {
+  const handleLimitChange = (newLimit: number) => {
+    setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
+  };
+
+  const totalPages = Math.ceil(totalUsers / itemsPerPage);
+
+  if (role === 'regular' || role === 'cashier') {
     return <div>Access Denied</div>;
-  }
-
-  if (role === 'cashier') {
-    return (
-      <div>
-        <h1>Create New User</h1>
-        <Form
-          fields={[
-            { name: 'name', label: 'Name', type: 'text' },
-            { name: 'role', label: 'Role', type: 'select', options: ['regular', 'cashier']},
-            { name: 'email', label: 'Email', type: 'email' },
-          ]}
-          onSubmit={handleSubmit}
-        />
-      </div>
-    );
   }
 
   return (
@@ -103,36 +77,25 @@ const UsersPage: React.FC = () => {
         sortOptions={[{ label: 'Name', value: 'name' }, { label: 'Role', value: 'role' }]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
-        disabled={users.length === 0}
       />
-      {users.length === 0 ? (
-        <div style={{ margin: '20px 0' }}>
-          <p>There are currently no entries</p>
+      {users && users.length === 0 ? (
+        <div className="no-entries">
+          <p>There are currently no users</p>
         </div>
       ) : (
         users.map((user) => (
           <ItemBox
             key={user.id}
-            title={user.name}
+            title={`ID: ${user.id} - Name: ${user.name}`}
             description={`Role: ${user.role}, Verified: ${user.verified}`}
-            onClick={() => handleEdit(user)}
+            navigateTo={`/users/${user.id}`}
           />
         ))
-      )}
-      {editingUser && (
-        <Form
-          fields={[
-            { name: 'name', label: 'Name', type: 'text', value: editingUser.name },
-            { name: 'role', label: 'Role', type: 'select', value: editingUser.role },
-            { name: 'verified', label: 'Verified', type: 'checkbox', value: editingUser.verified },
-          ]}
-          onSubmit={handleSubmit}
-        />
       )}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
       />
     </div>

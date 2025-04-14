@@ -1,7 +1,33 @@
 import { apiCall } from '../utils/api.utils';
 
-export const fetchPromotions = async (page: number, filters: Record<string, any>, sort: string, limit?: number) => {
-  return apiCall(`/promotions`, 'GET', { page, ...filters, sort, limit });
+export interface Promotion {
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  startTime: string;
+  endTime: string;
+  minSpending?: number;
+  rate?: number;
+  points?: number;
+}
+
+export interface PromotionResponse {
+  count: number;
+  results: Promotion[];
+}
+
+export interface PromotionFilters {
+  name?: string;
+  type?: string;
+  started?: boolean;
+  ended?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export const fetchPromotions = async (filters?: PromotionFilters): Promise<PromotionResponse> => {
+  return apiCall(`/promotions`, 'GET', filters);
 };
 
 export const updatePromotion = async (promotionId: number, promotionData: Record<string, any>) => {

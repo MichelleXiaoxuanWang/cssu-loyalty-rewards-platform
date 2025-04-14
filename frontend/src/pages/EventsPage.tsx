@@ -3,48 +3,44 @@ import ItemBox from '../components/ItemBox';
 import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
-import { fetchEvents, updateEvent, createEvent } from '../services/event.service';
+import { fetchEvents, updateEvent, createEvent, Event, EventResponse, EventFilters } from '../services/event.service';
 import '../App.css';
-
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  capacity: number | null;
-  points: number;
-}
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [creatingEvent, setCreatingEvent] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalEvents, setTotalEvents] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<EventFilters>({
+      page: 1,
+      limit: 10
+    });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
 
   useEffect(() => {
-    if (role === 'manager' || role === 'superuser') {
-      const loadEvents = async () => {
-        try {
-          const data = await fetchEvents(currentPage, {}, '');
-          setEvents(data.events || []);
-          setTotalPages(data.totalPages || 1);
-        } catch (error) {
-          console.error('Error loading events:', error);
-          setEvents([]);
-        }
-      };
-      loadEvents();
-    }
-  }, [currentPage, role]);
+    const loadEvents = async () => {
+      setLoading(true);
+      try {
+        const response: EventResponse = await fetchEvents(filters);
+        setEvents(response.results);
+        setTotalEvents(response.count);
+        setCurrentPage(filters.page || 1);
+        setItemsPerPage(filters.limit || 10);
+      } catch (err) {
+        setError('Failed to load events. Please try again later.');
+        console.error('Error fetching events:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleEdit = (event: any) => {
-    setEditingEvent(event);
-  };
+    loadEvents();
+  }, [currentPage, filters, role]);
 
   const handleCreate = () => {
     setCreatingEvent(true);
@@ -52,38 +48,48 @@ const EventsPage: React.FC = () => {
 
   const handleSubmit = async (formData: Record<string, any>) => {
     try {
+      let newEvent: Event;
       if (creatingEvent) {
-        await createEvent(formData);
+        newEvent = await createEvent(formData);
         setCreatingEvent(false);
-      } else if (editingEvent) {
-        await updateEvent(editingEvent.id, formData);
-        setEditingEvent(null);
+        // Check if the current page is full
+        if (events.length >= itemsPerPage) {
+          // Move to the next page and add the new event there
+          setCurrentPage((prevPage) => prevPage + 1);
+          setFilters((prevFilters) => ({ ...prevFilters, page: currentPage + 1 }));
+          setEvents([newEvent]); // Set the new event as the first item on the new page
+        } else {
+          // Add the new event to the current page
+          setEvents((prevEvents) => [...prevEvents, newEvent]);
+        }
+        // Update the total events count
+        setTotalEvents((prevTotal) => prevTotal + 1);
       }
-      const data = await fetchEvents(currentPage, {}, '');
-      setEvents(data.events);
       setFeedbackMessage('Submission successful!');
     } catch (error) {
       setFeedbackMessage('Submission failed. Please try again.');
     }
   };
 
-  const handleFilterChange = async (filter: { name?: string; location?: string; started?: boolean; ended?: boolean; showFull?: boolean; published?: boolean }) => {
-    const data = await fetchEvents(currentPage, filter, '');
-    setEvents(data.events);
-    setTotalPages(data.totalPages);
+  const handleFilterChange = async (newFilters: EventFilters) => {
+    setFilters({ ...newFilters, page: 1 });
   };
 
   const handleSortChange = async (sort: string) => {
-    const data = await fetchEvents(currentPage, {}, sort);
-    setEvents(data.events);
-    setTotalPages(data.totalPages);
+    const data = await fetchEvents(filters);
+    setEvents(data.results);
+    setTotalEvents(data.count);
   };
 
-  const handleLimitChange = async (newLimit: number) => {
-    const data = await fetchEvents(currentPage, {}, '', newLimit);
-    setEvents(data.events);
-    setTotalPages(data.totalPages);
+  const handlePageChange = (newPage: number) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
   };
+
+  const handleLimitChange = (newLimit: number) => {
+    setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
+  };
+
+  const totalPages = Math.ceil(totalEvents / itemsPerPage);
 
   if (role === 'regular' || role === 'cashier') {
     return (
@@ -95,9 +101,9 @@ const EventsPage: React.FC = () => {
           events?.map((event) => (
             <ItemBox
               key={event.id}
-              title={event.title}
-              description={event.description}
-              onClick={() => handleEdit(event)}
+              title={`ID: ${event.id}, Name: ${event.name}`}
+              description={`Description: ${event.description || 'No description available'}`}
+              navigateTo={`/events/${event.id}`}
             />
           ))
         )}
@@ -135,7 +141,6 @@ const EventsPage: React.FC = () => {
         sortOptions={[{ label: 'Title', value: 'title' }, { label: 'Date', value: 'date' }]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
-        disabled={!Array.isArray(events) || events.length === 0}
       />
       {events && events.length === 0 ? (
         <div className="no-entries">
@@ -145,29 +150,16 @@ const EventsPage: React.FC = () => {
         events?.map((event) => (
           <ItemBox
             key={event.id}
-            title={event.title}
-            description={event.description}
-            onClick={() => handleEdit(event)}
+            title={`ID: ${event.id} - Name: ${event.name}`}
+            description={`Description: ${event.description || 'No description available'}`}
+            navigateTo={`/events/${event.id}`}
           />
         ))
-      )}
-      {(editingEvent) && (
-        <Form
-          fields={[
-            { name: 'title', label: 'Title', type: 'text', value: editingEvent?.title || '' },
-            { name: 'description', label: 'Description', type: 'text', value: editingEvent?.description || '' },
-            { name: 'startTime', label: 'Start Time', type: 'datetime-local', value: editingEvent?.startTime || '' },
-            { name: 'endTime', label: 'End Time', type: 'datetime-local', value: editingEvent?.endTime || '' },
-            { name: 'capacity', label: 'Capacity', type: 'number', value: editingEvent?.capacity || '' },
-            { name: 'points', label: 'Points', type: 'number', value: editingEvent?.points || '' },
-          ]}
-          onSubmit={handleSubmit}
-        />
       )}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
       />
     </div>

@@ -1,15 +1,26 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ItemBox.css';
 
-type ItemBoxProps = {
+interface ItemBoxProps {
   title: string;
   description: string;
-  onClick: () => void;
-};
+  navigateTo?: string;
+}
 
-const ItemBox: React.FC<ItemBoxProps> = ({ title, description, onClick }) => {
+const ItemBox: React.FC<ItemBoxProps> = ({ title, description, navigateTo }) => {
+  const navigate = useNavigate();
+
+  console.log('ItemBox props:', { title, description, navigateTo });
+
+  const handleClick = () => {
+    if (navigateTo) {
+      navigate(navigateTo);
+    }
+  };
+
   return (
-    <div className="item-box" onClick={onClick}>
+    <div className="item-box" onClick={handleClick}>
       <h3>{title}</h3>
       <p>{description}</p>
     </div>
