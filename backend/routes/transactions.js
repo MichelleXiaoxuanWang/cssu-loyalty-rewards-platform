@@ -101,6 +101,7 @@ router.get('/', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) =>
         if (req.query.name) filters.name = req.query.name;
         if (req.query.createdBy) filters.createdBy = req.query.createdBy;
         if (req.query.type) filters.type = req.query.type;
+        if (req.query.sort) filters.sort = req.query.sort;
         
         // Numeric filters
         if (req.query.promotionId) filters.promotionId = parseInt(req.query.promotionId, 10);
