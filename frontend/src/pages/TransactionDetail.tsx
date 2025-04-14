@@ -17,6 +17,7 @@ export interface TransactionDetailData {
   // Additional fields for redemption transactions:
   processedBy?: string;
   redeemed?: number;
+  relatedId?: number;
   // etc.
 }
 
@@ -37,7 +38,7 @@ const TransactionDetailPage: React.FC = () => {
   const currentUser = localStorage.getItem('currentUser');
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
   // Get the stored role (e.g., 'regular', 'cashier', 'manager', 'superuser')
-  const currentUserRole = currentUser ? localStorage.getItem(`role_${currentUser}`) || '' : '';
+  const currentUserRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) || '' : '';
 
   // Function to fetch transaction details
   const fetchTransaction = async () => {

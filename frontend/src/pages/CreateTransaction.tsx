@@ -14,7 +14,7 @@ const CreateTransaction: React.FC = () => {
   const [promotionIds, setPromotionIds] = useState('');
   const [remark, setRemark] = useState('');
   const currentUser = localStorage.getItem('currentUser');
-  const role = localStorage.getItem(`role_${currentUser}`);
+  const role = localStorage.getItem(`current_role_${currentUser}`);
   const currentUserId = localStorage.getItem(`userId_${currentUser}`);
 
   const [successMessage, setSuccessMessage] = useState<string | null>(null);

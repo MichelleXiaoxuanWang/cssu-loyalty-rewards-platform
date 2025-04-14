@@ -204,9 +204,6 @@ const ProfilePage: React.FC = () => {
           <p><strong>Created At:</strong> {new Date(user.createdAt).toLocaleString()}</p>
           <p><strong>Last Login:</strong> {new Date(user.lastLogin).toLocaleString()}</p>
           <p><strong>Verified:</strong> {user.verified ? 'Yes' : 'No'}</p>
-          <div>
-            <img src={user.avatarUrl} alt="Avatar" style={{ width: '150px' }} />
-          </div>
           <button onClick={handleEditClick} style={{ marginTop: '1rem' }}>Edit Profile</button>
           <button onClick={handlePasswordToggle} style={{ marginTop: '1rem', marginLeft: '1rem' }}>
             {passwordEditMode ? 'Cancel Password Change' : 'Change Password'}
@@ -282,7 +279,6 @@ const ProfilePage: React.FC = () => {
               style={{ width: '100%' }}
             />
           </div>
-          {/* TODO: avatar related here */}
           <button type="submit" style={{ marginRight: '1rem' }}>Save Changes</button>
           <button type="button" onClick={handleCancel}>Cancel</button>
         </form>

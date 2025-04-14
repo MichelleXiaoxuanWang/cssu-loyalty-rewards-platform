@@ -19,7 +19,7 @@ const UsersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const currentUser = localStorage.getItem('currentUser');
-  const role = localStorage.getItem(`role_${currentUser}`);
+  const role = localStorage.getItem(`current_role_${currentUser}`);
 
   useEffect(() => {
     if (role === 'manager' || role === 'superuser') {
