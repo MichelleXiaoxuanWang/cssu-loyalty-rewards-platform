@@ -34,10 +34,12 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     
-    // Convert numeric values
-    if (['amount', 'relatedId', 'promotionId', 'page'].includes(name)) {
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFilters(prev => ({ ...prev, [name]: checked || undefined }));
+    } else if (['amount', 'relatedId', 'promotionId', 'page'].includes(name)) {
       const numValue = value === '' ? undefined : Number(value);
       setFilters(prev => ({ ...prev, [name]: numValue }));
     } else {
@@ -198,6 +200,32 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
                 </option>
               ))}
             </select>
+          </div>
+        </div>
+
+        {/* Additional Checkbox Filters */}
+        <div className="checkbox-filters">
+          <div className="checkbox-group">
+            <label>
+              <input
+                type="checkbox"
+                name="unprocessed"
+                checked={filters.unprocessed || false}
+                onChange={handleChange}
+              />
+              Only show unprocessed redemptions
+            </label>
+          </div>
+          <div className="checkbox-group">
+            <label>
+              <input
+                type="checkbox"
+                name="suspicious"
+                checked={filters.suspicious || false}
+                onChange={handleChange}
+              />
+              Only show suspicious transactions
+            </label>
           </div>
         </div>
 

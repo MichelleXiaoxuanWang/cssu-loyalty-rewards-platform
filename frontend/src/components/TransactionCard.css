@@ -146,16 +146,19 @@
 .suspicious-tag {
   background-color: var(--warning-bg);
   color: var(--warning-color);
+  margin-left: 0;
 }
 
 .processed-tag {
   background-color: var(--success-bg);
   color: var(--success-color);
+  margin-left: 0;
 }
 
 .unprocessed-tag {
   background-color: var(--pending-bg);
   color: var(--pending-color);
+  margin-left: 0;
 }
 
 .transaction-amount {

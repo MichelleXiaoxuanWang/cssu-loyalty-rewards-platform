@@ -24,6 +24,7 @@ export interface TransactionFilters {
   amount?: number;
   operator?: string;
   suspicious?: boolean;
+  unprocessed?: boolean;
   page?: number;
   limit?: number;
   sort?: string;
