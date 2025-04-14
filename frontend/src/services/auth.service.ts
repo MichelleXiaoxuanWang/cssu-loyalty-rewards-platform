@@ -40,6 +40,13 @@ export const setCurrentRole = (role: string): void => {
   localStorage.setItem(`current_role_${currentUser}`, role);
 };
 
+// get the user name
+export const getUserName = (): string | null => {
+  const currentUser = localStorage.getItem('currentUser');
+  if (!currentUser) return null;
+  return localStorage.getItem(`userName_${currentUser}`);
+};
+
 export const getUserId = (): string | null => {
   const currentUser = localStorage.getItem('currentUser');
   if (!currentUser) return null;
@@ -63,6 +70,8 @@ export const logout = (): void => {
   localStorage.removeItem('currentUser');
   localStorage.removeItem(`token_${currentUser}`);
   localStorage.removeItem(`role_${currentUser}`);
+  localStorage.removeItem(`current_role_${currentUser}`);
   localStorage.removeItem(`userId_${currentUser}`);
   localStorage.removeItem(`resetExpiresAt_${currentUser}`);
+  localStorage.removeItem(`userName_${currentUser}`);
 };
