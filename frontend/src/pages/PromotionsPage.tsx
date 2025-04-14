@@ -18,7 +18,7 @@ const PromotionsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<PromotionFilters>({
       page: 1,
-      limit: 10
+      limit: 5
     });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
@@ -28,7 +28,35 @@ const PromotionsPage: React.FC = () => {
         setLoading(true);
         try {
           const response: PromotionResponse = await fetchPromotions(filters);
-          setPromotions(response.results);
+          let fetchedPromotions = response.results;
+
+          // Apply sorting after fetching
+          if (filters.sort) {
+            fetchedPromotions = fetchedPromotions.sort((a, b) => {
+              switch (filters.sort) {
+                case 'id-asc':
+                  return a.id - b.id;
+                case 'id-desc':
+                  return b.id - a.id;
+                case 'name-asc':
+                  return a.name.localeCompare(b.name);
+                case 'name-desc':
+                  return b.name.localeCompare(a.name);
+                case 'starttime-asc':
+                  return new Date(a.startTime || '').getTime() - new Date(b.startTime || '').getTime();
+                case 'starttime-desc':
+                  return new Date(b.startTime || '').getTime() - new Date(a.startTime || '').getTime();
+                case 'endtime-asc':
+                  return new Date(a.endTime || '').getTime() - new Date(b.endTime || '').getTime();
+                case 'endtime-desc':
+                  return new Date(b.endTime || '').getTime() - new Date(a.endTime || '').getTime();
+                default:
+                  return 0;
+              }
+            });
+          }
+
+          setPromotions(fetchedPromotions);
           setTotalPromotions(response.count);
           setCurrentPage(filters.page || 1);
           setItemsPerPage(filters.limit || 10);
@@ -41,7 +69,7 @@ const PromotionsPage: React.FC = () => {
       };
   
       loadPromotions();
-    }, [currentPage, filters, role]);
+    }, [filters, role]);
 
   const handleCreate = () => {
     setCreatingPromotion(true);
@@ -74,10 +102,8 @@ const PromotionsPage: React.FC = () => {
       setFilters({ ...newFilters, page: 1 });
   };
 
-  const handleSortChange = async (sort: string) => {
-    const data = await fetchPromotions(filters);
-    setPromotions(data.results);
-    setTotalPromotions(data.count);
+  const handleSortChange = (sort: string) => {
+    setFilters(prev => ({ ...prev, sort }));
   };
 
   const handlePageChange = (newPage: number) => {
@@ -137,7 +163,16 @@ const PromotionsPage: React.FC = () => {
           { label: 'Started', value: 'started', options: ['true', 'false'] },
           { label: 'Ended', value: 'ended', options: ['true', 'false'] },
         ]}
-        sortOptions={[{ label: 'Name', value: 'name' }, { label: 'Discount', value: 'discount' }]}
+        sortOptions={[
+          { label: 'ID (Ascending)', value: 'id-asc' },
+          { label: 'ID (Descending)', value: 'id-desc' },
+          { label: 'Name (A-Z)', value: 'name-asc' },
+          { label: 'Name (Z-A)', value: 'name-desc' },
+          { label: 'Start Time (Earliest)', value: 'starttime-asc' },
+          { label: 'Start Time (Latest)', value: 'starttime-desc' },
+          { label: 'End Time (Earliest)', value: 'endtime-asc' },
+          { label: 'End Time (Latest)', value: 'endtime-desc' },
+        ]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />
