@@ -99,7 +99,7 @@ const PromotionsPage: React.FC = () => {
             <ItemBox
               key={promotion.id}
               title={promotion.name}
-              description={promotion.description}
+              description={`${promotion.type}`}
               navigateTo={`/promotions/${promotion.id}`}
             />
           ))
@@ -156,8 +156,8 @@ const PromotionsPage: React.FC = () => {
         promotions?.map((promotion) => (
           <ItemBox
             key={promotion.id}
-            title={`ID: ${promotion.id} - Name: ${promotion.name}`}
-            description={`Description: ${promotion.description}`}
+            title={`ID: ${promotion.id} - ${promotion.name}`}
+            description={`${promotion.type}`}
             navigateTo={`/promotions/${promotion.id}`}
           />
         ))

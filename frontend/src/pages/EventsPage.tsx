@@ -151,8 +151,8 @@ const EventsPage: React.FC = () => {
         events?.map((event) => (
           <ItemBox
             key={event.id}
-            title={`ID: ${event.id} - Name: ${event.name}`}
-            description={`Description: ${event.description || 'No description available'}`}
+            title={`ID: ${event.id} - ${event.name}`}
+            description={`${event.published ? 'Published' : 'Not Published'}`}
             navigateTo={`/events/${event.id}`}
           />
         ))
