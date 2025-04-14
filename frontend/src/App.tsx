@@ -31,6 +31,8 @@ interface ProtectedRouteProps {
   page: string;
 }
 
+// Protected route to check if user is authenticated and has access to the page
+// This should check highest role that the user has, instead of the current role the user is using.
 function ProtectedRoute({ children, page }: ProtectedRouteProps) {
   const currentUser = localStorage.getItem('currentUser');
   const token = localStorage.getItem(`token_${currentUser}`);
