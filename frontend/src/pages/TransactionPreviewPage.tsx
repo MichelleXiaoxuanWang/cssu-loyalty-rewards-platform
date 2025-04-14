@@ -108,11 +108,6 @@ const TransactionPreviewPage: React.FC = () => {
         ) : transactions.length === 0 ? (
           <div className="no-transactions">
             <p>No transactions found. Try adjusting your filters or create a new transaction.</p>
-            {(currentRole === 'regular' || currentRole === 'cashier') && (
-              <button onClick={() => navigate('/createTransaction')} className="action-button">
-                Create Transaction
-              </button>
-            )}
           </div>
         ) : (
           <>
