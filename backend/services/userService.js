@@ -58,7 +58,7 @@ async function createUser(userData) {
  * @returns {Promise<Object>} results with pagination
  */
 async function filterUsers(req, filters = {}) {
-    const { name, role, verified, activated } = filters;
+    const { name, role, verified, activated, sort } = filters;
     
     // build where filter
     const where = {};
@@ -87,8 +87,33 @@ async function filterUsers(req, filters = {}) {
         verified: true,
         avatarUrl: true
     };
+
+    /// Determine orderBy clause based on filters.sort
+    let orderBy = {};
+    switch (sort) {
+        case 'id-asc':
+            orderBy = { id: 'asc' };
+            break;
+        case 'id-desc':
+            orderBy = { id: 'desc' };
+            break;
+        case 'utorid-asc':
+            orderBy = { utorid: 'asc' };
+            break;
+        case 'utorid-desc':
+            orderBy = { utorid: 'desc' };
+            break;
+        case 'name-asc':
+            orderBy = { name: 'asc' };
+            break;
+        case 'name-desc':
+            orderBy = { name: 'desc' };
+            break;
+        default:
+            orderBy = { id: 'asc' }; // Default ordering
+    }
     
-    return paginate(req, where, 'user', { select });
+    return paginate(req, where, 'user', { select }, orderBy);
 }
 
 /**

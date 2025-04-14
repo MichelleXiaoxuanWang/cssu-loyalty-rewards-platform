@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ItemBox from '../components/ItemBox';
-import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
-import { fetchUsers, updateUser, createUser, User, UserFilters, UserResponse } from '../services/user.service';
+import { fetchUsers, User, UserFilters, UserResponse } from '../services/user.service';
 import '../App.css';
 
 const UsersPage: React.FC = () => {
@@ -15,13 +14,13 @@ const UsersPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<UserFilters>({
     page: 1,
-    limit: 10
+    limit: 5
   });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
 
   useEffect(() => {
-    const loadEvents = async () => {
+    const loadUsers = async () => {
       setLoading(true);
       try {
         const response: UserResponse = await fetchUsers(filters);
@@ -37,17 +36,15 @@ const UsersPage: React.FC = () => {
       }
     };
 
-    loadEvents();
-  }, [currentPage, filters, role]);
+    loadUsers();
+  }, [filters, role]);
 
   const handleFilterChange = async (newFilters: UserFilters) => {
     setFilters({ ...newFilters, page: 1 });
   };
 
-  const handleSortChange = async (sort: string) => {
-    const data = await fetchUsers(filters);
-    setUsers(data.results);
-    setTotalUsers(data.count);
+  const handleSortChange = (sort: string) => {
+    setFilters(prev => ({ ...prev, sort }));
   };
 
   const handlePageChange = (newPage: number) => {
@@ -74,7 +71,14 @@ const UsersPage: React.FC = () => {
           { label: 'Verified', value: 'verified', options: ['true', 'false'] },
           { label: 'Activated', value: 'activated', options: ['true', 'false'] },
         ]}
-        sortOptions={[{ label: 'Name', value: 'name' }, { label: 'Role', value: 'role' }]}
+        sortOptions={[
+          { label: 'ID (Ascending)', value: 'id-asc' },
+          { label: 'ID (Descending)', value: 'id-desc' },
+          { label: 'UTORID (A-Z)', value: 'utorid-asc' },
+          { label: 'UTORID (Z-A)', value: 'utorid-desc' },
+          { label: 'Name (A-Z)', value: 'name-asc' },
+          { label: 'Name (Z-A)', value: 'name-desc' },
+        ]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />

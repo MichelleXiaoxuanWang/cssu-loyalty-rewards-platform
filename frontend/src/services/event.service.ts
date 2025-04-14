@@ -25,14 +25,11 @@ export interface EventFilters {
   showFull?: boolean;
   page?: number;
   limit?: number;
+  sort?: string;
 }
 
 export const fetchEvents = async (filters?: EventFilters): Promise<EventResponse> => {
   return apiCall(`/events`, 'GET', filters);
-};
-
-export const updateEvent = async (eventId: number, eventData: Record<string, any>) => {
-  return apiCall(`/events/${eventId}`, 'PUT', eventData);
 };
 
 export const createEvent = async (eventData: Record<string, any>): Promise<Event> => {

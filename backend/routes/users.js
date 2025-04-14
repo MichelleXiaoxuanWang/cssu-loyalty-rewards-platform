@@ -41,7 +41,7 @@ router.post('/', jwtAuth, checkRole(ROLES.CASHIER_OR_HIGHER), async (req, res) =
 router.get('/', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) => {
     try {
         // Extract query parameters
-        const { name, role, verified, activated } = req.query;
+        const { name, role, verified, activated, sort } = req.query;
         
         // Parse boolean values
         const parsedVerified = verified !== undefined ? verified === 'true' : undefined;
@@ -52,7 +52,8 @@ router.get('/', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) =>
             name: name,
             role: role,
             verified: parsedVerified,
-            activated: parsedActivated
+            activated: parsedActivated,
+            sort: sort,
         };
         
         // Get users with pagination

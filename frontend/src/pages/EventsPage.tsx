@@ -3,7 +3,7 @@ import ItemBox from '../components/ItemBox';
 import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
-import { fetchEvents, updateEvent, createEvent, Event, EventResponse, EventFilters } from '../services/event.service';
+import { fetchEvents, createEvent, Event, EventResponse, EventFilters } from '../services/event.service';
 import '../App.css';
 
 const EventsPage: React.FC = () => {
@@ -17,7 +17,7 @@ const EventsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<EventFilters>({
       page: 1,
-      limit: 10
+      limit: 5
     });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
@@ -27,6 +27,7 @@ const EventsPage: React.FC = () => {
       setLoading(true);
       try {
         const response: EventResponse = await fetchEvents(filters);
+        
         setEvents(response.results);
         setTotalEvents(response.count);
         setCurrentPage(filters.page || 1);
@@ -40,7 +41,7 @@ const EventsPage: React.FC = () => {
     };
 
     loadEvents();
-  }, [currentPage, filters, role]);
+  }, [filters]);
 
   const handleCreate = () => {
     setCreatingEvent(true);
@@ -75,10 +76,8 @@ const EventsPage: React.FC = () => {
     setFilters({ ...newFilters, page: 1 });
   };
 
-  const handleSortChange = async (sort: string) => {
-    const data = await fetchEvents(filters);
-    setEvents(data.results);
-    setTotalEvents(data.count);
+  const handleSortChange = (sort: string) => {
+    setFilters(prev => ({ ...prev, sort }));
   };
 
   const handlePageChange = (newPage: number) => {
@@ -138,7 +137,16 @@ const EventsPage: React.FC = () => {
           { label: 'Ended', value: 'ended', options: ['true', 'false'] },
           { label: 'Published', value: 'published', options: ['true', 'false'] },
         ]}
-        sortOptions={[{ label: 'Title', value: 'title' }, { label: 'Date', value: 'date' }]}
+        sortOptions={[
+          { label: 'ID (Ascending)', value: 'id-asc' },
+          { label: 'ID (Descending)', value: 'id-desc' },
+          { label: 'Name (A-Z)', value: 'name-asc' },
+          { label: 'Name (Z-A)', value: 'name-desc' },
+          { label: 'Start Time (Earliest)', value: 'starttime-asc' },
+          { label: 'Start Time (Latest)', value: 'starttime-desc' },
+          { label: 'End Time (Earliest)', value: 'endtime-asc' },
+          { label: 'End Time (Latest)', value: 'endtime-desc' },
+        ]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />
