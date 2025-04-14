@@ -290,23 +290,23 @@ async function main() {
     // For transfer, relatedId is the ID of the other user
     const transfers = await prisma.transaction.createMany({
         data: [
-            { id: 11, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 6, remark: 'Diana transfer to Ethan' }, // relatedId now points to Ethan (id 6)
-            { id: 12, utorid: 'ethan123', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 5, remark: 'Ethan receive from Diana' }, // relatedId now points to Diana (id 5)
+            { id: 11, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 6, relatedUtorid: 'ethan123', remark: 'Diana transfer to Ethan' }, // relatedId now points to Ethan (id 6)
+            { id: 12, utorid: 'ethan123', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 5, relatedUtorid: 'diana123', remark: 'Ethan receive from Diana' }, // relatedId now points to Diana (id 5)
 
-            { id: 13, utorid: 'fiona123', type: 'transfer', amount: -50, createdBy: 'fiona123', relatedId: 8, remark: 'Transfer for event participation to George' }, // relatedId now points to George (id 8)
-            { id: 14, utorid: 'george12', type: 'transfer', amount: 50, createdBy: 'fiona123', relatedId: 7, remark: 'George receive from Fiona for event participation' }, // relatedId now points to Fiona (id 7)
+            { id: 13, utorid: 'fiona123', type: 'transfer', amount: -50, createdBy: 'fiona123', relatedId: 8, relatedUtorid: 'george12', remark: 'Transfer for event participation to George' }, // relatedId now points to George (id 8)
+            { id: 14, utorid: 'george12', type: 'transfer', amount: 50, createdBy: 'fiona123', relatedId: 7, relatedUtorid: 'fiona123', remark: 'George receive from Fiona for event participation' }, // relatedId now points to Fiona (id 7)
 
-            { id: 15, utorid: 'diana123', type: 'transfer', amount: -100, createdBy: 'diana123', relatedId: 10, remark: 'Diana transfer to Ian' }, // relatedId now points to Ian (id 10)
-            { id: 16, utorid: 'iantay12', type: 'transfer', amount: 100, createdBy: 'diana123', relatedId: 5, remark: 'Ian receive from Diana' }, // relatedId now points to Diana (id 5)
+            { id: 15, utorid: 'diana123', type: 'transfer', amount: -100, createdBy: 'diana123', relatedId: 10, relatedUtorid: 'iantay12', remark: 'Diana transfer to Ian' }, // relatedId now points to Ian (id 10)
+            { id: 16, utorid: 'iantay12', type: 'transfer', amount: 100, createdBy: 'diana123', relatedId: 5, relatedUtorid: 'diana123', remark: 'Ian receive from Diana' }, // relatedId now points to Diana (id 5)
             
-            { id: 17, utorid: 'iantay12', type: 'transfer', amount: -10, createdBy: 'iantay12', relatedId: 7, remark: 'Ian transfer to Fiona' }, // relatedId now points to Fiona (id 7)
-            { id: 18, utorid: 'fiona123', type: 'transfer', amount: 10, createdBy: 'iantay12', relatedId: 10, remark: 'Fiona receive from Ian' }, // relatedId now points to Ian (id 10)
+            { id: 17, utorid: 'iantay12', type: 'transfer', amount: -10, createdBy: 'iantay12', relatedId: 7, relatedUtorid: 'fiona123', remark: 'Ian transfer to Fiona' }, // relatedId now points to Fiona (id 7)
+            { id: 18, utorid: 'fiona123', type: 'transfer', amount: 10, createdBy: 'iantay12', relatedId: 10, relatedUtorid: 'iantay12', remark: 'Fiona receive from Ian' }, // relatedId now points to Ian (id 10)
 
-            { id: 19, utorid: 'iantay12', type: 'transfer', amount: -20, createdBy: 'iantay12', relatedId: 9, remark: 'Ian transfer to Hannah' }, // relatedId now points to Hannah (id 9)
-            { id: 20, utorid: 'hannah12', type: 'transfer', amount: 20, createdBy: 'iantay12', relatedId: 10, remark: 'Hannah receive from Ian' }, // relatedId now points to Ian (id 10)
+            { id: 19, utorid: 'iantay12', type: 'transfer', amount: -20, createdBy: 'iantay12', relatedId: 9, relatedUtorid: 'hannah12', remark: 'Ian transfer to Hannah' }, // relatedId now points to Hannah (id 9)
+            { id: 20, utorid: 'hannah12', type: 'transfer', amount: 20, createdBy: 'iantay12', relatedId: 10, relatedUtorid: 'iantay12', remark: 'Hannah receive from Ian' }, // relatedId now points to Ian (id 10)
 
-            { id: 21, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 2, remark: 'Diana transfer to Bob' }, // relatedId now points to Bob (id 2)
-            { id: 22, utorid: 'bobman12', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 5, remark: 'Bob receive from Diana' }, // relatedId now points to Diana (id 5)
+            { id: 21, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 2, relatedUtorid: 'bobman12', remark: 'Diana transfer to Bob' }, // relatedId now points to Bob (id 2)
+            { id: 22, utorid: 'bobman12', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 5, relatedUtorid: 'diana123', remark: 'Bob receive from Diana' }, // relatedId now points to Diana (id 5)
         ]
     });
 
@@ -323,10 +323,10 @@ async function main() {
     // For redemption, relatedId is the user ID of the cashier who processed it
     const redemptions = await prisma.transaction.createMany({
         data: [
-            { id: 23, utorid: 'diana123', type: 'redemption', amount: -100, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3}, // relatedId points to Alice cashier (id 3)
-            { id: 24, utorid: 'ethan123', type: 'redemption', amount: -50, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3}, // relatedId points to Alice cashier (id 3)
-            { id: 25, utorid: 'fiona123', type: 'redemption', amount: -20, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4}, // relatedId points to Charlie cashier (id 4)
-            { id: 26, utorid: 'george12', type: 'redemption', amount: -10, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4}, // relatedId points to Charlie cashier (id 4)
+            { id: 23, utorid: 'diana123', type: 'redemption', amount: -100, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3, relatedUtorid: 'alice123'}, // relatedId points to Alice cashier (id 3)
+            { id: 24, utorid: 'ethan123', type: 'redemption', amount: -50, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3, relatedUtorid: 'alice123'}, // relatedId points to Alice cashier (id 3)
+            { id: 25, utorid: 'fiona123', type: 'redemption', amount: -20, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4, relatedUtorid: 'charlie1'}, // relatedId points to Charlie cashier (id 4)
+            { id: 26, utorid: 'george12', type: 'redemption', amount: -10, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4, relatedUtorid: 'charlie1'}, // relatedId points to Charlie cashier (id 4)
         ]
     });
 

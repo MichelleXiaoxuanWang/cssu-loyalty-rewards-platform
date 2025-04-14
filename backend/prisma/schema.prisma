@@ -66,7 +66,7 @@ model Transaction {
 
   // Type specific fields
   spent         Float?            // Purchase: dollar amount spent in this transaction
-  amount        Int?              // Purchase (> 0), Adjustment (<> 0), Redemption? (> 0), Transfer (> 0), Event (> 0)
+  amount        Int?              // Purchase (> 0), Adjustment (<> 0), Redemption (< 0), Transfer (> 0), Event (> 0)
 
   isSender      Boolean           @default(true) // Transfer only: if this is the sender's transaction (TODO: need?)
 
@@ -89,7 +89,8 @@ model Transaction {
   // For redemption, this is the user ID of the cashier who processed the redemption (null if not processed yet)
   // For event, this is the ID of the event from which points were disbursed
   // For purchase, this field is not used
-  relatedId     Int?              
+  relatedId     Int? 
+  relatedUtorid String? // only set when the relatedId is a user
 
   // Purchase and Adjustment only: promotion (both types) used in this transaction.
   // For Adjustment, simply add the promotions to the list of promotion ids, and don't preform any calculations with them

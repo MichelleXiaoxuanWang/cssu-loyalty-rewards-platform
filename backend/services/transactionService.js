@@ -289,7 +289,7 @@ async function createTransferTransaction(transactionData) {
             error.statusCode = 400;
             throw error;
         }
-        
+
         // Create transaction in a transaction block to ensure atomicity
         const result = await prisma.$transaction(async (prisma) => {
             // Create sender's transaction (negative amount)
@@ -302,6 +302,7 @@ async function createTransferTransaction(transactionData) {
                     utorid: senderUtorid,
                     createdBy: senderUtorid, // Self-created
                     relatedId: recipientId, // Related to recipient user
+                    relatedUtorid: recipient.utorid
                 }
             });
             
@@ -315,6 +316,7 @@ async function createTransferTransaction(transactionData) {
                     utorid: recipient.utorid,
                     createdBy: senderUtorid, // Created by sender
                     relatedId: sender.id, // Related to sender user
+                    relatedUtorid: senderUtorid
                 }
             });
             
@@ -485,9 +487,14 @@ async function getTransactions(filters) {
             if (filters.relatedId) {
                 where.relatedId = filters.relatedId;
             }
-        } else if (filters.relatedId) {
-            // relatedId without type is not allowed
-            const error = new Error('relatedId must be used with type');
+
+            // If relatedUtorid is provided with type
+            if (filters.relatedUtorid) {
+                where.relatedUtorid = filters.relatedUtorid;
+            }
+        } else if (filters.relatedId || filters.relatedUtorid) {
+            // relatedId or relatedUtorid without type is not allowed
+            const error = new Error('relatedId or relatedUtorid must be used with type');
             error.statusCode = 400;
             throw error;
         }
@@ -853,9 +860,14 @@ async function getUserTransactions(utorid, filters = {}) {
             if (filters.relatedId) {
                 where.relatedId = filters.relatedId;
             }
-        } else if (filters.relatedId) {
-            // relatedId without type is not allowed
-            const error = new Error('relatedId must be used with type');
+
+            // If relatedUtorid is provided with type
+            if (filters.relatedUtorid) {
+                where.relatedUtorid = filters.relatedUtorid;
+            }
+        } else if (filters.relatedId || filters.relatedUtorid) {
+            // relatedId or relatedUtorid without type is not allowed
+            const error = new Error('relatedId or relatedUtorid must be used with type');
             error.statusCode = 400;
             throw error;
         }
@@ -1017,7 +1029,8 @@ async function processRedemptionTransaction(transactionId, cashierUtorid) {
             const updatedTransaction = await prisma.transaction.update({
                 where: { id: transactionId },
                 data: {
-                    relatedId: cashier.id // Store cashier ID (numeric) in relatedId
+                    relatedId: cashier.id, // Store cashier ID (numeric) in relatedId
+                    relatedUtorid: cashierUtorid
                 },
                 include: {
                     promotionUsed: {
