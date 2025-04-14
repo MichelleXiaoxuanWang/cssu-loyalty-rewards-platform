@@ -5,11 +5,11 @@ import './TransactionCard.css';
 import { getUserId } from '../services/auth.service';
 
 // Import transaction type icons
-import purchaseIcon from '../assets/purchase.png';
-import redemptionIcon from '../assets/redempion.png';
-import transferIcon from '../assets/transfer.png';
-import adjustmentIcon from '../assets/adjustment.png';
-import eventIcon from '../assets/event.png';
+import purchaseIcon from '../assets/purchase.png';  // Attribute: this is external image from https://www.veryicon.com/icons/miscellaneous/common-icons-17/purchase-21.html
+import redemptionIcon from '../assets/redempion.png';  // Attribute: this is external image from https://www.veryicon.com/icons/miscellaneous/common-icons-17/purchase-21.html
+import transferIcon from '../assets/transfer.png';  // Attribute: this is external image from https://www.flaticon.com/free-icon/transfer_876784
+import adjustmentIcon from '../assets/adjustment.png';  // Attribute: this is external image from https://www.vecteezy.com/png/19552595-sign-up-icon-signup-square-box-on-transparent-background
+import eventIcon from '../assets/event.png';  // Attribute: this is external image from https://pngtree.com/freepng/events-line-icon-vector_9020887.html
 
 interface TransactionCardProps {
   transaction: Transaction;

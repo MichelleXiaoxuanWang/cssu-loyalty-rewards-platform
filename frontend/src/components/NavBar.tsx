@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { getUserUtorid, getUserRole, getCurrentRole, setCurrentRole, getUserName, logout } from '../services/auth.service';
-import logoutIcon from '../assets/logout.png';
+import logoutIcon from '../assets/logout.png';  // Attribute: this is external image from https://www.flaticon.com/free-icon/logout_8212701
 import { isUserOrganizer } from '../services/event.service';
 
 // Role hierarchy for determining available roles
