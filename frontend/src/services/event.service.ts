@@ -26,9 +26,11 @@ export interface EventFilters {
   page?: number;
   limit?: number;
   sort?: string;
+  organizer?: number;
 }
 
 export const fetchEvents = async (filters?: EventFilters): Promise<EventResponse> => {
+  console.log('Filters sent to fetchEvents:', filters);
   return apiCall(`/events`, 'GET', filters);
 };
 
@@ -37,10 +39,6 @@ export const createEvent = async (eventData: Record<string, any>): Promise<Event
 };
 
 export async function isUserOrganizer(userId: number): Promise<boolean> {
-  const response = await fetch(`/api/events/is-organizer/${userId}`);
-  if (!response.ok) {
-    throw new Error('Failed to check organizer status');
-  }
-  const data = await response.json();
-  return data.isOrganizer;
+  const response = await apiCall(`/events/is-organizer/${userId}`, 'GET');
+  return response.isOrganizer;
 }

@@ -11,8 +11,6 @@ interface ItemBoxProps {
 const ItemBox: React.FC<ItemBoxProps> = ({ title, description, navigateTo }) => {
   const navigate = useNavigate();
 
-  console.log('ItemBox props:', { title, description, navigateTo });
-
   const handleClick = () => {
     if (navigateTo) {
       navigate(navigateTo);
