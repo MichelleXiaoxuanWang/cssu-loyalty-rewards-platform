@@ -5,7 +5,6 @@ import { getCurrentRole, getUserUtorid } from '../services/auth.service';
 import TransactionCard from '../components/TransactionCard';
 import TransactionFilters from '../components/TransactionFilters';
 import Pagination from '../components/Pagination';
-import { getMyTransactions, getAllTransactions, TransactionFilters as FiltersType, TransactionResponse, Transaction } from '../services/transaction.service';
 import './TransactionPreviewPage.css';
 
 const TransactionPreviewPage: React.FC = () => {
@@ -20,12 +19,8 @@ const TransactionPreviewPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   // Get current user role and ID
-
   const currentRole = getCurrentRole();
   const currentUser = getUserUtorid();
-  
-  // Determine if admin role (manager or superuser) to show all transactions
-
   const isAdminRole = currentRole === 'manager' || currentRole === 'superuser';
 
   // Redirect to login if not authenticated
@@ -73,6 +68,7 @@ const TransactionPreviewPage: React.FC = () => {
     if (currentUser) {
       navigate(`/${currentUser}/transactions/${transactionId}`);
     }
+  };
 
   if (!currentUser || !currentRole) {
     return null; // Will redirect in useEffect
@@ -88,7 +84,6 @@ const TransactionPreviewPage: React.FC = () => {
 
   return (
     <div className="transaction-preview-page">
-
       <h1>{isAdminRole ? 'All Transactions' : 'My Transactions'}</h1>
       
       <TransactionFilters 
