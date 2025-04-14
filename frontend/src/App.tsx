@@ -102,7 +102,8 @@ function App() {
 
   useEffect(() => {
     const checkOrganizerStatus = async () => {
-      const userId = localStorage.getItem('userId');
+      const currentUser = localStorage.getItem('currentUser');
+      const userId = localStorage.getItem(`userId_${currentUser}`);
       if (userId) {
         const isOrganizer = await isUserOrganizer(parseInt(userId));
         setIsOrganizer(isOrganizer);
