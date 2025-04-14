@@ -31,7 +31,8 @@ const RegularLandingPage: React.FC = () => {
         // Fetch recent transactions
         const transactionsResponse = await getMyTransactions({ 
           page: 1, 
-          limit: 6 
+          limit: 5,
+          sort: 'id-desc'  // Sort by ID in descending order to get the most recent ones
         });
         setRecentTransactions(transactionsResponse.results);
       } catch (err) {
@@ -97,7 +98,6 @@ const RegularLandingPage: React.FC = () => {
             </Link>
           </div>
           
-          {/* TODO: Update this section when backend adds timestamp for proper sorting */}
           {recentTransactions.length === 0 ? (
             <div className="no-transactions">
               <p>No recent transactions found.</p>
