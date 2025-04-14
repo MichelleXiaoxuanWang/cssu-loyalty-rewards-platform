@@ -8,6 +8,7 @@
 
 .navbar {
     position: fixed;       /* if you want it fixed */
+    z-index: 5;
     top: 0;
     left: 0;
     display: flex;

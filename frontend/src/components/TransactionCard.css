@@ -51,7 +51,8 @@
   justify-content: center;
   width: 80px;
   padding: 16px;
-  position: relative;
+  position: relative; /* Keep this for the colored border */
+  z-index: 1; /* Keep local stacking context within the card */
 }
 
 /* Add colored border indicator */

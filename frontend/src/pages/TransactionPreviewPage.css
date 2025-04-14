@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 1;
 }
 /* 
 .page-header {
@@ -111,6 +112,8 @@
   flex-direction: column;
   gap: 16px;
   margin: 20px 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* Responsive styles */
