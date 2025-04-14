@@ -1,77 +1,104 @@
 import React, { useState, useEffect } from 'react';
 import ItemBox from '../components/ItemBox';
-import { fetchEvents } from '../services/event.service';
+import { fetchEvents, Event, EventResponse, EventFilters } from '../services/event.service';
 import '../App.css';
-
-const API_BASE_URL = 'http://localhost:3000';
-
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-}
+import FilterAndSort from '../components/FilterAndSort';
+import Pagination from '../components/Pagination';
 
 const OrganizerEventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [currentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalEvents, setTotalEvents] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const currentUser = localStorage.getItem('currentUser');
+  const currentUserId = localStorage.getItem(`userId_${currentUser}`);
+  const [filters, setFilters] = useState<EventFilters>({
+    page: 1,
+    limit: 5,
+    organizer: Number(currentUserId),
+  });
 
   useEffect(() => {
     const loadEvents = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const data = await fetchEvents(currentPage, {}, '');
-        setEvents(data.events || []);
-      } catch (error) {
-        console.error('Error loading events:', error);
-        setEvents([]);
+        const response: EventResponse = await fetchEvents(filters); 
+        setEvents(response.results);
+        setTotalEvents(response.count);
+        setCurrentPage(filters.page || 1);
+        setItemsPerPage(filters.limit || 10);
+      } catch (err) {
+        console.error('Error loading events:', err);
+        setError('Failed to load events.');
+      } finally {
+        setLoading(false);
       }
     };
     loadEvents();
-  }, [currentPage]);
+  }, [filters]);
 
-  const awardPoints = async (eventId: number, userId: string | null, points: number) => {
-    try {
-      const endpoint = `${API_BASE_URL}/events/${eventId}/transactions`;
-      const payload = {
-        type: 'event',
-        utorid: userId || undefined, // Include only if userId is provided
-        amount: points,
-        remark: userId ? `Awarded ${points} points to user ${userId}` : `Awarded ${points} points to all participants`,
-      };
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Points awarded successfully:', data);
-    } catch (error) {
-      console.error('Error awarding points:', error);
-    }
+  const handleFilterChange = async (newFilters: EventFilters) => {
+    setFilters({ ...newFilters, page: 1 });
   };
+
+  const handleSortChange = (sort: string) => {
+    setFilters(prev => ({ ...prev, sort }));
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
+  };
+  
+  const totalPages = Math.ceil(totalEvents / itemsPerPage);
 
   return (
     <div>
       <h1>My Organized Events</h1>
-      {events.length === 0 ? (
-        <div>No events found</div>
+      <FilterAndSort
+        filters={[
+          { label: 'Name', value: 'name' },
+          { label: 'Location', value: 'location' },
+          { label: 'Started', value: 'started', options: ['true', 'false'] },
+          { label: 'Ended', value: 'ended', options: ['true', 'false'] },
+          { label: 'Published', value: 'published', options: ['true', 'false'] },
+        ]}
+        sortOptions={[
+          { label: 'Name (A-Z)', value: 'name-asc' },
+          { label: 'Name (Z-A)', value: 'name-desc' },
+          { label: 'Start Time (Earliest)', value: 'starttime-asc' },
+          { label: 'Start Time (Latest)', value: 'starttime-desc' },
+        ]}
+        onFilterChange={handleFilterChange}
+        onSortChange={handleSortChange}
+      />
+      {events && events.length === 0 ? (
+        <div className="no-entries">
+          <p>No events available</p>
+        </div>
       ) : (
-        events.map((event) => (
-        <ItemBox
-          key={event.id}
-          title={event.title}
-          description={event.description}
-          onClick={() => console.log(`Clicked on event ${event.id}`)}
-        />
-        )))}
-      <button onClick={() => awardPoints(1, null, 10)}>Award 10 Points to All Participants</button>
+        events?.map((event) => (
+          <ItemBox
+            key={event.id}
+            title={`ID: ${event.id} - Name: ${event.name}`}
+            description={`Description: ${event.description || 'No description available'}`}
+            navigateTo={`/events/${event.id}`}
+          />
+        ))
+      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+        itemsPerPage={itemsPerPage}
+      />
     </div>
   );
 };

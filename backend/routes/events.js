@@ -357,6 +357,13 @@ router.get('/', jwtAuth, async (req, res) => {
             return res.status(400).json({ error: 'Cannot specify both started and ended filters' });
         }
 
+        // Check if the organizer filter is provided
+        if (req.query.organizer) {
+            filters.organizerId = req.query.organizer;
+        }
+
+        console.log('Filters received in GET /events:', filters);
+
         // Add user info for permissions check
         const userInfo = {
             userId: req.user.id,
@@ -463,6 +470,22 @@ router.post('/:eventId/transactions', jwtAuth, async (req, res) => {
             return res.status(error.statusCode).json({ error: error.message });
         }
         console.error('Error creating event transaction:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// GET /events/is-organizer/:userId - Check if a user is an organizer for any event
+router.get('/is-organizer/:userId', jwtAuth, async (req, res) => {
+    try {
+        const userId = parseInt(req.params.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+
+        const isOrganizer = await eventService.isUserOrganizer(userId);
+        return res.json({ isOrganizer });
+    } catch (error) {
+        console.error('Error checking organizer status:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 });

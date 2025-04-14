@@ -847,6 +847,14 @@ async function getEvents(filters, userInfo) {
             where.published = filters.published;
         }
         
+        // Apply organizerId filter
+        if (filters.organizerId) {
+            where.organizers = {
+                some: {
+                    id: Number(filters.organizerId)
+                }
+            };
+        }
         
         // Count ALL events matching where clause before pagination and showFull filter
         const totalEvents = await prisma.event.count({ where });

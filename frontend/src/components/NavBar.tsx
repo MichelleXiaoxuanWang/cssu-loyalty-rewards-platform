@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { getUserUtorid, getUserRole, getCurrentRole, setCurrentRole, getUserName, logout } from '../services/auth.service';
 import logoutIcon from '../assets/logout.png';
+import { isUserOrganizer } from '../services/event.service';
 
 // Role hierarchy for determining available roles
 const ROLE_HIERARCHY = {
@@ -22,8 +23,8 @@ const Navbar: React.FC = () => {
   const [currentRole, setCurrentRoleState] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
+  const [isOrganizer, setIsOrganizer] = useState<boolean>(false);
   
-  // Update authentication state when component mounts or location changes
   useEffect(() => {
     const userUtorid = getUserUtorid();
     const userMaxRole = getUserRole();
@@ -39,6 +40,21 @@ const Navbar: React.FC = () => {
     if (userMaxRole && ROLE_HIERARCHY[userMaxRole as keyof typeof ROLE_HIERARCHY]) {
       setAvailableRoles(ROLE_HIERARCHY[userMaxRole as keyof typeof ROLE_HIERARCHY]);
     }
+
+    const checkOrganizerStatus = async () => {
+      const currentUser = localStorage.getItem('currentUser');
+      const userId = localStorage.getItem(`userId_${currentUser}`);
+      if (userId) {
+        try {
+          const organizerStatus = await isUserOrganizer(Number(userId));
+          setIsOrganizer(organizerStatus);
+        } catch (error) {
+          console.error('Error checking organizer status:', error);
+        }
+      }
+    };
+
+    checkOrganizerStatus();
   }, [location]);
   
   // Don't show navbar on authentication pages
@@ -115,6 +131,12 @@ const Navbar: React.FC = () => {
         <Link to="/events" className={isActiveLink('/events') ? 'active-link' : ''}>Events</Link>
         <Link to="/create-user" className={isActiveLink('/create-user') ? 'active-link' : ''}>Register Users</Link>
         
+        {isOrganizer && (
+          <Link to="/organizer-events" className={isActiveLink('/organizer-events') ? 'active-link' : ''}>
+            My Organized Events
+          </Link>
+        )}
+
         <button className="logout-button" onClick={handleLogout}>
           Logout
           <img src={logoutIcon} alt="Logout" className="logout-icon" />
@@ -165,6 +187,12 @@ const Navbar: React.FC = () => {
         {(currentRole === 'manager' || currentRole === 'superuser') && 
          <Link to="/create-user" className={isActiveLink('/create-user') ? 'active-link' : ''}>Create User</Link>}
         
+        {isOrganizer && (
+          <Link to="/organizer-events" className={isActiveLink('/organizer-events') ? 'active-link' : ''}>
+            My Organized Events
+          </Link>
+        )}
+
         <button className="logout-button" onClick={handleLogout}>
           Logout
           <img src={logoutIcon} alt="Logout" className="logout-icon" />
@@ -210,6 +238,12 @@ const Navbar: React.FC = () => {
       <Link to="/promotions" className={isActiveLink('/promotions') ? 'active-link' : ''}>Promotions</Link>
       <Link to="/profile" className={isActiveLink('/profile') ? 'active-link' : ''}>Profile</Link>
       
+      {isOrganizer && (
+        <Link to="/organizer-events" className={isActiveLink('/organizer-events') ? 'active-link' : ''}>
+          My Organized Events
+        </Link>
+      )}
+
       <button className="logout-button" onClick={handleLogout}>
         Logout
         <img src={logoutIcon} alt="Logout" className="logout-icon" />
