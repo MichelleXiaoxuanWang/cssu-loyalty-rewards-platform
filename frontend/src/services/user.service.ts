@@ -15,8 +15,22 @@ export interface User {
   promotions: any[];
 }
 
-export const fetchUsers = async (page: number, filters: Record<string, any>, sort: string, limit?: number) => {
-  return apiCall(`/users`, 'GET', { page, ...filters, sort, limit });
+export interface UserResponse {
+  count: number;
+  results: User[];
+}
+
+export interface UserFilters {
+  name?: string;
+  role?: string;
+  verified?: boolean;
+  activated?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export const fetchUsers = async (filters?: UserFilters): Promise<UserResponse> => {
+  return apiCall(`/users`, 'GET', filters);
 };
 
 export const updateUser = async (userId: number, userData: Record<string, any>) => {

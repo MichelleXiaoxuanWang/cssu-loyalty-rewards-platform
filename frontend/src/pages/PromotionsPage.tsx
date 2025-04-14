@@ -3,50 +3,45 @@ import ItemBox from '../components/ItemBox';
 import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
-import { fetchPromotions, updatePromotion, createPromotion } from '../services/promotion.service';
+import { fetchPromotions, updatePromotion, createPromotion, Promotion, PromotionFilters, PromotionResponse } from '../services/promotion.service';
 import '../App.css';
-
-interface Promotion {
-  id: number;
-  name: string;
-  description: string;
-  type: string;
-  startTime: string;
-  endTime: string;
-  minSpending?: number;
-  rate?: number;
-  points?: number;
-}
 
 const PromotionsPage: React.FC = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
   const [creatingPromotion, setCreatingPromotion] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPromotions, setTotalPromotions] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<PromotionFilters>({
+      page: 1,
+      limit: 10
+    });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
 
   useEffect(() => {
-    if (role === 'manager' || role === 'superuser') {
       const loadPromotions = async () => {
+        setLoading(true);
         try {
-          const data = await fetchPromotions(currentPage, {}, '');
-          setPromotions(data.promotions || []);
-          setTotalPages(data.totalPages || 1);
-        } catch (error) {
-          console.error('Error loading promotions:', error);
-          setPromotions([]);
+          const response: PromotionResponse = await fetchPromotions(filters);
+          setPromotions(response.results);
+          setTotalPromotions(response.count);
+          setCurrentPage(filters.page || 1);
+          setItemsPerPage(filters.limit || 10);
+        } catch (err) {
+          setError('Failed to load promotions. Please try again later.');
+          console.error('Error fetching promotions:', err);
+        } finally {
+          setLoading(false);
         }
       };
+  
       loadPromotions();
-    }
-  }, [currentPage, role]);
-
-  const handleEdit = (promotion: any) => {
-    setEditingPromotion(promotion);
-  };
+    }, [currentPage, filters, role]);
 
   const handleCreate = () => {
     setCreatingPromotion(true);
@@ -54,38 +49,46 @@ const PromotionsPage: React.FC = () => {
 
   const handleSubmit = async (formData: Record<string, any>) => {
     try {
+      let newPromotion: Promotion;
       if (creatingPromotion) {
-        await createPromotion(formData);
+        newPromotion = await createPromotion(formData);
         setCreatingPromotion(false);
-      } else if (editingPromotion) {
-        await updatePromotion(editingPromotion.id, formData);
-        setEditingPromotion(null);
+        // Check if the current page is full
+        if (promotions.length >= itemsPerPage) {
+          // Move to the next page and add the new event there
+          setCurrentPage((prevPage) => prevPage + 1);
+          setFilters((prevFilters) => ({ ...prevFilters, page: currentPage + 1 }));
+          setPromotions([newPromotion]); // Set the new event as the first item on the new page
+        } else {
+          // Add the new event to the current page
+          setPromotions((prevPromotions) => [...prevPromotions, newPromotion]);
+        }
       }
-      const data = await fetchPromotions(currentPage, {}, '');
-      setPromotions(data.promotions);
       setFeedbackMessage('Submission successful!');
     } catch (error) {
       setFeedbackMessage('Submission failed. Please try again.');
     }
   };
 
-  const handleFilterChange = async (filter: { name?: string; type?: string; started?: boolean; ended?: boolean }) => {
-    const data = await fetchPromotions(currentPage, filter, '');
-    setPromotions(data.promotions);
-    setTotalPages(data.totalPages);
+  const handleFilterChange = async (newFilters: PromotionFilters) => {
+      setFilters({ ...newFilters, page: 1 });
   };
 
   const handleSortChange = async (sort: string) => {
-    const data = await fetchPromotions(currentPage, {}, sort);
-    setPromotions(data.promotions);
-    setTotalPages(data.totalPages);
+    const data = await fetchPromotions(filters);
+    setPromotions(data.results);
+    setTotalPromotions(data.count);
   };
 
-  const handleLimitChange = async (newLimit: number) => {
-    const data = await fetchPromotions(currentPage, {}, '', newLimit);
-    setPromotions(data.promotions);
-    setTotalPages(data.totalPages);
+  const handlePageChange = (newPage: number) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
   };
+
+  const handleLimitChange = (newLimit: number) => {
+    setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
+  };
+
+  const totalPages = Math.ceil(totalPromotions / itemsPerPage);
 
   if (role === 'regular' || role === 'cashier') {
     return (
@@ -99,7 +102,7 @@ const PromotionsPage: React.FC = () => {
               key={promotion.id}
               title={promotion.name}
               description={promotion.description}
-              onClick={() => handleEdit(promotion)}
+              navigateTo={`/promotions/${promotion.id}`}
             />
           ))
         )}
@@ -137,41 +140,25 @@ const PromotionsPage: React.FC = () => {
         sortOptions={[{ label: 'Name', value: 'name' }, { label: 'Discount', value: 'discount' }]}
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
-        disabled={!Array.isArray(promotions) || promotions.length === 0}
       />
       {promotions && promotions.length === 0 ? (
-        <div style={{ margin: '20px 0' }}>
-          <p>There are currently no entries</p>
+        <div className="no-entries">
+          <p>No promotions available</p>
         </div>
       ) : (
         promotions?.map((promotion) => (
           <ItemBox
             key={promotion.id}
-            title={promotion.name}
-            description={promotion.description}
-            onClick={() => handleEdit(promotion)}
+            title={`ID: ${promotion.id} - Name: ${promotion.name}`}
+            description={`Description: ${promotion.description}`}
+            navigateTo={`/promotions/${promotion.id}`}
           />
         ))
-      )}
-      {(editingPromotion) && (
-        <Form
-          fields={[
-            { name: 'name', label: 'Name', type: 'text', value: editingPromotion?.name || '' },
-            { name: 'description', label: 'Description', type: 'text', value: editingPromotion?.description || '' },
-            { name: 'type', label: 'Type', type: 'select', options: ['automatic', 'one-time'], value: editingPromotion?.type || '' },
-            { name: 'startTime', label: 'Start Time', type: 'datetime-local', value: editingPromotion?.startTime || '' },
-            { name: 'endTime', label: 'End Time', type: 'datetime-local', value: editingPromotion?.endTime || '' },
-            { name: 'minSpending', label: 'Minimum Spending', type: 'number', value: editingPromotion?.minSpending || 0},
-            { name: 'rate', label: 'Rate', type: 'number', value: editingPromotion?.rate || 0 },
-            { name: 'points', label: 'Points', type: 'number', value: editingPromotion?.points || 0 },
-          ]}
-          onSubmit={handleSubmit}
-        />
       )}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
       />
     </div>
