@@ -95,7 +95,16 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
 
   return (
     <div className="transaction-filters">
-      <h3>Filter Transactions</h3>
+      <div className="filters-header">
+        <h3>Filter Transactions</h3>
+        <button 
+          onClick={() => window.location.href = '/createTransaction'} 
+          className="create-transaction-button"
+        >
+          <i className="fas fa-plus"></i>
+          + Create Transaction
+        </button>
+      </div>
       
       <form onSubmit={handleSubmit}>
         <div className="filters-grid">
