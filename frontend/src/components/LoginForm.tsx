@@ -39,6 +39,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onError }) => {
       localStorage.setItem(`userId_${utorid}`, data.userId);
       localStorage.setItem(`userName_${utorid}`, data.userName);
       localStorage.setItem(`currentUser`, utorid);
+      localStorage.setItem(`verified_${utorid}`, data.isVerified);
 
       onLoginSuccess();
     } catch (error: any) {

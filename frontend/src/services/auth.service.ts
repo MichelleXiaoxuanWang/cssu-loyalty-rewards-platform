@@ -75,3 +75,11 @@ export const logout = (): void => {
   localStorage.removeItem(`resetExpiresAt_${currentUser}`);
   localStorage.removeItem(`userName_${currentUser}`);
 };
+
+export const isUserVerified = (): boolean => {
+  const currentUser = localStorage.getItem('currentUser');
+  if (!currentUser) return false;
+  return localStorage.getItem(`verified_${currentUser}`) === 'true';
+};
+
+// TODO: update user state (call user/me to update all states stored in localStorage)

@@ -1,5 +1,8 @@
 .regular-landing-page {
   display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
 }
 
 .left-panel {
@@ -174,4 +177,32 @@
     max-width: 100%;
     height: auto;
   }
+}
+
+/* Add styles for the verification notice */
+.verification-notice {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  color: #856404;
+  margin-bottom: 20px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.verification-content {
+  padding: 15px 20px;
+}
+
+.verification-content h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.verification-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
 } 

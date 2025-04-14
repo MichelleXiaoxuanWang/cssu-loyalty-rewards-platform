@@ -62,13 +62,15 @@ async function login(utorid, password) {
     const userRole = user.role;
     const userId = user.id;
     const userName = user.name;
+    const isVerified = user.verified;
 
     return {
         token,
         expiresAt,
         userRole,
         userId,
-        userName
+        userName,
+        isVerified
     };
 }
 
