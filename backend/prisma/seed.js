@@ -69,40 +69,194 @@ async function main() {
     const promotions = await prisma.promotion.createMany({
         data: [
             { id: 1, name: 'Holiday Discount', description: 'Special discount for the holiday season.', type: 'automatic', startTime: new Date('2023-12-01T00:00:00'), endTime: new Date('2023-12-31T23:59:59'), minSpending: 50, rate: 10, points: 20 },
-            { id: 2, name: 'New Year Offer', description: 'Celebrate the new year with exclusive offers.', type: 'one-time', startTime: new Date('2024-01-01T00:00:00'), endTime: new Date('2024-01-15T23:59:59'), minSpending: 100, rate: 15, points: 30 },
+            { id: 2, name: 'New Year Offer', description: 'Celebrate the new year with exclusive offers.', type: 'one_time', startTime: new Date('2024-01-01T00:00:00'), endTime: new Date('2024-01-15T23:59:59'), minSpending: 100, rate: 15, points: 30 },
             { id: 3, name: 'Spring Sale', description: 'Enjoy discounts during the spring season.', type: 'automatic', startTime: new Date('2024-03-01T00:00:00'), endTime: new Date('2024-03-31T23:59:59'), minSpending: 20, rate: 5, points: 10 },
-            { id: 4, name: 'Summer Bonanza', description: 'Hot deals for the summer.', type: 'one-time', startTime: new Date('2024-06-01T00:00:00'), endTime: new Date('2024-06-30T23:59:59'), minSpending: 75, rate: 20, points: 40 },
+            { id: 4, name: 'Summer Bonanza', description: 'Hot deals for the summer.', type: 'one_time', startTime: new Date('2024-06-01T00:00:00'), endTime: new Date('2024-06-30T23:59:59'), minSpending: 75, rate: 20, points: 40 },
             { id: 5, name: 'Back to School', description: 'Special offers for students.', type: 'automatic', startTime: new Date('2024-08-15T00:00:00'), endTime: new Date('2024-09-15T23:59:59'), minSpending: 30, rate: 10, points: 15 },
-            { id: 6, name: 'Black Friday', description: 'Massive discounts on Black Friday.', type: 'one-time', startTime: new Date('2023-11-24T00:00:00'), endTime: new Date('2023-11-24T23:59:59'), minSpending: 0, rate: 25, points: 50 },
+            { id: 6, name: 'Black Friday', description: 'Massive discounts on Black Friday.', type: 'one_time', startTime: new Date('2023-11-24T00:00:00'), endTime: new Date('2023-11-24T23:59:59'), minSpending: 0, rate: 25, points: 50 },
             { id: 7, name: 'Cyber Monday', description: 'Exclusive online deals.', type: 'automatic', startTime: new Date('2023-11-27T00:00:00'), endTime: new Date('2023-11-27T23:59:59'), minSpending: 0, rate: 20, points: 40 },
-            { id: 8, name: 'Thanksgiving Special', description: 'Celebrate Thanksgiving with discounts.', type: 'one-time', startTime: new Date('2023-11-23T00:00:00'), endTime: new Date('2023-11-23T23:59:59'), minSpending: 50, rate: 15, points: 25 },
+            { id: 8, name: 'Thanksgiving Special', description: 'Celebrate Thanksgiving with discounts.', type: 'one_time', startTime: new Date('2023-11-23T00:00:00'), endTime: new Date('2023-11-23T23:59:59'), minSpending: 50, rate: 15, points: 25 },
             { id: 9, name: 'Winter Clearance', description: 'Clearance sale for winter items.', type: 'automatic', startTime: new Date('2024-02-01T00:00:00'), endTime: new Date('2024-02-28T23:59:59'), minSpending: 10, rate: 10, points: 15 },
-            { id: 10, name: 'Valentine’s Day Special', description: 'Special offers for Valentine’s Day.', type: 'one-time', startTime: new Date('2024-02-14T00:00:00'), endTime: new Date('2024-02-14T23:59:59'), minSpending: 25, rate: 10, points: 20 },
+            { id: 10, name: 'Valentine Day Special', description: 'Special offers for Valentine Day.', type: 'one_time', startTime: new Date('2024-02-14T00:00:00'), endTime: new Date('2024-02-14T23:59:59'), minSpending: 25, rate: 10, points: 20 },
             { id: 11, name: 'Halloween Treats', description: 'Spooky discounts for Halloween.', type: 'automatic', startTime: new Date('2023-10-31T00:00:00'), endTime: new Date('2023-10-31T23:59:59'), minSpending: 15, rate: 5, points: 10 },
             { id: 12, name: 'End of Semester Sale', description: 'Special offers for the end of semester.', type: 'automatic', startTime: new Date('2025-04-01T00:00:00'), endTime: new Date('2025-04-30T23:59:59'), minSpending: 50, points: 5 },
-            { id: 13, name: 'Final Exam Season Sale', description: 'Special offers for the final exam season.', type: 'one-time', startTime: new Date('2025-04-01T00:00:00'), endTime: new Date('2025-04-30T23:59:59'), minSpending: 50, points: 20 },
+            { id: 13, name: 'Final Exam Season Sale', description: 'Special offers for the final exam season.', type: 'one_time', startTime: new Date('2025-04-01T00:00:00'), endTime: new Date('2025-04-30T23:59:59'), minSpending: 50, points: 20 },
         ],
     });
 
-    // Create transactions
-    // at least 30 transactions, at least 2 per type
-    const transactions = await prisma.transaction.createMany({
+    // Now add event organizers and guests (using the connect method for many-to-many relationships)
+    // For events 10 and 11 that have transactions, let's add organizers and guests
+    await prisma.event.update({
+        where: { id: 10 },
+        data: {
+            organizers: {
+                connect: [
+                    { utorid: 'bobman12' },
+                    { utorid: 'iantay12' },
+                ]
+            },
+            guests: {
+                connect: [
+                    { utorid: 'diana123' },
+                    { utorid: 'fiona123' }
+                ]
+            }
+        }
+    });
+
+    await prisma.event.update({
+        where: { id: 11 },
+        data: {
+            organizers: {
+                connect: [{ utorid: 'bobman12' }]
+            },
+            guests: {
+                connect: [
+                    { utorid: 'ethan123' },
+                    { utorid: 'george12' }
+                ]
+            }
+        }
+    });
+
+    // Create transactions one by one to properly handle the many-to-many relationship with promotions
+    // Purchases
+    const purchase1 = await prisma.transaction.create({
+        data: {
+            id: 1,
+            utorid: 'diana123',
+            type: 'purchase',
+            spent: 100,
+            amount: 405,
+            createdBy: 'alice123',
+            remark: 'Purchase of office supplies',
+            promotionUsed: {
+                connect: [{ id: 12 }]
+            }
+        }
+    });
+
+    const purchase2 = await prisma.transaction.create({
+        data: {
+            id: 2,
+            utorid: 'ethan123',
+            type: 'purchase',
+            spent: 50,
+            amount: 200,
+            createdBy: 'alice123',
+            remark: 'Purchase of snacks'
+        }
+    });
+
+    const purchase3 = await prisma.transaction.create({
+        data: {
+            id: 3,
+            utorid: 'fiona123',
+            type: 'purchase',
+            spent: 70,
+            amount: 280,
+            createdBy: 'charlie1',
+            remark: 'Purchase of posters'
+        }
+    });
+
+    const purchase4 = await prisma.transaction.create({
+        data: {
+            id: 4,
+            utorid: 'george12',
+            type: 'purchase',
+            spent: 10,
+            amount: 40,
+            createdBy: 'charlie1',
+            remark: 'Purchase of supplies'
+        }
+    });
+
+    const purchase5 = await prisma.transaction.create({
+        data: {
+            id: 5,
+            utorid: 'diana123',
+            type: 'purchase',
+            spent: 200,
+            amount: 805,
+            createdBy: 'charlie1',
+            remark: 'Purchase of snacks',
+            promotionUsed: {
+                connect: [{ id: 12 }]
+            }
+        }
+    });
+
+    // Adjustments
+    const adjustment1 = await prisma.transaction.create({
+        data: {
+            id: 6, 
+            utorid: 'diana123', 
+            type: 'adjustment', 
+            amount: -10, 
+            relatedId: 1, 
+            createdBy: 'bobman12', 
+            remark: 'Refund adjustment'
+        }
+    });
+
+    const adjustment2 = await prisma.transaction.create({
+        data: {
+            id: 7, 
+            utorid: 'ethan123', 
+            type: 'adjustment', 
+            amount: 20, 
+            relatedId: 2, 
+            createdBy: 'bobman12', 
+            remark: 'Adjustment for overcharge'
+        }
+    });
+
+    const adjustment3 = await prisma.transaction.create({
+        data: {
+            id: 8, 
+            utorid: 'ethan123', 
+            type: 'adjustment', 
+            amount: 5, 
+            relatedId: 2, 
+            createdBy: 'bobman12', 
+            remark: 'Adjustment for promotion',
+            promotionUsed: {
+                connect: [{ id: 12 }]
+            }
+        }
+    });
+
+    const adjustment4 = await prisma.transaction.create({
+        data: {
+            id: 9, 
+            utorid: 'fiona123', 
+            type: 'adjustment', 
+            amount: 5, 
+            relatedId: 3, 
+            createdBy: 'bobman12', 
+            remark: 'Adjustment for promotion',
+            promotionUsed: {
+                connect: [{ id: 12 }]
+            }
+        }
+    });
+
+    const adjustment5 = await prisma.transaction.create({
+        data: {
+            id: 10, 
+            utorid: 'george12', 
+            type: 'adjustment', 
+            amount: -2, 
+            relatedId: 4, 
+            createdBy: 'bobman12', 
+            remark: 'Refund adjustment'
+        }
+    });
+
+    // Transfers
+    const transfers = await prisma.transaction.createMany({
         data: [
-            // Purchases
-            { id: 1, utorid: 'diana123', type: 'purchase', spent: 100, amount: 405, promotionIds: [12], createdBy: 'alice123', remark: 'Purchase of office supplies' },
-            { id: 2, utorid: 'ethan123', type: 'purchase', spent: 50, amount: 200, promotionIds: [], createdBy: 'alice123', remark: 'Purchase of snacks' },
-            { id: 3, utorid: 'fiona123', type: 'purchase', spent: 70, amount: 280, promotionIds: [], createdBy: 'charlie1', remark: 'Purchase of posters' },
-            { id: 4, utorid: 'george12', type: 'purchase', spent: 10, amount: 40, promotionIds: [], createdBy: 'charlie1', remark: 'Purchase of supplies' },
-            { id: 5, utorid: 'diana123', type: 'purchase', spent: 200, amount: 805, promotionIds: [12], createdBy: 'charlie1', remark: 'Purchase of snacks' },
-
-            // Adjustments
-            { id: 6, utorid: 'diana123', type: 'adjustment', amount: -10, relatedId: 1, promotionIds: [], createdBy: 'bobman12', remark: 'Refund adjustment' },
-            { id: 7, utorid: 'ethan123', type: 'adjustment', amount: 20, relatedId: 2, promotionIds: [], createdBy: 'bobman12', remark: 'Adjustment for overcharge' },
-            { id: 8, utorid: 'ethan123', type: 'adjustment', amount: 5, relatedId: 2, promotionIds: [12], createdBy: 'bobman12', remark: 'Adjustment for promotion' },
-            { id: 9, utorid: 'fiona123', type: 'adjustment', amount: 5, relatedId: 3, promotionIds: [12], createdBy: 'bobman12', remark: 'Adjustment for promotion' },
-            { id: 10, utorid: 'george12', type: 'adjustment', amount: -2, relatedId: 4, promotionIds: [], createdBy: 'bobman12', remark: 'Refund adjustment' },
-
-            // Transfers
             { id: 11, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 5, remark: 'Diana transfer to Ethan' },
             { id: 12, utorid: 'ethan123', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 4, remark: 'Ethan receive from Diana' },
 
@@ -120,20 +274,27 @@ async function main() {
 
             { id: 21, utorid: 'diana123', type: 'transfer', amount: -50, createdBy: 'diana123', relatedId: 1, remark: 'Diana transfer to Bob' },
             { id: 22, utorid: 'bobman12', type: 'transfer', amount: 50, createdBy: 'diana123', relatedId: 4, remark: 'Bob receive from Diana' },
+        ]
+    });
 
-            // Redemptions
+    // Redemptions
+    const redemptions = await prisma.transaction.createMany({
+        data: [
             { id: 23, utorid: 'diana123', type: 'redemption', amount: 100, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 2},
             { id: 24, utorid: 'ethan123', type: 'redemption', amount: 50, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 3},
             { id: 25, utorid: 'fiona123', type: 'redemption', amount: 20, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 4},
             { id: 26, utorid: 'george12', type: 'redemption', amount: 10, remark: 'Redemption for gift card', createdBy: 'diana123', relatedId: 5},
+        ]
+    });
 
-            // Events
+    // Events
+    const eventTransactions = await prisma.transaction.createMany({
+        data: [
             { id: 27, utorid: 'diana123', type: 'event', amount: 40, remark: 'Event participation', createdBy: 'bobman12', relatedId: 10},
             { id: 28, utorid: 'ethan123', type: 'event', amount: 5, remark: 'Event participation', createdBy: 'bobman12', relatedId: 11},
             { id: 29, utorid: 'fiona123', type: 'event', amount: 40, remark: 'Event participation', createdBy: 'bobman12', relatedId: 10},
             { id: 30, utorid: 'george12', type: 'event', amount: 5, remark: 'Event participation', createdBy: 'bobman12', relatedId: 11},
-
-        ],
+        ]
     });
 
     console.log('Database seeded successfully!');
