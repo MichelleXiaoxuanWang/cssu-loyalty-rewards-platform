@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TransactionFilters from '../components/TransactionFilters';
+import { getMyTransactions, getAllTransactions, TransactionFilters as FiltersType, TransactionResponse, Transaction } from '../services/transaction.service';
+import { getCurrentRole, getUserUtorid } from '../services/auth.service';
 import TransactionCard from '../components/TransactionCard';
+import TransactionFilters from '../components/TransactionFilters';
 import Pagination from '../components/Pagination';
 import { getMyTransactions, getAllTransactions, TransactionFilters as FiltersType, TransactionResponse, Transaction } from '../services/transaction.service';
 import './TransactionPreviewPage.css';
@@ -9,150 +11,112 @@ import './TransactionPreviewPage.css';
 const TransactionPreviewPage: React.FC = () => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [totalTransactions, setTotalTransactions] = useState<number>(0);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FiltersType>({
     page: 1,
     limit: 10
   });
-  
+  const [totalPages, setTotalPages] = useState(1);
+
   // Get current user role and ID
-  const currentUser = localStorage.getItem('currentUser');
-  const currentRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) : null;
+
+  const currentRole = getCurrentRole();
+  const currentUser = getUserUtorid();
   
   // Determine if admin role (manager or superuser) to show all transactions
+
   const isAdminRole = currentRole === 'manager' || currentRole === 'superuser';
-  const isCashier = currentRole === 'cashier';
 
-  // Fetch transactions when filters change
+  // Redirect to login if not authenticated
   useEffect(() => {
-    const fetchTransactions = async () => {
+    if (!currentUser || !currentRole) {
+      navigate('/login');
+    }
+  }, [currentUser, currentRole]);
+
+  useEffect(() => {
+    if (currentUser && currentRole) {
+      fetchTransactions();
+    }
+  }, [filters, currentUser, currentRole]);
+
+  const fetchTransactions = async () => {
+    try {
       setLoading(true);
-      try {
-        let response: TransactionResponse;
-        
-        // Use different endpoints based on user role
-        if (isAdminRole) {
-          // For admin roles, fetch all transactions
-          response = await getAllTransactions(filters);
-        } else {
-          // For regular users and cashiers, fetch only their transactions
-          response = await getMyTransactions(filters);
-        }
-        
-        setTransactions(response.results);
-        setTotalTransactions(response.count);
-        setCurrentPage(filters.page || 1);
-        setItemsPerPage(filters.limit || 10);
-      } catch (err) {
-        setError('Failed to load transactions. Please try again later.');
-        console.error('Error fetching transactions:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const response: TransactionResponse = isAdminRole 
+        ? await getAllTransactions(filters)
+        : await getMyTransactions(filters);
+      setTransactions(response.results);
+      setTotalPages(Math.ceil(response.count / (filters.limit || 10)));
+    } catch (err) {
+      setError('Failed to fetch transactions');
+      console.error('Error fetching transactions:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchTransactions();
-  }, [filters, isAdminRole]);
-
-  // Handle filter changes
-  const handleApplyFilters = (newFilters: FiltersType) => {
-    // Ensure page is reset when applying new filters
+  const handleFilterChange = (newFilters: FiltersType) => {
     setFilters({ ...newFilters, page: 1 });
   };
 
-  // Handle pagination page change
-  const handlePageChange = (newPage: number) => {
-    setFilters(prev => ({ ...prev, page: newPage }));
+  const handlePageChange = (page: number) => {
+    setFilters(prev => ({ ...prev, page }));
   };
 
-  // Handle pagination limit change
-  const handleLimitChange = (newLimit: number) => {
-    setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
+  const handleLimitChange = (limit: number) => {
+    setFilters(prev => ({ ...prev, limit, page: 1 }));
   };
 
-  // Get page title based on user role
-  const getPageTitle = () => {
-    if (isAdminRole) return 'All Transactions';
-    if (isCashier) return 'Cashier Transactions';
-    return 'My Transactions';
-  };
+  const handleTransactionClick = (transactionId: number) => {
+    if (currentUser) {
+      navigate(`/${currentUser}/transactions/${transactionId}`);
+    }
 
-  // Calculate total pages
-  const totalPages = Math.ceil(totalTransactions / itemsPerPage);
+  if (!currentUser || !currentRole) {
+    return null; // Will redirect in useEffect
+  }
+
+  if (loading) {
+    return <div className="loading">Loading transactions...</div>;
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
   return (
     <div className="transaction-preview-page">
-      <div className="page-header">
-        <h1>{getPageTitle()}</h1>
-        {(currentRole === 'regular' || currentRole === 'cashier') && (
-          <button onClick={() => navigate('/createTransaction')} className="action-button">
-            Create Transaction
-          </button>
-        )}
-      </div>
 
+      <h1>{isAdminRole ? 'All Transactions' : 'My Transactions'}</h1>
+      
       <TransactionFilters 
-        onApplyFilters={handleApplyFilters} 
+        onApplyFilters={handleFilterChange}
         initialFilters={filters}
       />
 
-      <div className="transactions-container">
-        {loading ? (
-          <div className="loading-spinner">Loading transactions...</div>
-        ) : error ? (
-          <div className="error-message">{error}</div>
-        ) : transactions.length === 0 ? (
-          <div className="no-transactions">
-            <p>No transactions found. Try adjusting your filters or create a new transaction.</p>
+      <div className="transactions-list">
+        {transactions.map(transaction => (
+          <div 
+            key={transaction.id}
+            onClick={() => handleTransactionClick(transaction.id)}
+            style={{ cursor: 'pointer' }}
+          >
+            <TransactionCard
+              transaction={transaction}
+            />
           </div>
-        ) : (
-          <>
-            <div className="transactions-summary">
-              <div className="transactions-count">
-                Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalTransactions)} - {Math.min(currentPage * itemsPerPage, totalTransactions)} of {totalTransactions} transactions
-              </div>
-              
-              <div className="transactions-alerts">
-                {transactions.some(t => t.suspicious) && isAdminRole && (
-                  <div className="suspicious-alert">
-                    ⚠️ Some transactions are flagged as suspicious
-                  </div>
-                )}
-                
-                {transactions.some(t => t.type === 'redemption' && !t.relatedId) && 
-                 (isAdminRole || isCashier) && (
-                  <div className="pending-redemptions-alert">
-                    🔔 There are pending redemptions to process
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div className="transactions-list">
-              {transactions.map(transaction => (
-                <TransactionCard 
-                  key={transaction.id} 
-                  transaction={transaction} 
-                />
-              ))}
-            </div>
-            
-            {totalPages > 0 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                onLimitChange={handleLimitChange}
-                itemsPerPage={itemsPerPage}
-              />
-            )}
-          </>
-        )}
+        ))}
       </div>
+
+      <Pagination
+        currentPage={filters.page || 1}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+        itemsPerPage={filters.limit || 10}
+      />
     </div>
   );
 };

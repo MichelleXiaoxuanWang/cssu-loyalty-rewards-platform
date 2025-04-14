@@ -16,13 +16,17 @@ export interface Transaction {
 }
 
 export interface TransactionFilters {
+  name?: string;
+  createdBy?: string;
   type?: string;
-  relatedId?: number;
   promotionId?: number;
+  relatedId?: number;
   amount?: number;
-  operator?: 'gte' | 'lte';
+  operator?: string;
+  suspicious?: boolean;
   page?: number;
   limit?: number;
+  sort?: string;
 }
 
 export interface TransactionResponse {
@@ -81,6 +85,17 @@ const getAllTransactions = async (filters?: TransactionFilters): Promise<Transac
 const getTransactionById = async (id: number): Promise<Transaction> => {
   return apiCall(`/transactions/${id}`, 'GET');
 };
+
+export const SORT_OPTIONS = [
+  { label: 'ID (Ascending)', value: 'id-asc' },
+  { label: 'ID (Descending)', value: 'id-desc' },
+  { label: 'Amount (Low to High)', value: 'amount-asc' },
+  { label: 'Amount (High to Low)', value: 'amount-desc' },
+  { label: 'Date (Oldest First)', value: 'createdAt-asc' },
+  { label: 'Date (Newest First)', value: 'createdAt-desc' },
+  { label: 'Type (A-Z)', value: 'type-asc' },
+  { label: 'Type (Z-A)', value: 'type-desc' }
+];
 
 export { 
   transferPoints, 

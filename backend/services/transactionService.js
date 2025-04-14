@@ -496,10 +496,16 @@ async function getTransactions(filters) {
             
             switch (filters.operator) {
                 case 'gte':
-                    where.amount = { gte: filters.amount };
+                    where.OR = [
+                        { amount: { gte: filters.amount } },
+                        { amount: { lte: -filters.amount } }
+                    ];
                     break;
                 case 'lte':
-                    where.amount = { lte: filters.amount };
+                    where.AND = [
+                        { amount: { lte: filters.amount } },
+                        { amount: { gte: -filters.amount } }
+                    ];
                     break;
                 default:
                     const error = new Error('operator must be "gte" or "lte"');
@@ -529,12 +535,31 @@ async function getTransactions(filters) {
 
         const skip = (page - 1) * limit;
         
+        // Handle sorting
+        let orderBy = { id: 'desc' }; // Default sorting
+        if (filters.sort) {
+            const [field, direction] = filters.sort.split('-');
+            switch (field) {
+                case 'id':
+                case 'amount':
+                case 'createdAt':
+                    orderBy = { [field]: direction === 'desc' ? 'desc' : 'asc' };
+                    break;
+                case 'type':
+                    orderBy = { type: direction === 'desc' ? 'desc' : 'asc' };
+                    break;
+                default:
+                    // Keep default sorting if invalid field
+                    break;
+            }
+        }
+        
         // Get transactions
         const transactions = await prisma.transaction.findMany({
             where,
             skip,
             take: limit,
-            orderBy: { id: 'desc' },
+            orderBy,
             include: {
                 promotionUsed: {
                     select: { id: true }

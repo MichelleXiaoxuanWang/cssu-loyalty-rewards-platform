@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TransactionFilters as FiltersType } from '../services/transaction.service';
+import { TransactionFilters as FiltersType, SORT_OPTIONS } from '../services/transaction.service';
 import './TransactionFilters.css';
 
 interface TransactionFiltersProps {
@@ -11,7 +11,10 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   onApplyFilters, 
   initialFilters = {} 
 }) => {
-  const [filters, setFilters] = useState<FiltersType>(initialFilters);
+  const [filters, setFilters] = useState<FiltersType>({
+    ...initialFilters,
+    operator: initialFilters.operator || 'gte' // Set default operator if not provided
+  });
 
   // Transaction type options
   const transactionTypes = [
@@ -34,7 +37,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
     const { name, value } = e.target;
     
     // Convert numeric values
-    if (['amount', 'relatedId', 'promotionId', 'page', 'limit'].includes(name)) {
+    if (['amount', 'relatedId', 'promotionId', 'page'].includes(name)) {
       const numValue = value === '' ? undefined : Number(value);
       setFilters(prev => ({ ...prev, [name]: numValue }));
     } else {
@@ -45,6 +48,32 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate amount is positive integer if provided
+    if (filters.amount !== undefined) {
+      if (filters.amount < 0) {
+        alert('Amount must be a positive integer');
+        return;
+      }
+      if (!Number.isInteger(filters.amount)) {
+        alert('Amount must be a whole number (integer)');
+        return;
+      }
+      
+      // If amount is provided, ensure operator is set
+      if (!filters.operator) {
+        filters.operator = 'gte'; // Default to gte if not set
+      }
+    } else {
+      // If amount is not provided, remove operator
+      delete filters.operator;
+    }
+    
+    // Ensure relatedId is a number if provided
+    if (filters.relatedId !== undefined) {
+      filters.relatedId = Number(filters.relatedId);
+    }
+    
     onApplyFilters(filters);
   };
 
@@ -78,23 +107,39 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             </select>
           </div>
 
-          {/* Related ID Filter */}
-          <div className="filter-group">
-            <label htmlFor="relatedId">Related ID</label>
-            <input 
-              type="number" 
-              id="relatedId" 
-              name="relatedId" 
-              value={filters.relatedId || ''} 
-              onChange={handleChange} 
-              placeholder="Enter ID"
-              min="1"
-            />
-          </div>
+          {/* Related ID Filter - Conditionally rendered based on transaction type */}
+          {filters.type && filters.type !== 'purchase' && (
+            <div className="filter-group">
+              <label htmlFor="relatedId">
+                {filters.type === 'transfer' && 'Other User ID'}
+                {filters.type === 'adjustment' && 'Adjusted Transaction ID'}
+                {filters.type === 'redemption' && 'Cashier ID'}
+                {filters.type === 'event' && 'Event ID'}
+                <span className="hint-text">
+                  {filters.type === 'transfer' && '(receiver/sender)'}
+                  {filters.type === 'adjustment' && ''}
+                  {filters.type === 'redemption' && '(who processed redemption)'}
+                  {filters.type === 'event' && '(which awarded the points)'}
+                </span>
+              </label>
+              <input 
+                type="number" 
+                id="relatedId" 
+                name="relatedId" 
+                value={filters.relatedId || ''} 
+                onChange={handleChange} 
+                placeholder="Enter ID"
+                min="1"
+              />
+            </div>
+          )}
 
           {/* Promotion ID Filter */}
           <div className="filter-group">
-            <label htmlFor="promotionId">Promotion ID</label>
+            <label htmlFor="promotionId">
+              Promotion Involved
+              <span className="hint-text">(promotion ID)</span>
+            </label>
             <input 
               type="number" 
               id="promotionId" 
@@ -108,7 +153,10 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
 
           {/* Amount Filter with Operator */}
           <div className="filter-group amount-filter">
-            <label htmlFor="amount">Points Amount</label>
+            <label htmlFor="amount">
+              Points Amount Involved
+              <span className="hint-text">(positive integer)</span>
+            </label>
             <div className="amount-filter-group">
               <select 
                 id="operator" 
@@ -126,26 +174,29 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
                 type="number" 
                 id="amount" 
                 name="amount" 
-                value={filters.amount || ''} 
+                value={filters.amount ?? ''} 
                 onChange={handleChange} 
-                placeholder="Enter amount"
+                placeholder="Enter amount (optional)"
+                step="1"
               />
             </div>
           </div>
 
-          {/* Page Size Filter */}
+          {/* Sort Filter */}
           <div className="filter-group">
-            <label htmlFor="limit">Results per page</label>
+            <label htmlFor="sort">Sort By</label>
             <select 
-              id="limit" 
-              name="limit" 
-              value={filters.limit || '10'} 
+              id="sort" 
+              name="sort" 
+              value={filters.sort || ''} 
               onChange={handleChange}
             >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
+              <option value="">Default (ID Descending)</option>
+              {SORT_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
         </div>
