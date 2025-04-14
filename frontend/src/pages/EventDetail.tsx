@@ -65,7 +65,7 @@ const EventDetailPage: React.FC = () => {
   // Retrieve current user's information (e.g., UTORid, token, role) from localStorage
   const currentUser = localStorage.getItem('currentUser');
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
-  const currentUserRole = currentUser ? localStorage.getItem(`role_${currentUser}`) || '' : '';
+  const currentUserRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) || '' : '';
 
   // Helper: check if the current user has full access (manager, superuser, or is in organizers)
   const hasFullAccess = (ev: EventData): boolean => {
@@ -150,7 +150,7 @@ const EventDetailPage: React.FC = () => {
 
   // Handle form field changes
   const handleFormChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,

@@ -39,7 +39,7 @@ const UserDetailPage: React.FC = () => {
   const currentUser = localStorage.getItem('currentUser');
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
   // The role of the logged-in user (determines what can be edited)
-  const currentUserRole = currentUser ? localStorage.getItem(`role_${currentUser}`) || '' : '';
+  const currentUserRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) || '' : '';
 
   // Fetch user data from endpoint GET /users/:userId
   useEffect(() => {
@@ -81,7 +81,7 @@ const UserDetailPage: React.FC = () => {
   const handleEditClick = () => setEditMode(true);
   
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value

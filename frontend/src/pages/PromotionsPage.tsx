@@ -26,7 +26,7 @@ const PromotionsPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const currentUser = localStorage.getItem('currentUser');
-  const role = localStorage.getItem(`role_${currentUser}`);
+  const role = localStorage.getItem(`current_role_${currentUser}`);
 
   useEffect(() => {
     if (role === 'manager' || role === 'superuser') {
