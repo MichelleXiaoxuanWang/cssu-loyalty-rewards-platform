@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import { getCurrentUser, User } from '../services/user.service';
 import { getMyTransactions, Transaction } from '../services/transaction.service';
+import { isUserVerified } from '../services/auth.service';
 import TransactionCard from '../components/TransactionCard';
 import './RegularLandingPage.css';
 
@@ -11,6 +12,9 @@ const RegularLandingPage: React.FC = () => {
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Check user verification status
+  const userVerified = isUserVerified();
   
   // Generate a random QR code value for the user (placeholder)
   const userId = localStorage.getItem('userId') || 'user';
@@ -51,6 +55,15 @@ const RegularLandingPage: React.FC = () => {
 
   return (
     <div className="regular-landing-page">
+      {!userVerified && (
+        <div className="verification-notice">
+          <div className="verification-content">
+            <h3>Account Not Verified</h3>
+            <p>Your account has not been verified by a manager yet. Until verification, you cannot transfer or redeem points. Please wait for a manager to verify your information.</p>
+          </div>
+        </div>
+      )}
+      
       <div className="left-panel">
         <div className="points-card">
           <h2>My Points Balance</h2>

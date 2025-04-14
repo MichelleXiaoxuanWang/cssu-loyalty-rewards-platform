@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import './CreateTransaction.css';
 import { transferPoints, redeemPoints, purchaseTransaction, adjustmentTransaction } from '../services/transaction.service';
+import { isUserVerified } from '../services/auth.service';
 
 const CreateTransaction: React.FC = () => {
   const [activeTab, setActiveTab] = useState('qrCode');
@@ -16,9 +17,19 @@ const CreateTransaction: React.FC = () => {
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
   const currentUserId = localStorage.getItem(`userId_${currentUser}`);
+  
+  // Check user verification status
+  const userVerified = isUserVerified();
 
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Set default tab based on verification status - unverified regular users should see QR code by default
+  useState(() => {
+    if (role === 'regular' && !userVerified) {
+      setActiveTab('qrCode');
+    }
+  });
 
   const handleTransactionSuccess = (message: string) => {
     setSuccessMessage(message);
@@ -31,7 +42,14 @@ const CreateTransaction: React.FC = () => {
   };
 
   const handleTabChange = (tab: 'qrCode' | 'transfer' | 'redemption' | 'purchase' | 'adjustment'): void => {
+    // For unverified regular users, disable transfer and redemption
+    if (role === 'regular' && !userVerified && (tab === 'transfer' || tab === 'redemption')) {
+      setErrorMessage('You need to be verified by a manager before you can transfer or redeem points');
+      return;
+    }
+    
     setActiveTab(tab);
+    setErrorMessage(null);
   };
 
   const handleTransfer = async () => {
@@ -106,18 +124,34 @@ const CreateTransaction: React.FC = () => {
 
   return (
     <div className="create-transaction">
+      {!userVerified && role === 'regular' && (
+        <div className="verification-warning">
+          <h3>Account Not Verified</h3>
+          <p>Your account has not been verified by a manager yet. Until verification, you cannot transfer or redeem points.</p>
+        </div>
+      )}
+    
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      
       <div className="tabs">
         {role === 'regular' && (
           <button onClick={() => handleTabChange('qrCode')} className={activeTab === 'qrCode' ? 'active' : ''}>
             Transaction QR Code
           </button>
         )}
-        <button onClick={() => handleTabChange('transfer')} className={activeTab === 'transfer' ? 'active' : ''}>
+        <button 
+          onClick={() => handleTabChange('transfer')} 
+          className={`${activeTab === 'transfer' ? 'active' : ''} ${role === 'regular' && !userVerified ? 'disabled' : ''}`}
+          disabled={role === 'regular' && !userVerified}
+        >
           Transfer Points
         </button>
-        <button onClick={() => handleTabChange('redemption')} className={activeTab === 'redemption' ? 'active' : ''}>
+        <button 
+          onClick={() => handleTabChange('redemption')} 
+          className={`${activeTab === 'redemption' ? 'active' : ''} ${role === 'regular' && !userVerified ? 'disabled' : ''}`}
+          disabled={role === 'regular' && !userVerified}
+        >
           Redeem Points
         </button>
         {role !== 'regular' && (

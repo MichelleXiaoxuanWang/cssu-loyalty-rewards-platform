@@ -5,6 +5,8 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .tabs {
@@ -29,6 +31,18 @@
 
 .tabs button:hover {
   background-color: #e0e0e0;
+}
+
+.tabs button.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+  color: #999;
+}
+
+.tabs button.disabled:hover {
+  background-color: #f0f0f0;
+  color: #999;
 }
 
 .tab-content {
@@ -186,4 +200,25 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+}
+
+/* Add styles for verification warning */
+.verification-warning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  color: #856404;
+  margin-bottom: 20px;
+  padding: 15px;
+}
+
+.verification-warning h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.verification-warning p {
+  margin: 0;
+  font-size: 0.95rem;
 }

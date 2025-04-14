@@ -82,6 +82,17 @@ Specifically, the following packages are required:
    - If you did not specify the `.env` file, the server will run on port 8000 and accept requests coming from `http://localhost:3000` by default. 
    - Any changes you make to the backend code will be reflected automatically without having to restart the server.
 
+5. [Optional] seed the database with the following commands:
+    If you have created test data in the database, you need to reset the database first: 
+    ```
+    npx prisma db push --force-reset
+    ```
+
+    Then, seed the database with the following command:
+    ```
+    npx prisma db seed
+    ```
+
 ### Frontend
 
 1. navigate to the `frontend` directory. 
