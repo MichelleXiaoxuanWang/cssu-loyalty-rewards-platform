@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api.config';
+import { QRCodeCanvas as QRCode } from 'qrcode.react';
+import './TransactionDetail.css';
 
 export interface TransactionDetailData {
   id: number;
@@ -39,6 +41,7 @@ const TransactionDetailPage: React.FC = () => {
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
   // Get the stored role (e.g., 'regular', 'cashier', 'manager', 'superuser')
   const currentUserRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) || '' : '';
+  const isRegularUser = currentUserRole === 'regular';
 
   // Function to fetch transaction details
   const fetchTransaction = async () => {
@@ -124,57 +127,135 @@ const TransactionDetailPage: React.FC = () => {
     }
   };
 
+  // Check if a redemption is processed (has relatedId)
+  const isRedemptionProcessed = () => {
+    return transaction?.type === 'redemption' && 
+           transaction?.relatedId !== undefined && 
+           transaction?.relatedId !== null;
+  };
+
+  // Generate QR code data for unprocessed redemptions
+  const generateQRCodeData = () => {
+    if (!transaction) return "";
+    return JSON.stringify({
+      id: transaction.id,
+      utorid: transaction.utorid,
+      type: transaction.type,
+      amount: transaction.amount,
+      timestamp: new Date().getTime()
+    });
+  };
+
+  // Should show QR code only for regular users viewing their own unprocessed redemption
+  const shouldShowQRCode = () => {
+    return isRegularUser && 
+           transaction?.type === 'redemption' && 
+           !isRedemptionProcessed();
+  };
+
   if (loading) return <p>Loading transaction details...</p>;
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
   if (!transaction) return <p>No transaction found.</p>;
 
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto', border: '1px solid #ddd', padding: '1rem' }}>
-      <h2>Transaction Details (ID: {transaction.id})</h2>
-      <p><strong>UTORid:</strong> {transaction.utorid}</p>
-      <p><strong>Type:</strong> {transaction.type}</p>
-      {transaction.spent !== undefined && <p><strong>Spent:</strong> ${transaction.spent}</p>}
-      <p><strong>Amount:</strong> {transaction.amount}</p>
-      <p><strong>Suspicious:</strong> {transaction.suspicious ? 'Yes' : 'No'}</p>
-      <p><strong>Remark:</strong> {transaction.remark || 'None'}</p>
-      <p><strong>Created By:</strong> {transaction.createdBy}</p>
-      {transaction.relatedId && <p><strong>Related ID:</strong> {transaction.relatedId}</p>}
+    <div className={`transaction-detail-container ${shouldShowQRCode() ? 'with-qr-code' : ''}`}>
+      <div className="transaction-info-section">
+        <h2>Transaction Details (ID: {transaction.id})</h2>
+        
+        {transaction.suspicious && (
+          <div className="suspicious-badge">
+            <span>⚠️ This transaction has been flagged as suspicious</span>
+          </div>
+        )}
+        
+        <div className="detail-row">
+          <strong>UTORid:</strong> {transaction.utorid}
+        </div>
+        
+        <div className="detail-row">
+          <strong>Type:</strong> {transaction.type}
+          {transaction.type === 'redemption' && (
+            <span className={`status-tag ${isRedemptionProcessed() ? 'processed-tag' : 'unprocessed-tag'}`}>
+              {isRedemptionProcessed() ? 'Processed' : 'Pending'}
+            </span>
+          )}
+        </div>
+        
+        {transaction.spent !== undefined && (
+          <div className="detail-row">
+            <strong>Spent:</strong> ${transaction.spent}
+          </div>
+        )}
+        
+        <div className="detail-row">
+          <strong>Amount:</strong> {transaction.amount} points
+        </div>
+        
+        <div className="detail-row">
+          <strong>Suspicious:</strong> {transaction.suspicious ? 'Yes' : 'No'}
+        </div>
+        
+        <div className="detail-row">
+          <strong>Remark:</strong> {transaction.remark || 'None'}
+        </div>
+        
+        <div className="detail-row">
+          <strong>Created By:</strong> {transaction.createdBy}
+        </div>
+        
+        {transaction.relatedId && (
+          <div className="detail-row">
+            <strong>Related ID:</strong> {transaction.relatedId}
+          </div>
+        )}
+        
+        {/* If current user is manager or superuser, allow editing suspicious status */}
+        {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
+          <div className="action-section">
+            <h3>Edit Transaction Suspicious Status</h3>
+            <label>
+              <input
+                type="checkbox"
+                checked={suspicious}
+                onChange={(e) => setSuspicious(e.target.checked)}
+              />
+              {' '}Mark as suspicious
+            </label>
+            <br />
+            <button onClick={handleUpdateSuspicious} className="action-button">
+              Update Suspicious Status
+            </button>
+          </div>
+        )}
+
+        {/* If transaction is of type "redemption" and current user's role is cashier or higher, show Process option */}
+        {(transaction.type === 'redemption') && !isRedemptionProcessed() &&
+          (['cashier', 'manager', 'superuser'].includes(currentUserRole)) && (
+          <div className="action-section">
+            <h3>Process Redemption</h3>
+            <button onClick={handleProcessRedemption} disabled={processing} className="action-button">
+              {processing ? 'Processing...' : 'Process Redemption'}
+            </button>
+          </div>
+        )}
+
+        {updateMsg && <p className="update-message">{updateMsg}</p>}
+        
+        <div className="navigation-links">
+          <a href="/transactions">Back to Transactions List</a>
+        </div>
+      </div>
       
-      {/* If current user is manager or superuser, allow editing suspicious status */}
-      {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
-        <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #ccc' }}>
-          <h3>Edit Transaction Suspicious Status</h3>
-          <label>
-            <input
-              type="checkbox"
-              checked={suspicious}
-              onChange={(e) => setSuspicious(e.target.checked)}
-            />
-            {' '}Mark as suspicious
-          </label>
-          <br />
-          <button onClick={handleUpdateSuspicious} style={{ marginTop: '0.5rem' }}>
-            Update Suspicious Status
-          </button>
+      {/* Show QR code only for regular users viewing their unprocessed redemption */}
+      {shouldShowQRCode() && (
+        <div className="qr-code-section">
+          <h3>Redemption QR Code</h3>
+          <p>Show this QR code to a cashier to process your redemption.</p>
+          <div className="qr-code-container">
+            <QRCode value={generateQRCodeData()} size={200} />
+          </div>
         </div>
       )}
-
-      {/* If transaction is of type "redemption" and current user's role is cashier or higher, show Process option */}
-      {(transaction.type === 'redemption') &&
-        (['cashier', 'manager', 'superuser'].includes(currentUserRole)) && (
-        <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #ccc' }}>
-          <h3>Process Redemption</h3>
-          <button onClick={handleProcessRedemption} disabled={processing}>
-            {processing ? 'Processing...' : 'Process Redemption'}
-          </button>
-        </div>
-      )}
-
-      {updateMsg && <p style={{ marginTop: '1rem', color: 'green' }}>{updateMsg}</p>}
-      
-      <p style={{ marginTop: '1rem' }}>
-        <a href={`/transactions`}>Back to Transactions List</a>
-      </p>
     </div>
   );
 };

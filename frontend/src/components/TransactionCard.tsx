@@ -65,7 +65,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
       case 'purchase':
         return `Purchase - Spent $${transaction.spent?.toFixed(2)}`;
       case 'redemption':
-        return `Redemption${transaction.processed ? ' (Processed)' : ''}`;
+        return `Redemption`;
       case 'transfer':
         // Different message based on whether this is incoming or outgoing
         return transaction.amount > 0 
@@ -78,6 +78,13 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
       default:
         return String(transaction.type).charAt(0).toUpperCase() + String(transaction.type).slice(1);
     }
+  };
+  
+  // Check if a redemption is processed (has relatedId)
+  const isRedemptionProcessed = () => {
+    return transaction.type === 'redemption' && 
+           transaction.relatedId !== undefined && 
+           transaction.relatedId !== null;
   };
   
   // Handle click to navigate to the transaction details page
@@ -106,9 +113,25 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
       
       <div className="transaction-details">
         <div className="transaction-header">
-          <h3 className="transaction-type">
-            {getTransactionDescription(transaction)}
-          </h3>
+          <div className="transaction-title-container">
+            <h3 className="transaction-type">
+              {getTransactionDescription(transaction)}
+            </h3>
+            
+            {/* Status indicators */}
+            <div className="transaction-status-indicators">
+              {transaction.suspicious && (
+                <span className="status-tag suspicious-tag">Suspicious</span>
+              )}
+              
+              {transaction.type === 'redemption' && (
+                <span className={`status-tag ${isRedemptionProcessed() ? 'processed-tag' : 'unprocessed-tag'}`}>
+                  {isRedemptionProcessed() ? 'Processed' : 'Pending'}
+                </span>
+              )}
+            </div>
+          </div>
+          
           <span 
             className={`transaction-amount ${transaction.amount >= 0 ? 'positive' : 'negative'}`}
           >

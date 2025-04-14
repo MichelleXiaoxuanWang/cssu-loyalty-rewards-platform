@@ -79,7 +79,12 @@ export const logout = (): void => {
 export const isUserVerified = (): boolean => {
   const currentUser = localStorage.getItem('currentUser');
   if (!currentUser) return false;
-  return localStorage.getItem(`verified_${currentUser}`) === 'true';
+  
+  const verifiedValue = localStorage.getItem(`verified_${currentUser}`);
+  console.log(`Verification status for ${currentUser}: ${verifiedValue}`);
+  
+  // Handle different string representations of boolean values
+  return verifiedValue === 'true' || verifiedValue === '1' || verifiedValue === 'yes';
 };
 
 // TODO: update user state (call user/me to update all states stored in localStorage)

@@ -31,6 +31,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onError }) => {
       }
 
       const data = await response.json();
+      
+      console.log('Login response data:', data); // Debug: log the full response data
+      
       // Save the token, token expiration, and the highest role in localStorage
       localStorage.setItem(`resetExpiresAt_${utorid}`, data.expiresAt);
       localStorage.setItem(`token_${utorid}`, data.token);
@@ -39,7 +42,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onError }) => {
       localStorage.setItem(`userId_${utorid}`, data.userId);
       localStorage.setItem(`userName_${utorid}`, data.userName);
       localStorage.setItem(`currentUser`, utorid);
-      localStorage.setItem(`verified_${utorid}`, data.isVerified);
+      
+      // Explicitly convert the boolean value to string 'true' or 'false'
+      const isVerifiedStr = data.isVerified === true ? 'true' : 'false';
+      console.log(`Setting verified status for ${utorid} to: ${isVerifiedStr}`);
+      localStorage.setItem(`verified_${utorid}`, isVerifiedStr);
 
       onLoginSuccess();
     } catch (error: any) {
