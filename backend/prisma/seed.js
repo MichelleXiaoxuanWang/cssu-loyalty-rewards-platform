@@ -10,7 +10,7 @@ const { exec } = require('child_process');
 
 async function createSuperuser() {
     return new Promise((resolve, reject) => {
-        exec('node prisma/createsu.js clive123 clive.su@mail.utoronto.ca SuperUser123!', (error, stdout, stderr) => {
+        exec('node prisma/createsu.js admin123 admin@mail.utoronto.ca Password@123', (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error creating superuser: ${stderr}`);
                 reject(error);
@@ -26,20 +26,21 @@ async function createSuperuser() {
 // Note: all random data is generated using chatGPT: https://www.chatgpt.com/
 async function main() {
     await createSuperuser();
+    
     // Create users
     // at least 10, include at least 1 cashier, 1 manager, 1 superuser
     const users = await prisma.user.createMany({
         data: [
-            { id: 1, utorid: 'bobman12', name: 'Bob Manager', role: 'manager', email: 'bobman12@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 2, utorid: 'alice123', name: 'Alice Cashier', role: 'cashier', email: 'alice123@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 3, utorid: 'charlie1', name: 'Charlie Brown', role: 'cashier', email: 'charlie1@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 4, utorid: 'diana123', name: 'Diana Evans', role: 'regular', email: 'diana123@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 5, utorid: 'ethan123', name: 'Ethan Williams', role: 'regular', email: 'ethan123@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 6, utorid: 'fiona123', name: 'Fiona Davis', role: 'regular', email: 'fiona123@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 7, utorid: 'george12', name: 'George Miller', role: 'regular', email: 'george12@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 8, utorid: 'hannah12', name: 'Hannah Wilson', role: 'regular', email: 'hannah12@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 9, utorid: 'iantay12', name: 'Ian Taylor', role: 'regular', email: 'iantay12@mail.utoronto.ca', password: 'Password@123', verified: true },
-            { id: 10, utorid: 'julia123', name: 'Julia Anderson', role: 'regular', email: 'julia123@mail.utoronto.ca', password: 'Password@123', verified: true },
+            { id: 1, utorid: 'bobman12', name: 'Bob Manager', role: 'manager', email: 'bobman12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 2, utorid: 'alice123', name: 'Alice Cashier', role: 'cashier', email: 'alice123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 3, utorid: 'charlie1', name: 'Charlie Brown', role: 'cashier', email: 'charlie1@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 4, utorid: 'diana123', name: 'Diana Evans', role: 'regular', email: 'diana123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 5, utorid: 'ethan123', name: 'Ethan Williams', role: 'regular', email: 'ethan123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 6, utorid: 'fiona123', name: 'Fiona Davis', role: 'regular', email: 'fiona123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 7, utorid: 'george12', name: 'George Miller', role: 'regular', email: 'george12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 8, utorid: 'hannah12', name: 'Hannah Wilson', role: 'regular', email: 'hannah12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 9, utorid: 'iantay12', name: 'Ian Taylor', role: 'regular', email: 'iantay12@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
+            { id: 10, utorid: 'julia123', name: 'Julia Anderson', role: 'regular', email: 'julia123@mail.utoronto.ca', password: 'Password@123', verified: true, activated: true },
         ],
     });
 
@@ -57,8 +58,8 @@ async function main() {
             { id: 7, name: 'Multicultural Night', description: 'Celebrating cultural diversity.', location: 'GG7890', startTime: new Date('2024-09-12T18:00:00'), endTime: new Date('2024-09-12T22:00:00'), capacity: 250, pointsAllocated: 50, published: true },
             { id: 8, name: 'Music Festival', description: 'Enjoy live music performances.', location: 'HH4567', startTime: new Date('2024-10-05T15:00:00'), endTime: new Date('2024-10-05T21:00:00'), capacity: 400, pointsAllocated: 30, published: true },
             { id: 9, name: 'Orientation', description: 'Welcoming new students to campus.', location: 'II8901', startTime: new Date('2024-11-18T09:00:00'), endTime: new Date('2024-11-18T13:00:00'), capacity: 500, pointsAllocated: 20, published: true },
-            { id: 10, name: 'Health and Wellness Fair', description: 'Promoting health and well-being.', location: 'JJ5678', startTime: new Date('2025-04-10T10:00:00'), endTime: new Date('2025-04-30T14:00:00'), capacity: 300, pointsAllocated: 300, pointsAwarded: 80, published: true },
-            { id: 11, name: 'Final Exam Review Session', description: 'Final exam review session for students.', location: 'KK1234', startTime: new Date('2025-04-01T19:00:00'), endTime: new Date('2025-04-30T23:00:00'), capacity: 200, pointsAllocated: 50, pointsAwarded: 10, published: true},
+            { id: 10, name: 'Health and Wellness Fair', description: 'Promoting health and well-being.', location: 'JJ5678', startTime: new Date('2025-04-10T10:00:00'), endTime: new Date('2025-04-30T14:00:00'), capacity: 300, pointsAllocated: 300, pointsAwarded: 0, published: true }, // Will set pointsAwarded at the end
+            { id: 11, name: 'Final Exam Review Session', description: 'Final exam review session for students.', location: 'KK1234', startTime: new Date('2025-04-01T19:00:00'), endTime: new Date('2025-04-30T23:00:00'), capacity: 200, pointsAllocated: 50, pointsAwarded: 0, published: true}, // Will set pointsAwarded at the end
             { id: 12, name: 'Summer School Orientation', description: 'Welcoming students to summer school.', location: 'LL1234', startTime: new Date('2025-04-20T19:00:00'), endTime: new Date('2025-04-30T23:00:00'), capacity: 500, pointsAllocated: 1000, published: false},
         ],
     });
@@ -119,6 +120,26 @@ async function main() {
         }
     });
 
+    // Track user points for later updating
+    const userPoints = {
+        'bobman12': 0,
+        'alice123': 0,
+        'charlie1': 0,
+        'diana123': 0,
+        'ethan123': 0,
+        'fiona123': 0,
+        'george12': 0,
+        'hannah12': 0,
+        'iantay12': 0,
+        'julia123': 0
+    };
+
+    // Track event points awarded
+    const eventPointsAwarded = {
+        10: 0,
+        11: 0
+    };
+
     // Create transactions one by one to properly handle the many-to-many relationship with promotions
     // Purchases
     const purchase1 = await prisma.transaction.create({
@@ -127,7 +148,7 @@ async function main() {
             utorid: 'diana123',
             type: 'purchase',
             spent: 100,
-            amount: 405,
+            amount: 405, // Points earned from purchase
             createdBy: 'alice123',
             remark: 'Purchase of office supplies',
             promotionUsed: {
@@ -135,6 +156,7 @@ async function main() {
             }
         }
     });
+    userPoints['diana123'] += 405;
 
     const purchase2 = await prisma.transaction.create({
         data: {
@@ -142,11 +164,12 @@ async function main() {
             utorid: 'ethan123',
             type: 'purchase',
             spent: 50,
-            amount: 200,
+            amount: 200, // Points earned from purchase
             createdBy: 'alice123',
             remark: 'Purchase of snacks'
         }
     });
+    userPoints['ethan123'] += 200;
 
     const purchase3 = await prisma.transaction.create({
         data: {
@@ -154,11 +177,12 @@ async function main() {
             utorid: 'fiona123',
             type: 'purchase',
             spent: 70,
-            amount: 280,
+            amount: 280, // Points earned from purchase
             createdBy: 'charlie1',
             remark: 'Purchase of posters'
         }
     });
+    userPoints['fiona123'] += 280;
 
     const purchase4 = await prisma.transaction.create({
         data: {
@@ -166,11 +190,12 @@ async function main() {
             utorid: 'george12',
             type: 'purchase',
             spent: 10,
-            amount: 40,
+            amount: 40, // Points earned from purchase
             createdBy: 'charlie1',
             remark: 'Purchase of supplies'
         }
     });
+    userPoints['george12'] += 40;
 
     const purchase5 = await prisma.transaction.create({
         data: {
@@ -178,7 +203,7 @@ async function main() {
             utorid: 'diana123',
             type: 'purchase',
             spent: 200,
-            amount: 805,
+            amount: 805, // Points earned from purchase
             createdBy: 'charlie1',
             remark: 'Purchase of snacks',
             promotionUsed: {
@@ -186,6 +211,7 @@ async function main() {
             }
         }
     });
+    userPoints['diana123'] += 805;
 
     // Adjustments
     const adjustment1 = await prisma.transaction.create({
@@ -193,31 +219,33 @@ async function main() {
             id: 6, 
             utorid: 'diana123', 
             type: 'adjustment', 
-            amount: -10, 
+            amount: -10, // Points adjustment (negative)
             relatedId: 1, 
             createdBy: 'bobman12', 
             remark: 'Refund adjustment'
         }
     });
+    userPoints['diana123'] += -10;
 
     const adjustment2 = await prisma.transaction.create({
         data: {
             id: 7, 
             utorid: 'ethan123', 
             type: 'adjustment', 
-            amount: 20, 
+            amount: 20, // Points adjustment (positive)
             relatedId: 2, 
             createdBy: 'bobman12', 
             remark: 'Adjustment for overcharge'
         }
     });
+    userPoints['ethan123'] += 20;
 
     const adjustment3 = await prisma.transaction.create({
         data: {
             id: 8, 
             utorid: 'ethan123', 
             type: 'adjustment', 
-            amount: 5, 
+            amount: 5, // Points adjustment (positive)
             relatedId: 2, 
             createdBy: 'bobman12', 
             remark: 'Adjustment for promotion',
@@ -226,13 +254,14 @@ async function main() {
             }
         }
     });
+    userPoints['ethan123'] += 5;
 
     const adjustment4 = await prisma.transaction.create({
         data: {
             id: 9, 
             utorid: 'fiona123', 
             type: 'adjustment', 
-            amount: 5, 
+            amount: 5, // Points adjustment (positive)
             relatedId: 3, 
             createdBy: 'bobman12', 
             remark: 'Adjustment for promotion',
@@ -241,18 +270,20 @@ async function main() {
             }
         }
     });
+    userPoints['fiona123'] += 5;
 
     const adjustment5 = await prisma.transaction.create({
         data: {
             id: 10, 
             utorid: 'george12', 
             type: 'adjustment', 
-            amount: -2, 
+            amount: -2, // Points adjustment (negative)
             relatedId: 4, 
             createdBy: 'bobman12', 
             remark: 'Refund adjustment'
         }
     });
+    userPoints['george12'] += -2;
 
     // Transfers
     const transfers = await prisma.transaction.createMany({
@@ -277,6 +308,15 @@ async function main() {
         ]
     });
 
+    // Update points from transfers
+    userPoints['diana123'] += -50 - 100 - 50; // -200 (transfers out)
+    userPoints['ethan123'] += 50; // +50 (transfers in)
+    userPoints['fiona123'] += -50 + 10; // -40 (net transfers)
+    userPoints['george12'] += 50 + 10; // +60 (transfers in)
+    userPoints['iantay12'] += 100 - 10 - 20; // +70 (net transfers)
+    userPoints['hannah12'] += 20; // +20 (transfers in)
+    userPoints['bobman12'] += 50; // +50 (transfers in)
+
     // Redemptions
     const redemptions = await prisma.transaction.createMany({
         data: [
@@ -287,6 +327,12 @@ async function main() {
         ]
     });
 
+    // Update points from redemptions (negative amounts)
+    userPoints['diana123'] += -100;
+    userPoints['ethan123'] += -50;
+    userPoints['fiona123'] += -20;
+    userPoints['george12'] += -10;
+
     // Events
     const eventTransactions = await prisma.transaction.createMany({
         data: [
@@ -296,6 +342,43 @@ async function main() {
             { id: 30, utorid: 'george12', type: 'event', amount: 5, remark: 'Event participation', createdBy: 'bobman12', relatedId: 11},
         ]
     });
+
+    // Update points from event awards
+    userPoints['diana123'] += 40;
+    userPoints['ethan123'] += 5;
+    userPoints['fiona123'] += 40;
+    userPoints['george12'] += 5;
+
+    // Update event points awarded
+    eventPointsAwarded[10] += 40 + 40; // 80 points awarded for event 10
+    eventPointsAwarded[11] += 5 + 5;   // 10 points awarded for event 11
+
+    // Connect one-time promotion to User who used it (if any)
+    // For example, if promotion 13 is a one-time promotion used in a transaction
+    await prisma.promotion.update({
+        where: { id: 13 },
+        data: {
+            oneTimeUsed: {
+                connect: [{ utorid: 'diana123' }]
+            }
+        }
+    });
+
+    // Update user points in database
+    for (const [utorid, points] of Object.entries(userPoints)) {
+        await prisma.user.update({
+            where: { utorid },
+            data: { points }
+        });
+    }
+
+    // Update event points awarded in database
+    for (const [eventId, pointsAwarded] of Object.entries(eventPointsAwarded)) {
+        await prisma.event.update({
+            where: { id: parseInt(eventId) },
+            data: { pointsAwarded }
+        });
+    }
 
     console.log('Database seeded successfully!');
 }
