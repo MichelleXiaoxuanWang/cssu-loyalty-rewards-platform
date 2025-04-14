@@ -16,6 +16,11 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
     operator: initialFilters.operator || 'gte' // Set default operator if not provided
   });
 
+  // Get current user role
+  const currentUser = localStorage.getItem('currentUser');
+  const currentRole = localStorage.getItem(`current_role_${currentUser}`);
+  const isRegularUser = currentRole === 'regular';
+
   // Transaction type options
   const transactionTypes = [
     { value: '', label: 'All Types' },
@@ -97,13 +102,15 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
     <div className="transaction-filters">
       <div className="filters-header">
         <h3>Filter Transactions</h3>
-        <button 
-          onClick={() => window.location.href = '/createTransaction'} 
-          className="create-transaction-button"
-        >
-          <i className="fas fa-plus"></i>
-          + Create Transaction
-        </button>
+        {isRegularUser && (
+          <button 
+            onClick={() => window.location.href = '/createTransaction'} 
+            className="create-transaction-button"
+          >
+            <i className="fas fa-plus"></i>
+            + Create Transaction
+          </button>
+        )}
       </div>
       
       <form onSubmit={handleSubmit}>
