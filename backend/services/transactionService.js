@@ -801,94 +801,149 @@ function formatTransactionResponse(transaction) {
  */
 async function getUserTransactions(utorid, filters = {}) {
     try {
-        // Build the base query
-        let query = {
-            where: {
-                utorid: utorid
-            },
-            include: {
-                user: true,
-                creater: true,
-                promotionUsed: true
-            }
-        };
-
-        // Add type filter if specified
-        if (filters.type) {
-            query.where.type = filters.type;
-        }
-
-        // Add promotion ID filter if specified
-        if (filters.promotionId) {
-            query.where.promotionUsed = {
-                some: {
-                    id: filters.promotionId
+        // Build where clause based on filters
+        const where = {};
+        
+        // Filter by name or utorid
+        if (filters.name) {
+            where.OR = [
+                { utorid: { contains: filters.name } },
+                { 
+                    user: {
+                        name: { contains: filters.name }
+                    }
                 }
-            };
+            ];
         }
-
-        // Add related ID filter if specified
-        if (filters.relatedId) {
-            query.where.relatedId = filters.relatedId;
+        
+        // Filter by creator
+        if (filters.createdBy) {
+            where.createdBy = { contains: filters.createdBy };
         }
-
-        // Add amount filter with absolute value comparison
-        if (filters.amount !== undefined) {
-            const operator = filters.operator || 'gte';
-            if (operator === 'gte') {
-                query.where.OR = [
-                    { amount: { gte: filters.amount } },
-                    { amount: { lte: -filters.amount } }
-                ];
-            } else if (operator === 'lte') {
-                query.where.OR = [
-                    { amount: { lte: filters.amount } },
-                    { amount: { gte: -filters.amount } }
-                ];
-            }
-        }
-
-        // Add suspicious filter if specified
+        
+        // Filter by suspicious flag
         if (filters.suspicious !== undefined) {
-            query.where.suspicious = filters.suspicious;
+            where.suspicious = filters.suspicious;
         }
-
-        // Add sorting
-        if (filters.sort) {
-            const [field, direction] = filters.sort.split('-');
-            query.orderBy = {
-                [field]: direction
-            };
-        } else {
-            // Default sorting by ID descending
-            query.orderBy = {
-                id: 'desc'
+        
+        // Filter by promotionId
+        if (filters.promotionId) {
+            where.promotionUsed = {
+                some: { id: filters.promotionId }
             };
         }
+        
+        // Filter by transaction type
+        if (filters.type) {
+            where.type = filters.type;
+            
+            // If relatedId is provided with type
+            if (filters.relatedId) {
+                where.relatedId = filters.relatedId;
+            }
+        } else if (filters.relatedId) {
+            // relatedId without type is not allowed
+            const error = new Error('relatedId must be used with type');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        // Filter by amount with operator
+        if (filters.amount !== undefined) {
+            if (!filters.operator) {
+                const error = new Error('operator must be provided with amount');
+                error.statusCode = 400;
+                throw error;
+            }
+            
+            switch (filters.operator) {
+                case 'gte':
+                    where.OR = [
+                        { amount: { gte: filters.amount } },
+                        { amount: { lte: -filters.amount } }
+                    ];
+                    break;
+                case 'lte':
+                    where.AND = [
+                        { amount: { lte: filters.amount } },
+                        { amount: { gte: -filters.amount } }
+                    ];
+                    break;
+                default:
+                    const error = new Error('operator must be "gte" or "lte"');
+                    error.statusCode = 400;
+                    throw error;
+            }
+        } else if (filters.operator) {
+            // operator without amount is not allowed
+            const error = new Error('amount must be provided with operator');
+            error.statusCode = 400;
+            throw error;
+        }
 
-        // Add pagination
+        where.utorid = utorid;
+    
+        // Count total transactions matching where clause
+        const totalTransactions = await prisma.transaction.count({ where });
+            
+        // Pagination
         const page = filters.page || 1;
         const limit = filters.limit || 10;
+
+        // validate page and limit
+        if (page < 1 || limit < 1) {
+            const error = new Error('page and limit must be greater than 0');
+            error.statusCode = 400;
+            throw error;
+        }
+
         const skip = (page - 1) * limit;
-
-        // Get total count
-        const count = await prisma.transaction.count({
-            where: query.where
-        });
-
-        // Get paginated results
-        const results = await prisma.transaction.findMany({
-            ...query,
+        
+        // Handle sorting
+        let orderBy = { id: 'desc' }; // Default sorting
+        if (filters.sort) {
+            const [field, direction] = filters.sort.split('-');
+            switch (field) {
+                case 'id':
+                case 'amount':
+                case 'createdAt':
+                    orderBy = { [field]: direction === 'desc' ? 'desc' : 'asc' };
+                    break;
+                case 'type':
+                    orderBy = { type: direction === 'desc' ? 'desc' : 'asc' };
+                    break;
+                default:
+                    // Keep default sorting if invalid field
+                    break;
+            }
+        }
+        
+        // Get transactions
+        const transactions = await prisma.transaction.findMany({
+            where,
             skip,
-            take: limit
+            take: limit,
+            orderBy,
+            include: {
+                promotionUsed: {
+                    select: { id: true }
+                }
+            }
         });
-
+        
+        // Format response
+        const results = transactions.map(formatTransactionResponse);
+        
         return {
-            count,
+            count: totalTransactions,
             results
         };
     } catch (error) {
-        console.error('Error in getUserTransactions:', error);
+        if (!error.statusCode) {
+            console.error('Database error getting transactions:', error);
+            error.statusCode = 500;
+            error.message = 'Error retrieving transactions from database';
+        }
         throw error;
     }
 }
