@@ -112,6 +112,10 @@ router.get('/', jwtAuth, checkRole(ROLES.MANAGER_OR_HIGHER), async (req, res) =>
         if (req.query.suspicious !== undefined) {
             filters.suspicious = req.query.suspicious === 'true';
         }
+
+        if (req.query.unprocessed !== undefined) {
+            filters.unprocessed = req.query.unprocessed === 'true';
+        }
         
         // Special filters
         if (req.query.operator) {

@@ -463,6 +463,12 @@ async function getTransactions(filters) {
         if (filters.suspicious !== undefined) {
             where.suspicious = filters.suspicious;
         }
+
+        // Filter by processed or unprocessed (redemption)
+        if (filters.unprocessed !== undefined) {
+            where.relatedId = null;
+            where.type = 'redemption';
+        }
         
         // Filter by promotionId
         if (filters.promotionId) {
@@ -824,6 +830,12 @@ async function getUserTransactions(utorid, filters = {}) {
         // Filter by suspicious flag
         if (filters.suspicious !== undefined) {
             where.suspicious = filters.suspicious;
+        }
+
+        // filter by processed or unprocessed (redemption)
+        if (filters.unprocessed !== undefined) {
+            where.relatedId = null;
+            where.type = 'redemption';
         }
         
         // Filter by promotionId
