@@ -118,7 +118,7 @@ function App() {
   return (
   <Router>
     <Navbar />
-    <div class="app-container">
+    <div className="app-container">
       <Routes>
         <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<LoginPage />} />
