@@ -65,7 +65,6 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
       case 'purchase':
         return `Purchase - Spent $${transaction.spent?.toFixed(2)}`;
       case 'redemption':
-        const isProcessed = transaction.relatedId !== undefined && transaction.relatedId !== null;
         return `Redemption`;
       case 'transfer':
         // Different message based on whether this is incoming or outgoing

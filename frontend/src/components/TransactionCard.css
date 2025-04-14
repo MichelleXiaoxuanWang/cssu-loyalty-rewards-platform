@@ -19,6 +19,14 @@
   --suspicious-color: #FF9800;                /* Orange for suspicious */
   --processed-color: #4CAF50;                 /* Green for processed */
   --unprocessed-color: #757575;               /* Gray for unprocessed */
+  
+  /* Tag background colors with transparency */
+  --warning-bg: rgba(255, 152, 0, 0.15);      /* Light orange background */
+  --warning-color: #E65100;                   /* Dark orange text */
+  --success-bg: rgba(76, 175, 80, 0.15);      /* Light green background */
+  --success-color: #2E7D32;                   /* Dark green text */
+  --pending-bg: rgba(117, 117, 117, 0.15);    /* Light gray background */
+  --pending-color: #424242;                   /* Dark gray text */
 }
 
 .transaction-card {
@@ -104,42 +112,50 @@
 }
 
 .transaction-title-container {
+  flex-grow: 1;
+  margin-right: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  align-items: flex-start;
 }
 
 .transaction-type {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
+  text-align: left;
+  width: 100%;
 }
 
 .transaction-status-indicators {
   display: flex;
-  gap: 8px;
+  gap: 5px;
+  align-items: center;
   margin-top: 4px;
+  flex-wrap: wrap;
 }
 
 .status-tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
+  font-size: 0.7rem;
+  padding: 3px 7px;
+  border-radius: 4px;
   font-weight: 500;
-  color: white;
+  display: inline-block;
 }
 
 .suspicious-tag {
-  background-color: var(--suspicious-color);
+  background-color: var(--warning-bg);
+  color: var(--warning-color);
 }
 
 .processed-tag {
-  background-color: var(--processed-color);
+  background-color: var(--success-bg);
+  color: var(--success-color);
 }
 
 .unprocessed-tag {
-  background-color: var(--unprocessed-color);
+  background-color: var(--pending-bg);
+  color: var(--pending-color);
 }
 
 .transaction-amount {

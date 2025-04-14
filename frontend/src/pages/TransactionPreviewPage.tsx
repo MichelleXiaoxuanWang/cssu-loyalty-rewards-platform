@@ -126,22 +126,24 @@ const TransactionPreviewPage: React.FC = () => {
         ) : (
           <>
             <div className="transactions-summary">
-              <span>
+              <div className="transactions-count">
                 Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalTransactions)} - {Math.min(currentPage * itemsPerPage, totalTransactions)} of {totalTransactions} transactions
-              </span>
+              </div>
               
-              {transactions.some(t => t.suspicious) && isAdminRole && (
-                <div className="suspicious-alert">
-                  ⚠️ Some transactions are flagged as suspicious
-                </div>
-              )}
-              
-              {transactions.some(t => t.type === 'redemption' && !t.relatedId) && 
-               (isAdminRole || isCashier) && (
-                <div className="pending-redemptions-alert">
-                  🔔 There are pending redemptions to process
-                </div>
-              )}
+              <div className="transactions-alerts">
+                {transactions.some(t => t.suspicious) && isAdminRole && (
+                  <div className="suspicious-alert">
+                    ⚠️ Some transactions are flagged as suspicious
+                  </div>
+                )}
+                
+                {transactions.some(t => t.type === 'redemption' && !t.relatedId) && 
+                 (isAdminRole || isCashier) && (
+                  <div className="pending-redemptions-alert">
+                    🔔 There are pending redemptions to process
+                  </div>
+                )}
+              </div>
             </div>
             
             <div className="transactions-list">

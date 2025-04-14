@@ -41,6 +41,7 @@ const TransactionDetailPage: React.FC = () => {
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
   // Get the stored role (e.g., 'regular', 'cashier', 'manager', 'superuser')
   const currentUserRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) || '' : '';
+  const isRegularUser = currentUserRole === 'regular';
 
   // Function to fetch transaction details
   const fetchTransaction = async () => {
@@ -145,12 +146,19 @@ const TransactionDetailPage: React.FC = () => {
     });
   };
 
+  // Should show QR code only for regular users viewing their own unprocessed redemption
+  const shouldShowQRCode = () => {
+    return isRegularUser && 
+           transaction?.type === 'redemption' && 
+           !isRedemptionProcessed();
+  };
+
   if (loading) return <p>Loading transaction details...</p>;
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
   if (!transaction) return <p>No transaction found.</p>;
 
   return (
-    <div className="transaction-detail-container">
+    <div className={`transaction-detail-container ${shouldShowQRCode() ? 'with-qr-code' : ''}`}>
       <div className="transaction-info-section">
         <h2>Transaction Details (ID: {transaction.id})</h2>
         
@@ -238,8 +246,8 @@ const TransactionDetailPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Show QR code for unprocessed redemption transactions */}
-      {transaction.type === 'redemption' && !isRedemptionProcessed() && (
+      {/* Show QR code only for regular users viewing their unprocessed redemption */}
+      {shouldShowQRCode() && (
         <div className="qr-code-section">
           <h3>Redemption QR Code</h3>
           <p>Show this QR code to a cashier to process your redemption.</p>
