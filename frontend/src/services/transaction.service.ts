@@ -7,14 +7,12 @@ export interface Transaction {
   type: 'purchase' | 'redemption' | 'adjustment' | 'transfer' | 'event';
   amount: number;
   spent?: number;
-  relatedId?: number;
+  relatedId?: number; // Will be populated with the processor's user ID when a redemption is processed
   promotionIds: number[];
   suspicious?: boolean;
   remark?: string;
   createdBy: string;
   createdAt?: string;
-  redeemed?: number;
-  processed?: boolean;
 }
 
 export interface TransactionFilters {

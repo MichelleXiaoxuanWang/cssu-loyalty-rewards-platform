@@ -14,6 +14,11 @@
   
   --event-color: rgba(0, 150, 136, 0.2);       /* Light Teal */
   --event-border: #009688;                     /* Teal border */
+  
+  /* Status colors */
+  --suspicious-color: #FF9800;                /* Orange for suspicious */
+  --processed-color: #4CAF50;                 /* Green for processed */
+  --unprocessed-color: #757575;               /* Gray for unprocessed */
 }
 
 .transaction-card {
@@ -98,10 +103,43 @@
   margin-bottom: 8px;
 }
 
+.transaction-title-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .transaction-type {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
+}
+
+.transaction-status-indicators {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+}
+
+.suspicious-tag {
+  background-color: var(--suspicious-color);
+}
+
+.processed-tag {
+  background-color: var(--processed-color);
+}
+
+.unprocessed-tag {
+  background-color: var(--unprocessed-color);
 }
 
 .transaction-amount {

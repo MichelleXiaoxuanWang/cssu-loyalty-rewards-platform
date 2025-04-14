@@ -26,6 +26,12 @@
   background-color: #388E3C;
 }
 
+.create-transaction-button.small {
+  font-size: 14px;
+  padding: 8px 12px;
+  margin-top: 10px;
+}
+
 .transactions-container {
   margin-top: 24px;
 }
@@ -51,12 +57,42 @@
   color: #666;
   background-color: #f9f9f9;
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .transactions-summary {
   margin-bottom: 16px;
   color: #666;
   font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.suspicious-alert, .pending-redemptions-alert {
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.suspicious-alert {
+  background-color: #FFF3E0;
+  color: #E65100;
+  border-left: 3px solid #FF9800;
+}
+
+.pending-redemptions-alert {
+  background-color: #E3F2FD;
+  color: #0D47A1;
+  border-left: 3px solid #2196F3;
 }
 
 .transactions-list {
@@ -72,5 +108,10 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+  
+  .transactions-summary {
+    flex-direction: column;
+    align-items: flex-start;
   }
 } 

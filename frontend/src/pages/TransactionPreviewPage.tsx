@@ -4,6 +4,7 @@ import TransactionFilters from '../components/TransactionFilters';
 import TransactionCard from '../components/TransactionCard';
 import Pagination from '../components/Pagination';
 import { getMyTransactions, getAllTransactions, TransactionFilters as FiltersType, TransactionResponse, Transaction } from '../services/transaction.service';
+import { getUserId } from '../services/auth.service';
 import './TransactionPreviewPage.css';
 
 const TransactionPreviewPage: React.FC = () => {
@@ -19,12 +20,14 @@ const TransactionPreviewPage: React.FC = () => {
     limit: 10
   });
   
-  // Get current user role
+  // Get current user role and ID
   const currentUser = localStorage.getItem('currentUser');
   const currentRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) : null;
+  const userId = getUserId();
   
   // Determine if admin role (manager or superuser) to show all transactions
   const isAdminRole = currentRole === 'manager' || currentRole === 'superuser';
+  const isCashier = currentRole === 'cashier';
 
   // Fetch transactions when filters change
   useEffect(() => {
@@ -78,13 +81,20 @@ const TransactionPreviewPage: React.FC = () => {
     navigate('/createTransaction');
   };
 
+  // Get page title based on user role
+  const getPageTitle = () => {
+    if (isAdminRole) return 'All Transactions';
+    if (isCashier) return 'Cashier Transactions';
+    return 'My Transactions';
+  };
+
   // Calculate total pages
   const totalPages = Math.ceil(totalTransactions / itemsPerPage);
 
   return (
     <div className="transaction-preview-page">
       <div className="page-header">
-        <h1>{isAdminRole ? 'All Transactions' : 'My Transactions'}</h1>
+        <h1>{getPageTitle()}</h1>
         <button 
           className="create-transaction-button"
           onClick={handleCreateTransaction}
@@ -105,12 +115,33 @@ const TransactionPreviewPage: React.FC = () => {
           <div className="error-message">{error}</div>
         ) : transactions.length === 0 ? (
           <div className="no-transactions">
-            <p>No transactions found. Try adjusting your filters.</p>
+            <p>No transactions found. Try adjusting your filters or create a new transaction.</p>
+            <button 
+              className="create-transaction-button small"
+              onClick={handleCreateTransaction}
+            >
+              Create Transaction
+            </button>
           </div>
         ) : (
           <>
             <div className="transactions-summary">
-              Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalTransactions)} - {Math.min(currentPage * itemsPerPage, totalTransactions)} of {totalTransactions} transactions
+              <span>
+                Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalTransactions)} - {Math.min(currentPage * itemsPerPage, totalTransactions)} of {totalTransactions} transactions
+              </span>
+              
+              {transactions.some(t => t.suspicious) && isAdminRole && (
+                <div className="suspicious-alert">
+                  ⚠️ Some transactions are flagged as suspicious
+                </div>
+              )}
+              
+              {transactions.some(t => t.type === 'redemption' && !t.relatedId) && 
+               (isAdminRole || isCashier) && (
+                <div className="pending-redemptions-alert">
+                  🔔 There are pending redemptions to process
+                </div>
+              )}
             </div>
             
             <div className="transactions-list">
