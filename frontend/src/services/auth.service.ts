@@ -19,10 +19,32 @@ export const getAuthToken = (): string | null => {
   return localStorage.getItem(`token_${currentUser}`);
 };
 
+// get the highest role that the user has
 export const getUserRole = (): string | null => {
   const currentUser = localStorage.getItem('currentUser');
   if (!currentUser) return null;
   return localStorage.getItem(`role_${currentUser}`);
+};
+
+// get the current role that the user is using
+export const getCurrentRole = (): string | null => {
+  const currentUser = localStorage.getItem('currentUser');
+  if (!currentUser) return null;
+  return localStorage.getItem(`current_role_${currentUser}`);
+};
+
+// set the current role that the user is using
+export const setCurrentRole = (role: string): void => {
+  const currentUser = localStorage.getItem('currentUser');
+  if (!currentUser) return;
+  localStorage.setItem(`current_role_${currentUser}`, role);
+};
+
+// get the user name
+export const getUserName = (): string | null => {
+  const currentUser = localStorage.getItem('currentUser');
+  if (!currentUser) return null;
+  return localStorage.getItem(`userName_${currentUser}`);
 };
 
 export const getUserId = (): string | null => {
@@ -48,6 +70,8 @@ export const logout = (): void => {
   localStorage.removeItem('currentUser');
   localStorage.removeItem(`token_${currentUser}`);
   localStorage.removeItem(`role_${currentUser}`);
+  localStorage.removeItem(`current_role_${currentUser}`);
   localStorage.removeItem(`userId_${currentUser}`);
   localStorage.removeItem(`resetExpiresAt_${currentUser}`);
+  localStorage.removeItem(`userName_${currentUser}`);
 };

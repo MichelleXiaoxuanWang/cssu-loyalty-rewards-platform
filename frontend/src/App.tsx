@@ -1,6 +1,6 @@
 import './App.css'
 import { ReactNode, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import VerifyEmailPage from './pages/VerifyEmail';
 import ResetPasswordPage from './pages/ResetPassword';
@@ -52,7 +52,13 @@ function ProtectedRoute({ children, page }: ProtectedRouteProps) {
 function HomeRedirect() {
   const currentUser = localStorage.getItem('currentUser');
   const token = localStorage.getItem(`token_${currentUser}`);
-  const role = localStorage.getItem(`role_${currentUser}`);
+  const role = localStorage.getItem(`current_role_${currentUser}`); // the current role that the user is using
+  const location = useLocation(); // Add this to access location state
+  
+  // Force component to re-render when location state changes due to role switch
+  useEffect(() => {
+    console.log('HomeRedirect re-rendering due to location change or role update');
+  }, [location.state, role]);
   
   // If not authenticated, redirect to login
   if (!currentUser || !token || !role) {
@@ -64,16 +70,16 @@ function HomeRedirect() {
   
   // Return appropriate landing page based on role
   if (role === 'regular') {
-    return <RegularLandingPage />;
+    return <RegularLandingPage key={role} />;
   }
   
   // For higher roles (manager, superuser), show admin dashboard
   if (role === 'manager' || role === 'superuser') {
-    return <AdminLandingPage />;
+    return <AdminLandingPage key={role} />;
   }
   
   // For cashier role or any other role, use regular landing page
-  return <RegularLandingPage />;
+  return <RegularLandingPage key={role} />;
 }
 
 function App() {

@@ -30,3 +30,4 @@ export const createUser = async (userData: Record<string, any>) => {
 export const getCurrentUser = async (): Promise<User> => {
   return apiCall('/users/me', 'GET');
 };
+

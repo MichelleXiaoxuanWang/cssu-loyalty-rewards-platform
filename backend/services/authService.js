@@ -61,12 +61,14 @@ async function login(utorid, password) {
     expiresAt.setHours(expiresAt.getHours() + 24);
     const userRole = user.role;
     const userId = user.id;
+    const userName = user.name;
 
     return {
         token,
         expiresAt,
         userRole,
-        userId
+        userId,
+        userName
     };
 }
 

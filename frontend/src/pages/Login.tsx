@@ -6,9 +6,9 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
- //TODO: modify this part to navigate to the correct page.
+  // Navigate to home page after successful login
   const handleLoginSuccess = () => {
-    navigate('/dashboard');
+    navigate('/'); // This will trigger the HomeRedirect component in App.tsx
   };
 
   const handleError = (message: string) => {

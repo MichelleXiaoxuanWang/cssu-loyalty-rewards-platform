@@ -17,77 +17,234 @@
     background: #4d4b52;
     min-height: 100vh;     /* Full viewport height */
     width: 10%;          /* Define the width of your navbar */
-  }
+}
+
+/* User information and role switcher styles */
+.user-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.username {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.role-label {
+  color: #bcbbbe;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-bottom: 0.3rem;
+  width: 100%;
+}
+
+.role-switcher {
+  width: 100%;
+  position: relative;
+}
+
+.current-role {
+  background-color: #3a3940;
+  color: #ffffff;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.role-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #3a3940;
+  border-radius: 4px;
+  margin-top: 2px;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.role-option {
+  padding: 0.5rem;
+  cursor: pointer;
+  text-align: center;
+  color: #bcbbbe;
+  transition: background-color 0.2s;
+}
+
+.role-option:hover {
+  background-color: #212023;
+}
+
+.role-option.active {
+  background-color: #212023;
+  color: #ffffff;
+}
   
-  /* Ensure the child elements take the full width */
-  .navbar img {
-    width: 100%;
-    max-width: 100%;       /* Prevent overflow */
-    height: auto;          /* Let the browser calculate the height */
-    margin-bottom: 0;
+/* Ensure the child elements take the full width */
+.navbar a {
+  display: block;        /* Make link behave like a block-level element */
+  width: 100%;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  color: #bcbbbe;
+  font-weight: 500;
+  padding: 0.5rem;
+  text-align: center;
+  max-width: 100%;
+}
+
+/* Style for active/current page link */
+.navbar a.active-link {
+  background-color: #212023;
+  color: #ffffff;
+  font-weight: 700;
+  border-left: 3px solid #ffffff;
+}
+
+/* Styling for logout button */
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #2a292f; /* Darker background color */
+  color: #bcbbbe; /* Updated to match dropdown text color */
+  border: none;
+  border-radius: 4px;
+  font-weight: 500; /* Bolder text to match dropdown */
+  cursor: pointer;
+  text-align: center;
+  margin-top: auto; /* Push to bottom of flex container */
+  margin-bottom: 4rem; /* Increased space at bottom of navbar */
+}
+
+.logout-button:hover {
+  background-color: #1a1921; /* Even darker on hover */
+  color: #ffffff;
+}
+
+.logout-icon {
+  margin-left: 8px; /* Changed from margin-right to margin-left */
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+/* Optional: Add a hover effect for links */
+.navbar a:hover:not(.active-link) {
+  background-color: #212023;
+  color: #ffffff;
+}
+
+@media screen and (max-width: 800px) {
+  .navbar {
+    padding-top: 1rem;
+    flex-direction: row;
+    height: 10vh;        
+    width: 100vw;      
+    min-height: unset;  
+    position: fixed;  
+    top: 0;
+    left: 0;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem;
+    justify-content: flex-start; 
   }
   
   .navbar a {
-    display: block;        /* Make link behave like a block-level element */
-    width: 100%;
-    margin-bottom: 1rem;
-    text-decoration: none;
-    color: #bcbbbe;
-    font-weight: 500;
-    padding: 0.5rem;
+    display: block;
+    flex: 1;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;  
     text-align: center;
-    max-width: 100%;
-  }
-  .navbar p {
-    font-weight:700;
-    color: #ffffff;
-    font-size: 1.3rem;
-  }
-  /* Optional: Add a hover effect for links */
-  .navbar a:hover {
-    background-color: #212023;
-    color: #ffffff;
+    margin: 0 4px;   
+    margin-right: 5px;
+    margin-left: 0px;     
+    box-sizing: border-box; 
   }
 
-  @media screen and (max-width: 800px) {
-    .navbar {
-        padding-top: 1rem;
-        flex-direction: row;
-        height: 10vh;        
-        width: 100vw;      
-        min-height: unset;  
-        position: fixed;  
-        top: 0;
-        left: 0;
-        justify-content: space-around;
-        align-items: center;
-        padding: 0.5rem;
-        justify-content: flex-start; 
-      }
-      .navbar a {
-        display: block;
-        flex: 1;
-        font-size: 0.8rem;
-        padding: 0.4rem 0.6rem;  
-        text-align: center;
-        margin: 0 4px;   
-        margin-right: 5px;
-        margin-left: 0px;     
-        box-sizing: border-box; 
-      }
-    
-      .navbar img {
-        width: 40px;  
-        height: auto;
-        margin-bottom: 0; 
-        margin-right: 2px; 
-        margin-top: 20px;
-      }
-      .navbar p {
-        font-weight:700;
-        color: #ffffff;
-        font-size: 0.7rem;
-        margin-bottom: 20px;
-        margin-top: 0px;
-      }
+  .logout-button {
+    flex: 1;
+    margin-top: 0;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    margin: 0 4px;
+    margin-right: 5px;
+    margin-left: 0px;
+    box-sizing: border-box;
   }
+
+  .logout-icon {
+    margin-left: 4px; /* Changed from margin-right to margin-left */
+    width: 14px;
+    height: 14px;
+  }
+
+  .user-info {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0;
+    margin-right: 10px;
+    width: auto;
+  }
+
+  .username {
+    margin-bottom: 0;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .role-label {
+    font-size: 0.7rem;
+    margin-right: 5px;
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+
+  .role-switcher {
+    width: auto;
+  }
+
+  .current-role {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .role-dropdown {
+    width: 120px;
+    right: 0;
+    left: auto;
+  }
+
+  .role-option {
+    font-size: 0.7rem;
+    padding: 0.3rem;
+  }
+
+  .navbar a.active-link {
+    border-left: none;
+    border-bottom: 2px solid #ffffff;
+  }
+}

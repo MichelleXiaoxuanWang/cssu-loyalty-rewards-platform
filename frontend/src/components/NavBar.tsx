@@ -1,22 +1,43 @@
 // src/components/Navbar.tsx
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
-import avatar from '../assets/avatar.png';  
+import { getUserUtorid, getUserRole, getCurrentRole, setCurrentRole, getUserName, logout } from '../services/auth.service';
+import logoutIcon from '../assets/logout.png';
+
+// Role hierarchy for determining available roles
+const ROLE_HIERARCHY = {
+  'superuser': ['superuser', 'manager', 'cashier', 'regular'],
+  'manager': ['manager', 'cashier', 'regular'],
+  'cashier': ['cashier', 'regular'],
+  'regular': ['regular']
+};
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [utorid, setUtorid] = useState<string | null>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [maxRole, setMaxRole] = useState<string | null>(null);
+  const [currentRole, setCurrentRoleState] = useState<string | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   
   // Update authentication state when component mounts or location changes
   useEffect(() => {
-    const currentUser = localStorage.getItem("currentUser");
-    setUtorid(currentUser);
+    const userUtorid = getUserUtorid();
+    const userMaxRole = getUserRole();
+    const userCurrentRole = getCurrentRole();
+    const name = getUserName();
     
-    if (currentUser) {
-      const userRole = localStorage.getItem(`role_${currentUser}`);
-      setRole(userRole);
+    setUtorid(userUtorid);
+    setUserName(name);
+    setMaxRole(userMaxRole);
+    setCurrentRoleState(userCurrentRole);
+    
+    // Determine available roles based on the user's maximum role
+    if (userMaxRole && ROLE_HIERARCHY[userMaxRole as keyof typeof ROLE_HIERARCHY]) {
+      setAvailableRoles(ROLE_HIERARCHY[userMaxRole as keyof typeof ROLE_HIERARCHY]);
     }
   }, [location]);
   
@@ -26,26 +47,83 @@ const Navbar: React.FC = () => {
   }
   
   // If not authenticated, don't show navbar
-  if (!utorid || !role) {
+  if (!utorid || !currentRole) {
     return null;
   }
+
+  const handleRoleChange = (newRole: string) => {
+    // Update the current role in local storage
+    setCurrentRole(newRole);
+    setCurrentRoleState(newRole);
+    setDropdownOpen(false);
+    
+    // Instead of just navigating to home, we'll force a refresh by
+    // navigating with a replaced state which forces App component to re-render
+    navigate('/', { replace: true, state: { roleChanged: true, timestamp: Date.now() } });
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+  
+  // Function to check if a link is active
+  const isActiveLink = (path: string) => {
+    if (path === '/' && location.pathname === '/') {
+      return true;
+    }
+    if (path !== '/' && location.pathname.startsWith(path)) {
+      return true;
+    }
+    return false;
+  };
   
   // Different navbar for managers and above
-  if (role !== 'regular'){
+  if (currentRole !== 'regular'){
     return (
       <nav className="navbar">
-        <div>
-          <img src={avatar} alt="Avatar" />
-          <p id="role">{role ? `${role}` : 'No Role Found'}</p>
+        <div className="user-info">
+          <div className="username">Welcome back, {userName || utorid}!</div>
+          
+          <div className="role-switcher">
+            <div className="role-label">Current role:</div>
+            <div 
+              className="current-role" 
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              {currentRole} ▼
+            </div>
+            
+            {dropdownOpen && (
+              <div className="role-dropdown">
+                {availableRoles.map(role => (
+                  <div 
+                    key={role} 
+                    className={`role-option ${role === currentRole ? 'active' : ''}`}
+                    onClick={() => handleRoleChange(role)}
+                  >
+                    {role}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         
-        <Link to="/">Home</Link>
-        <Link to="/transactions">My Transactions</Link>
-        <Link to="/events">Events</Link>
-        <Link to="/promotions">Promotions</Link>
-        {(role === 'manager' || role === 'superuser') && <Link to="/users">Users</Link>}
-        <Link to="/profile">Profile</Link>
-        {(role === 'manager' || role === 'superuser') && <Link to="/create-user">Create User</Link>}
+        <Link to="/" className={isActiveLink('/') ? 'active-link' : ''}>Home</Link>
+        <Link to="/transactions" className={isActiveLink('/transactions') ? 'active-link' : ''}>My Transactions</Link>
+        <Link to="/events" className={isActiveLink('/events') ? 'active-link' : ''}>Events</Link>
+        <Link to="/promotions" className={isActiveLink('/promotions') ? 'active-link' : ''}>Promotions</Link>
+        {(currentRole === 'manager' || currentRole === 'superuser') && 
+         <Link to="/users" className={isActiveLink('/users') ? 'active-link' : ''}>Users</Link>}
+        <Link to="/profile" className={isActiveLink('/profile') ? 'active-link' : ''}>Profile</Link>
+        {(currentRole === 'manager' || currentRole === 'superuser') && 
+         <Link to="/create-user" className={isActiveLink('/create-user') ? 'active-link' : ''}>Create User</Link>}
+        
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+          <img src={logoutIcon} alt="Logout" className="logout-icon" />
+        </button>
       </nav>
     );
   }
@@ -53,16 +131,44 @@ const Navbar: React.FC = () => {
   // Regular user navbar
   return (
     <nav className="navbar">
-      <div>
-        <img src={avatar} alt="Avatar" />
-        <p id="role">{role ? `${role}` : 'No Role Found'}</p>
+      <div className="user-info">
+        <div className="username">Welcome back, {userName || utorid}!</div>
+        
+        <div className="role-switcher">
+          <div className="role-label">Current role:</div>
+          <div 
+            className="current-role" 
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            {currentRole} ▼
+          </div>
+          
+          {dropdownOpen && (
+            <div className="role-dropdown">
+              {availableRoles.map(role => (
+                <div 
+                  key={role} 
+                  className={`role-option ${role === currentRole ? 'active' : ''}`}
+                  onClick={() => handleRoleChange(role)}
+                >
+                  {role}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       
-      <Link to="/">Home</Link>
-      <Link to="/transactions">My Transactions</Link>
-      <Link to="/events">Events</Link>
-      <Link to="/promotions">Promotions</Link>
-      <Link to="/profile">Profile</Link>
+      <Link to="/" className={isActiveLink('/') ? 'active-link' : ''}>Home</Link>
+      <Link to="/transactions" className={isActiveLink('/transactions') ? 'active-link' : ''}>My Transactions</Link>
+      <Link to="/events" className={isActiveLink('/events') ? 'active-link' : ''}>Events</Link>
+      <Link to="/promotions" className={isActiveLink('/promotions') ? 'active-link' : ''}>Promotions</Link>
+      <Link to="/profile" className={isActiveLink('/profile') ? 'active-link' : ''}>Profile</Link>
+      
+      <button className="logout-button" onClick={handleLogout}>
+        Logout
+        <img src={logoutIcon} alt="Logout" className="logout-icon" />
+      </button>
     </nav>
   );
 };
