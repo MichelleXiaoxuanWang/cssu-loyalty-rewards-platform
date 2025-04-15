@@ -65,7 +65,7 @@ const EventDetailPage: React.FC = () => {
   // Retrieve current user's information (e.g., UTORid, token, role) from localStorage.
   const currentUser = localStorage.getItem('currentUser');
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
-  const currentUserRole = currentUser ? localStorage.getItem(`role_${currentUser}`) || '' : '';
+  const currentUserRole = currentUser ? localStorage.getItem(`current_role_${currentUser}`) || '' : '';
 
   // Helper: check if the current user has full access (manager, superuser, or is in organizers)
   const hasFullAccess = (ev: EventData): boolean => {
@@ -225,6 +225,30 @@ const EventDetailPage: React.FC = () => {
     }
   };
 
+  const handleRegister = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/events/${eventId}/guests/me`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || ''}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to register for event');
+      }
+
+      const updatedEvent = await response.json();
+      setEventData(prev => prev ? { ...prev, numGuests: updatedEvent.numGuests } : prev);
+      alert('Successfully registered for the event!');
+    } catch (err: any) {
+      alert("Error registering for event: " + err.message || 'Failed to register for event. Please try again.');
+    }
+  };
+
   if (loading) return <p>Loading event details...</p>;
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
   if (!eventData) return <p>No event information available.</p>;
@@ -290,7 +314,8 @@ const EventDetailPage: React.FC = () => {
               )}
 
               <div style={{ marginTop: '2rem' }}>
-                {fullAccess && (currentUserRole === 'manager' || currentUserRole === 'superuser') && (
+                {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
+                  (eventData.organizers.some(org => org.utorid === currentUser))) && (
                   <button
                       onClick={() => navigate(`/events/${eventData.id}/organizers`)}
                       style={{ marginRight: '1rem' }}
@@ -298,7 +323,12 @@ const EventDetailPage: React.FC = () => {
                     Manage Organizers
                   </button>
                 )}
-                <button onClick={() => navigate(`/events/${eventId}/guests-manage`)}>Manage Guests</button>
+                {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
+                  (eventData.organizers.some(org => org.utorid === currentUser))) ? (
+                  <button onClick={() => navigate(`/events/${eventId}/guests-manage`)}>Manage Guests</button>
+                ) : (
+                  <button onClick={handleRegister}>Register to this Event</button>
+                )}
               </div>
               {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
             </div>
