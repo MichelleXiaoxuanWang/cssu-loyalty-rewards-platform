@@ -216,7 +216,7 @@ const PromotionDetailPage: React.FC = () => {
   if (!promotion) return <p>No promotion information available.</p>;
 
   return (
-    <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem', border: '1px solid #ddd' }}>
+    <div className='profile-container'>
       <h1>Promotion Details (ID: {promotion.id})</h1>
       {!editMode ? (
         <div>

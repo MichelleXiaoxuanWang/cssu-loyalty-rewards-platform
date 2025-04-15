@@ -230,7 +230,7 @@ const EventDetailPage: React.FC = () => {
   const fullAccess = hasFullAccess(eventData);
 
   return (
-      <div style={{ maxWidth: '900px', margin: '2rem auto', padding: '1rem', border: '1px solid #ddd' }}>
+      <div className='profile-container'>
         <h1>Event Details (ID: {eventData.id})</h1>
 
         {/* two bottons here */}
