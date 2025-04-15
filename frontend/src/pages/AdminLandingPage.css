@@ -1,3 +1,9 @@
+.admin-landing-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .admin-header {
   margin-bottom: 30px;
   text-align: center;
@@ -16,9 +22,11 @@
 
 .admin-stats-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-areas: 
+    "events promotions"
+    "users actions";
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
 }
 
 .stat-card-wrapper {
@@ -30,27 +38,45 @@
   transform: translateY(-5px);
 }
 
+/* Position each card in its area */
+.stat-card-wrapper:nth-child(1) {
+  grid-area: events;
+}
+
+.stat-card-wrapper:nth-child(2) {
+  grid-area: promotions;
+}
+
+.stat-card-wrapper:nth-child(3) {
+  grid-area: users;
+}
+
 .admin-action-buttons {
+  grid-area: actions;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  gap: 20px;
-  margin-top: 30px;
+  gap: 16px;
+  padding: 20px;
 }
 
 .admin-action-button {
-  padding: 12px 24px;
+  padding: 16px 24px;
   background-color: var(--primary-color, #1976d2);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
 .admin-action-button:hover {
   background-color: var(--primary-dark, #1565c0);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .admin-loading {
@@ -69,19 +95,22 @@
   margin: 20px 0;
 }
 
+/* Responsive styles */
 @media (max-width: 768px) {
   .admin-stats-container {
+    grid-template-areas: 
+      "events"
+      "promotions"
+      "users"
+      "actions";
     grid-template-columns: 1fr;
   }
   
   .admin-action-buttons {
-    flex-direction: column;
-    align-items: center;
+    padding: 0;
   }
   
   .admin-action-button {
     width: 100%;
-    max-width: 300px;
-    margin-bottom: 10px;
   }
 } 

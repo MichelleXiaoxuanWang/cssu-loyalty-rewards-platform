@@ -129,50 +129,50 @@ const AdminLandingPage: React.FC = () => {
           />
         </div>
 
-        {/* Promotions Statistics - Only showing active promotions */}
+        {/* Promotions Statistics */}
         <div className="stat-card-wrapper" onClick={() => handleNavigate('/promotions')}>
           <StatisticsCard
             title="Active Promotions"
             icon={PROMOTION_ICON}
             colorClass="promotions-color"
             items={[
-              { label: 'Total Active', value: promotionStats.ongoing },
+              { label: 'Total', value: promotionStats.ongoing },
               { label: 'Automatic', value: promotionStats.automatic },
               { label: 'One-Time', value: promotionStats.oneTime },
             ]}
           />
         </div>
 
-        {/* User Statistics - Total, Regular, Cashier, Manager, Superuser */}
+        {/* User Statistics */}
         <div className="stat-card-wrapper" onClick={() => handleNavigate('/users')}>
           <StatisticsCard
             title="Users"
             icon={USER_ICON}
             colorClass="users-color"
             items={[
-              { label: 'Total Users', value: userStats.total },
               { label: 'Regular Users', value: userStats.regular },
-              { label: 'Cashier Users', value: userStats.cashier },
-              { label: 'Manager Users', value: userStats.manager },
-              { label: 'Superuser Users', value: userStats.superuser },
+              { label: 'Cashier', value: userStats.cashier },
+              { label: 'Manager', value: userStats.manager },
+              { label: 'Superuser', value: userStats.superuser },
             ]}
           />
         </div>
-      </div>
 
-      <div className="admin-action-buttons">
-        <button 
-          className="admin-action-button" 
-          onClick={() => handleNavigate('/create-user')}
-        >
-          Create User
-        </button>
-        <button 
-          className="admin-action-button" 
-          onClick={() => handleNavigate('/createTransaction')}
-        >
-          Create Transaction
-        </button>
+        {/* Action Buttons - Now inside the grid container */}
+        <div className="admin-action-buttons">
+          <button 
+            className="admin-action-button" 
+            onClick={() => handleNavigate('/create-user')}
+          >
+            Create User
+          </button>
+          <button 
+            className="admin-action-button" 
+            onClick={() => handleNavigate('/transactions')}
+          >
+            Manage Transactions
+          </button>
+        </div>
       </div>
     </div>
   );

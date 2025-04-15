@@ -57,6 +57,11 @@ const RegularLandingPage: React.FC = () => {
 
   return (
     <div className="regular-landing-page">
+      <header className="regular-header">
+        <h1>My Dashboard</h1>
+        <p>View your points and recent activities</p>
+      </header>
+
       {!userVerified && (
         <div className="verification-notice">
           <div className="verification-content">
