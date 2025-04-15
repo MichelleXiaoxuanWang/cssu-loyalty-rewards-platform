@@ -1,6 +1,6 @@
 // src/pages/ProfilePage.tsx
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api.config';
 
 interface UserData {

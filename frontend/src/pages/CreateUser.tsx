@@ -1,6 +1,6 @@
 // src/pages/CreateUserPage.tsx
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import CreateUserForm from '../components/CreateUserForm.tsx';
 
 const CreateUserPage: React.FC = () => {
