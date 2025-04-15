@@ -1,5 +1,6 @@
 // src/components/ResetPasswordForm.tsx
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config/api.config';
 
 interface ResetPasswordFormProps {
   resetToken: string;
@@ -20,7 +21,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onResetSuccess, o
     onError(''); // Clear any previous errors
 
     try {
-      const response = await fetch(`http://localhost:8000/auth/resets/${resetToken}`, {
+      const response = await fetch(`${API_BASE_URL}/auth/resets/${resetToken}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
