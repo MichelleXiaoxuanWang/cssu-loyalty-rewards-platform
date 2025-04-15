@@ -49,16 +49,33 @@ const CreateTransaction: React.FC = () => {
     
     setActiveTab(tab);
     setErrorMessage(null);
+    setSuccessMessage(null); // Clear success message when changing tabs
   };
 
   const handleTransfer = async () => {
     try {
+      // Validate user ID
+      if (!userId.trim()) {
+        alert('Please enter a user ID');
+        return;
+      }
+
+      // Validate points
+      const pointsNum = Number(points);
+      if (isNaN(pointsNum) || pointsNum <= 0) {
+        alert('Please enter a valid points amount greater than 0');
+        return;
+      }
+
       const transactionData = {
         type: 'transfer',
-        amount: Number(points),
+        amount: pointsNum,
         remark: remark || '',
       };
       const result = await transferPoints(userId, transactionData);
+      if (!result) {
+        throw new Error('Transfer failed');
+      }
       handleTransactionSuccess('Transfer successful!');
       console.log('Transfer successful:', result);
     } catch (error) {
@@ -69,12 +86,22 @@ const CreateTransaction: React.FC = () => {
 
   const handleRedemption = async () => {
     try {
+      // Validate points
+      const pointsNum = Number(points);
+      if (isNaN(pointsNum) || pointsNum <= 0) {
+        alert('Please enter a valid points amount greater than 0');
+        return;
+      }
+
       const transactionData = {
         type: 'redemption',
-        amount: Number(points),
+        amount: pointsNum,
         remark: remark || '',
       };
       const result = await redeemPoints(transactionData);
+      if (!result) {
+        throw new Error('Redemption failed');
+      }
       setQrCodeData(JSON.stringify(result));
       handleTransactionSuccess('Redemption successful!');
       console.log('Redemption successful:', result);
@@ -86,14 +113,30 @@ const CreateTransaction: React.FC = () => {
 
   const handlePurchase = async () => {
     try {
+      // Validate user ID
+      if (!userId.trim()) {
+        alert('Please enter a utorid');
+        return;
+      }
+
+      // Validate spent amount
+      const spentNum = Number(spent);
+      if (isNaN(spentNum) || spentNum <= 0) {
+        alert('Please enter a valid spent amount greater than 0');
+        return;
+      }
+
       const transactionData = {
         utorid: userId,
         type: 'purchase',
-        spent: Number(spent),
+        spent: spentNum,
         promotionIds: promotionIds ? promotionIds.split(',').map(Number) : undefined,
         remark: remark || '',
       };
       const result = await purchaseTransaction(transactionData);
+      if (!result) {
+        throw new Error('Purchase failed');
+      }
       handleTransactionSuccess('Purchase successful!');
       console.log('Purchase successful:', result);
     } catch (error) {
@@ -110,6 +153,9 @@ const CreateTransaction: React.FC = () => {
       }
 
       const result = await processRedemptionTransaction(Number(relatedId));
+      if (!result) {
+        throw new Error('Process redemption failed');
+      }
       handleTransactionSuccess('Redemption processed successfully!');
       console.log('Redemption processed:', result);
     } catch (error) {
@@ -127,13 +173,17 @@ const CreateTransaction: React.FC = () => {
         </div>
       )}
     
+      <div className="page-header">
+        <h1>Create Transaction</h1>
+      </div>
+
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       
       <div className="tabs">
         {role === 'regular' && (
           <button onClick={() => handleTabChange('qrCode')} className={activeTab === 'qrCode' ? 'active' : ''}>
-            Transaction QR Code
+            Initiate Transaction
           </button>
         )}
         {role === 'regular' && (<button 
@@ -164,10 +214,22 @@ const CreateTransaction: React.FC = () => {
 
       <div className="tab-content">
         {activeTab === 'qrCode' && role === 'regular' && (
-          <div>
-            <h2>Initiate Transaction</h2>
-            <h3>Current User ID</h3>
-            <QRCode value={`User ID: ${String(currentUserId)}`} />
+          <div className="qr-code-section">
+            <div className="qr-code-card">
+              <h2>My QR Code</h2>
+              <p>Show this QR code to a cashier to earn points on your purchase</p>
+              <div className="qr-code-container">
+                <QRCode value={`User ID: ${String(currentUserId)}`} size={200} />
+              </div>
+              <div className="user-identifiers">
+                <h2>My IDs</h2>
+                <p>You can also use these IDs for transactions and activities</p>
+                <div className="regular-id-container">
+                  <p>User ID: {currentUserId}</p>
+                  <p>UTORid: {currentUser}</p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -176,13 +238,13 @@ const CreateTransaction: React.FC = () => {
             <h2>Transfer Points</h2>
             <input
               type="text"
-              placeholder="Enter User ID"
+              placeholder="Enter User ID to transfer to"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
             />
             <input
               type="number"
-              placeholder="Enter Points"
+              placeholder="Enter Points to transfer (non-negative integer)"
               value={points}
               onChange={(e) => setPoints(e.target.value)}
             />
@@ -201,7 +263,7 @@ const CreateTransaction: React.FC = () => {
             <h2>Redeem Points</h2>
             <input
               type="number"
-              placeholder="Enter Points"
+              placeholder="Enter Points to redeem (non-negative integer)"
               value={points}
               onChange={(e) => setPoints(e.target.value)}
             />
@@ -231,7 +293,7 @@ const CreateTransaction: React.FC = () => {
             />
             <input
               type="number"
-              placeholder="Enter Spent Amount"
+              placeholder="Enter Spent Amount (non-negative)"
               value={spent}
               onChange={(e) => setSpent(e.target.value)}
             />

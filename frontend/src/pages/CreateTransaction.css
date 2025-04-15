@@ -13,36 +13,46 @@
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  /* background-color: #4d4b52; */
+  padding: 1rem;
+  border-radius: 8px;
+  width: fit-content;
+  margin: 0 auto 20px;
 }
 
 .tabs button {
   padding: 10px 20px;
   border: none;
-  background-color: #f0f0f0;
+  background-color: #3a3940;
+  color: #bcbbbe;
   cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+  border-radius: 4px;
+  transition: all 0.3s;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .tabs button.active {
-  background-color: #007bff;
-  color: white;
+  background-color: #212023;
+  color: #ffffff;
+  font-weight: 700;
 }
 
-.tabs button:hover {
-  background-color: #e0e0e0;
+.tabs button:hover:not(.active) {
+  background-color: #212023;
+  color: #ffffff;
 }
 
 .tabs button.disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background-color: #f0f0f0;
-  color: #999;
+  background-color: #3a3940;
+  color: #bcbbbe;
 }
 
 .tabs button.disabled:hover {
-  background-color: #f0f0f0;
-  color: #999;
+  background-color: #3a3940;
+  color: #bcbbbe;
 }
 
 .tab-content {
@@ -69,6 +79,7 @@
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s;
+  margin-top: 20px;
 }
 
 .tab-content button:hover {
@@ -222,3 +233,74 @@
   margin: 0;
   font-size: 0.95rem;
 }
+
+/* QR Code Section Styles */
+.qr-code-section {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.qr-code-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.qr-code-card h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 20px;
+  color: #333;
+}
+
+.qr-code-card p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.qr-code-container {
+  background-color: white;
+  padding: 16px;
+  display: inline-block;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-identifiers {
+  position: relative;
+  z-index: 1;
+  padding-top: 24px;
+}
+
+.user-identifiers::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background-color: #bdbdbd;
+}
+
+.user-identifiers h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 20px;
+  color: #333;
+}
+
+.user-identifiers p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.regular-id-container p {
+  font-size: 16px;
+  color: #333;
+  font-weight: 550;
+}
+
