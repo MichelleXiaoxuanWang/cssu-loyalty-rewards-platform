@@ -99,7 +99,7 @@ const EventGuestsManagePage: React.FC = () => {
       setUpdateMsg('Guest added successfully!');
       setUtorid('');
     } catch (err: any) {
-      setError(err.message);
+      alert("Error adding guest: " + err.message || 'Failed to add guest. Please try again.');
     } finally {
       setAdding(false);
     }
@@ -129,7 +129,7 @@ const EventGuestsManagePage: React.FC = () => {
       });
       setUpdateMsg('Guest removed successfully!');
     } catch (err: any) {
-      setError(err.message);
+      alert("Error removing guest: " + err.message || 'Failed to remove guest. Please try again.');
     }
   };
 
