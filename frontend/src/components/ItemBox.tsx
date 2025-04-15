@@ -4,11 +4,13 @@ import './ItemBox.css';
 
 interface ItemBoxProps {
   title: string;
-  description: string;
+  description?: string;
+  details?: string;
+  verified?: string;
   navigateTo?: string;
 }
 
-const ItemBox: React.FC<ItemBoxProps> = ({ title, description, navigateTo }) => {
+const ItemBox: React.FC<ItemBoxProps> = ({ title, description, details, verified, navigateTo }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -20,9 +22,19 @@ const ItemBox: React.FC<ItemBoxProps> = ({ title, description, navigateTo }) => 
   return (
     <div className="item-box" onClick={handleClick}>
       <h3>{title}</h3>
-      <p className={`description ${description === 'Not Published' ? 'unpublished' : 'published'}`}>
-        {description}
-      </p>
+      {description && (
+        <p className={`description ${description === 'Not Published' ? 'unpublished' : 'published'}`}>
+          {description}
+        </p>
+      )}
+      {details && (
+        <p className="item-details">{details}</p>
+      )}
+      {verified && (
+        <p className={`description ${verified === 'Not Verified' ? 'unpublished' : 'published'}`}>
+          {verified}
+        </p>
+      )}
     </div>
   );
 };

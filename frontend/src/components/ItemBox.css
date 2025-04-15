@@ -40,3 +40,12 @@
 .item-box .description.unpublished {
   color: red;
 }
+
+.item-box .item-details {
+  text-align: left;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-left: 8px;
+  text-transform: capitalize;
+}
