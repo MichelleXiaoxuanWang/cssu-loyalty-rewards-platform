@@ -45,3 +45,13 @@
 .form button:hover {
   background-color: #0056b3;
 }
+
+/* Added styles to unify input box heights */
+input {
+  height: 30px;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}

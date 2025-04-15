@@ -2,7 +2,7 @@
   max-width: 100%;
   margin-left: 20%;
   margin-right: 10%;
-  padding: 0;
+  padding: 20px;
   text-align: center;
 }
 
@@ -130,4 +130,32 @@ button:disabled {
 .no-entries {
   font-weight: semi-bold;
   font-size: 20px;
+}
+
+/* Updated styles for no-navbar containers to center relative to root */
+.login-container, 
+.verify-container,
+.reset-container
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+
+.profile-container {
+  max-width: 600px;
+  padding: 2rem;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding-left: 40px;
+  padding-right: 40px;
+  margin-top: 20%;
 }

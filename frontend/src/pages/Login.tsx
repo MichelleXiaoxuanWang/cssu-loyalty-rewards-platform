@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import './LoginPage.css';
+import "../App.css";
 
 const LoginPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);

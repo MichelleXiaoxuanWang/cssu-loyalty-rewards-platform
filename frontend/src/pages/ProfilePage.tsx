@@ -190,7 +190,7 @@ const ProfilePage: React.FC = () => {
   if (!user) return <p>No user information available.</p>;
 
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '1rem', border: '1px solid #ddd' }}>
+    <div className='profile-container'>
       <h1>Profile</h1>
       {!editMode ? (
         <div>

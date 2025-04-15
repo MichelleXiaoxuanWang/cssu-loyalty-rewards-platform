@@ -21,7 +21,7 @@ const CreateUserPage: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '2rem auto' }}>
+    <div className='profile-container'>
       <h2>Create User</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {successMsg && <p style={{ color: 'green' }}>{successMsg}</p>}
