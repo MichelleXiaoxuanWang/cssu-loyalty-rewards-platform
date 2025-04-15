@@ -79,7 +79,7 @@ const OrganizersManagementPage: React.FC = () => {
       setNewOrganizerUtorid('');
       setUpdateMsg('Organizer added successfully!');
     } catch (err: any) {
-      setError(err.message);
+      alert("Error adding organizer: " + err.message || 'Failed to add organizer. Please try again.');
     }
   };
 
@@ -105,7 +105,7 @@ const OrganizersManagementPage: React.FC = () => {
       }
       setUpdateMsg('Organizer removed successfully!');
     } catch (err: any) {
-      setError(err.message);
+      alert("Error removing organizer: " + err.message || 'Failed to remove organizer. Please try again.');
     }
   };
 
