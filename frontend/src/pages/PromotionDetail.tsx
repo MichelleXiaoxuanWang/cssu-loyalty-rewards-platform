@@ -224,12 +224,12 @@ const PromotionDetailPage: React.FC = () => {
           <p><strong>Description:</strong> {promotion.description}</p>
           <p><strong>Type:</strong> {promotion.type}</p>
           <p><strong>End Time:</strong> {new Date(promotion.endTime).toLocaleString()}</p>
+          <p><strong>Min Spending:</strong> {promotion.minSpending !== undefined ? promotion.minSpending : 'N/A'}</p>
+          <p><strong>Rate:</strong> {promotion.rate !== undefined ? promotion.rate : 'N/A'}</p>
+          <p><strong>Points:</strong> {promotion.points}</p>
           {isManagerOrHigher && (
             <>
               <p><strong>Start Time:</strong> {promotion.startTime ? new Date(promotion.startTime).toLocaleString() : 'N/A'}</p>
-              <p><strong>Min Spending:</strong> {promotion.minSpending !== undefined ? promotion.minSpending : 'N/A'}</p>
-              <p><strong>Rate:</strong> {promotion.rate !== undefined ? promotion.rate : 'N/A'}</p>
-              <p><strong>Points:</strong> {promotion.points}</p>
             </>
           )}
           <div style={{ marginTop: '1rem' }}>
