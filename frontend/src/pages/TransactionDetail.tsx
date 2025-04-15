@@ -158,35 +158,59 @@ const TransactionDetailPage: React.FC = () => {
 
   const handleCreateAdjustmentClick = () => {
     setCreatingAdjustment(true);
+    setFeedbackMessage(null);
   };
 
   const handleAdjustmentSubmit = async (formData: Record<string, any>) => {
     try {
       if (!transaction) return;
+
+      // Validate that either amount or promotionIds is provided
+      if (!formData.amount && (!formData.promotionIds || formData.promotionIds.trim() === '')) {
+        alert('Please provide either an amount or promotion IDs');
+        return;
+      }
+
+      // If it's a purchase transaction and amount is empty, ensure promotionIds is provided
+      if (transaction.type === 'purchase' && !formData.amount && (!formData.promotionIds || formData.promotionIds.trim() === '')) {
+        alert('For purchase transactions, you must provide either an amount or promotion IDs');
+        return;
+      }
+
       const requestBody: AdjustmentTransactionData = {
         type: 'adjustment',
-        amount: formData.amount,
+        amount: formData.amount ? parseFloat(formData.amount) : 0,
         remark: formData.remark,
         relatedId: transaction.id,
         utorid: transaction.utorid
       };
 
-      // Include promotionIds if the transaction type is 'purchase' and promotionIds are provided
-      if (transaction.type === 'purchase' && formData.promotionIds) {
-        // Ensure promotionIds is parsed as an array of numbers
+      // Include promotionIds if provided
+      if (formData.promotionIds && formData.promotionIds.trim() !== '') {
         const parsedPromotionIds = formData.promotionIds
           .split(',')
           .map((id: string) => parseInt(id.trim(), 10))
           .filter((id: number) => !isNaN(id));
 
+        if (parsedPromotionIds.length === 0) {
+          alert('Please provide valid promotion IDs');
+          return;
+        }
+
         requestBody.promotionIds = parsedPromotionIds;
       }
 
-      await createAdjustmentTransaction(requestBody);
-      setFeedbackMessage('Adjustment transaction created successfully!');
+      const result = await createAdjustmentTransaction(requestBody);
+      if (!result) {
+        throw new Error('Failed to create adjustment transaction');
+      }
+      
+      // Only close window and show success message if the API call was successful
       setCreatingAdjustment(false);
+      setFeedbackMessage('Adjustment transaction created successfully!');
     } catch (err: any) {
-      setFeedbackMessage('Failed to create adjustment transaction. Please try again.');
+      alert(err.message || 'Failed to create adjustment transaction. Please try again.');
+      // Don't close the adjustment window or set feedback message on error
     }
   };
 

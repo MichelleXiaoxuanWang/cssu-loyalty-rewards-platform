@@ -1,4 +1,5 @@
 import { apiCall } from '../utils/api.utils';
+import { withErrorHandler } from '../utils/error.utils';
 
 // Transaction response interfaces
 export interface Transaction {
@@ -68,43 +69,62 @@ export type AdjustmentTransactionData = {
 
 // Functions for creating transactions
 const transferPoints = async (userId: string, transactionData: TransferTransactionData) => {
-  return apiCall(`/users/${userId}/transactions`, 'POST', transactionData );
+  return withErrorHandler(() => apiCall(`/users/${userId}/transactions`, 'POST', transactionData));
 };
 
 const redeemPoints = async (transactionData: RedeemTransactionData) => {
-  return apiCall('/users/me/transactions', 'POST', transactionData);
+  return withErrorHandler(() => apiCall('/users/me/transactions', 'POST', transactionData));
 };
 
 const purchaseTransaction = async (transactionData: PurchaseTransactionData) => {
-  return apiCall('/transactions', 'POST', transactionData);
-};
-
-export const createAdjustmentTransaction = async (transactionData: AdjustmentTransactionData) => {
-  return apiCall('/transactions', 'POST', transactionData);
+  return withErrorHandler(() => apiCall('/transactions', 'POST', transactionData));
 };
 
 // Function for processing redemption transactions
 const processRedemptionTransaction = async (transactionId: number): Promise<Transaction> => {
-  return apiCall(`/transactions/${transactionId}/processed`, 'PATCH', { processed: true });
+  const result = await withErrorHandler(() => apiCall(`/transactions/${transactionId}/processed`, 'PATCH', { processed: true }));
+  if (!result) {
+    throw new Error('Failed to process redemption transaction');
+  }
+  return result;
 };
 
 // Functions for retrieving transactions
 const getMyTransactions = async (filters?: TransactionFilters): Promise<TransactionResponse> => {
-  const response = await apiCall('/users/me/transactions', 'GET', filters);
-  console.log('getMyTransactions response:', response);
-  return response;
+  const result = await withErrorHandler(async () => {
+    const response = await apiCall('/users/me/transactions', 'GET', filters);
+    return response;
+  });
+  if (!result) {
+    throw new Error('Failed to fetch transactions');
+  }
+  return result;
 };
 
 const getAllTransactions = async (filters?: TransactionFilters): Promise<TransactionResponse> => {
-  const response = await apiCall('/transactions', 'GET', filters);
-  console.log('getAllTransactions response:', response);
-  return response;
+  const result = await withErrorHandler(async () => {
+    const response = await apiCall('/transactions', 'GET', filters);
+    return response;
+  });
+  if (!result) {
+    throw new Error('Failed to fetch all transactions');
+  }
+  return result;
 };
 
 const getTransactionById = async (id: number): Promise<Transaction> => {
-  const response = await apiCall(`/transactions/${id}`, 'GET');
-  console.log('getTransactionById response:', response);
-  return response;
+  const result = await withErrorHandler(async () => {
+    const response = await apiCall(`/transactions/${id}`, 'GET');
+    return response;
+  });
+  if (!result) {
+    throw new Error('Failed to fetch transaction');
+  }
+  return result;
+};
+
+export const createAdjustmentTransaction = async (transactionData: AdjustmentTransactionData) => {
+  return withErrorHandler(() => apiCall('/transactions', 'POST', transactionData));
 };
 
 export const SORT_OPTIONS = [

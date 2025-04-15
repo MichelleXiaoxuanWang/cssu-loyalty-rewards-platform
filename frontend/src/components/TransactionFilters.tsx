@@ -62,7 +62,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
     // Validate amount is positive integer if provided
     if (submittedFilters.amount !== undefined) {
       if (submittedFilters.amount < 0) {
-        alert('Amount must be a positive integer');
+        alert('Amount must be a non-negative integer');
         return;
       }
       if (!Number.isInteger(submittedFilters.amount)) {
@@ -181,8 +181,8 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
           {/* Amount Filter with Operator */}
           <div className="filter-group amount-filter">
             <label htmlFor="amount">
-              Points Amount Involved
-              <span className="hint-text">(positive integer)</span>
+              Points Involved
+              <span className="hint-text">(non-negative integer)</span>
             </label>
             <div className="amount-filter-group">
               <select 
