@@ -90,8 +90,9 @@ const UsersPage: React.FC = () => {
         users.map((user) => (
           <ItemBox
             key={user.id}
-            title={`ID: ${user.id} - Name: ${user.name}`}
-            description={`Role: ${user.role}, Verified: ${user.verified}`}
+            title={`ID: ${user.id} - ${user.name}`}
+            verified={`${user.verified ? 'Verified' : 'Not Verified'}`}
+            details={`${user.role}`}
             navigateTo={`/users/${user.id}`}
           />
         ))
