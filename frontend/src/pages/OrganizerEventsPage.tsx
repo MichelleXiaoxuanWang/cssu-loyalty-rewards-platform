@@ -87,7 +87,7 @@ const OrganizerEventsPage: React.FC = () => {
           <ItemBox
             key={event.id}
             title={`ID: ${event.id} - Name: ${event.name}`}
-            description={`Description: ${event.description || 'No description available'}`}
+            description={`${event.published ? 'Published' : 'Not Published'}`}
             navigateTo={`/events/${event.id}`}
           />
         ))
