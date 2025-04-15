@@ -54,11 +54,40 @@ All dependencies are listed in the `backend/package.json` file:
 ## Frontend
 All dependencies are listed in the `frontend/package.json` file:
 ```
-TODO
+"dependencies": {
+		"next": "^15.2.4",
+		"qrcode.react": "^4.2.0",
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"react-router-dom": "^7.4.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@eslint/js": "^9.21.0",
+		"@types/react": "^19.0.10",
+		"@types/react-dom": "^19.0.4",
+		"@vitejs/plugin-react": "^4.3.4",
+		"eslint": "^9.21.0",
+		"eslint-plugin-react-hooks": "^5.1.0",
+		"eslint-plugin-react-refresh": "^0.4.19",
+		"globals": "^15.15.0",
+		"typescript": "~5.7.2",
+		"typescript-eslint": "^8.24.1",
+		"vite": "^6.2.0"
+	}
 ```
 
 Specifically, the following packages are required:
-- TODO
+- next
+- qrcode.react
+- react
+- react-dom
+- @types/react
+- @types/react-dom
+- @vitejs/plugin-react
+- globals
+- typescript
+- vite
 
 # How to set up the backend and frontend
 ## Development
@@ -73,25 +102,15 @@ Specifically, the following packages are required:
     PORT=8000
     CLIENT_URL=http://localhost:3000
     ```
-3. install the dependencies, and start the server:
+3. install the dependencies, start the server and seed the database:
     ```
-    npm install
-    npm run dev
+    npm start
+    npx prisma generate
+    node index.js
     ```
 4. You can now access the backend server at `http://localhost:8000`, where 8000 should be replaced by the port you specified in the `.env` file, and the server will accept requests coming from the client URL you specified in the `.env` file. 
    - If you did not specify the `.env` file, the server will run on port 8000 and accept requests coming from `http://localhost:3000` by default. 
    - Any changes you make to the backend code will be reflected automatically without having to restart the server.
-
-5. [Optional] seed the database with the following commands:
-    If you have created test data in the database, you need to reset the database first: 
-    ```
-    npx prisma db push --force-reset
-    ```
-
-    Then, seed the database with the following command:
-    ```
-    npx prisma db seed
-    ```
 
 ### Frontend
 
@@ -112,8 +131,6 @@ Specifically, the following packages are required:
 
 ## Deployment
 
-
-
-# Information on how to deploy your website
+Done through railway, website: 309projfrontend-production.up.railway.app
 
 
