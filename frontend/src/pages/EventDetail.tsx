@@ -111,7 +111,7 @@ const EventDetailPage: React.FC = () => {
           ...(data.published !== undefined && { published: data.published }),
         });
       } catch (err: any) {
-        setError(err.message);
+        alert(err.message || 'Failed to fetch event details. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -219,7 +219,9 @@ const EventDetailPage: React.FC = () => {
       setUpdateMsg('Event updated successfully!');
       setEditMode(false);
     } catch (err: any) {
-      setError(err.message);
+      alert(err.message || 'Failed to update event. Please try again.');
+      // Keep the user in edit mode when update fails
+      setEditMode(true);
     }
   };
 
