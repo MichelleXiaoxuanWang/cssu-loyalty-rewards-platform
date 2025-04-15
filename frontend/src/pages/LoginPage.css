@@ -1,0 +1,54 @@
+.login-container {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 150px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+button {
+    margin-top:1rem;
+}
+.login-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.error-message {
+    color: #d32f2f;
+    background-color: #ffebee;
+    padding: 0.5rem 1rem;
+    border: 1px solid #f44336;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.login-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-container a:hover {
+    text-decoration: underline;
+}
+
+.login-container p {
+    font-size: 14px;
+    text-align: center;
+    margin-top: 1rem;
+}
+input[type="text"],
+input[type="password"],
+textarea {
+    height: 30px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+}

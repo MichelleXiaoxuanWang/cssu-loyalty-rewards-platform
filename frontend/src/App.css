@@ -5,6 +5,7 @@
   padding: 0;
   text-align: center;
 }
+
 @media screen and (max-width: 800px){
   .app-container{
     margin-top: 150px;
