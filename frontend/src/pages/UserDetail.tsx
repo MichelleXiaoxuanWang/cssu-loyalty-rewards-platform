@@ -212,7 +212,7 @@ const UserDetailPage: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '1rem', border: '1px solid #ddd' }}>
+    <div className='profile-container'>
       <h1>User Details</h1>
       {!editMode ? (
         renderUserInfo()
