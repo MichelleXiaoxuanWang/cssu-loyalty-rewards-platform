@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const [utorid, setUtorid] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
-  const [maxRole, setMaxRole] = useState<string | null>(null);
+  // const [maxRole, setMaxRole] = useState<string | null>(null);
   const [currentRole, setCurrentRoleState] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
@@ -33,7 +33,7 @@ const Navbar: React.FC = () => {
     
     setUtorid(userUtorid);
     setUserName(name);
-    setMaxRole(userMaxRole);
+    // setMaxRole(userMaxRole);
     setCurrentRoleState(userCurrentRole);
     
     // Determine available roles based on the user's maximum role

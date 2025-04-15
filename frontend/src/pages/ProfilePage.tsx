@@ -19,7 +19,7 @@ interface UserData {
 }
 
 const ProfilePage: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   
   // Basic user state
   const [user, setUser] = useState<UserData | null>(null);

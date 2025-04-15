@@ -3,19 +3,19 @@ import ItemBox from '../components/ItemBox';
 import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
-import { fetchPromotions, updatePromotion, createPromotion, Promotion, PromotionFilters, PromotionResponse } from '../services/promotion.service';
+import { fetchPromotions, createPromotion, Promotion, PromotionFilters, PromotionResponse } from '../services/promotion.service';
 import '../App.css';
 
 const PromotionsPage: React.FC = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
-  const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
+  // const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
   const [creatingPromotion, setCreatingPromotion] = useState(false);
   const [totalPromotions, setTotalPromotions] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<PromotionFilters>({
       page: 1,
       limit: 5
@@ -25,7 +25,7 @@ const PromotionsPage: React.FC = () => {
 
   useEffect(() => {
       const loadPromotions = async () => {
-        setLoading(true);
+        // setLoading(true);
         try {
           const response: PromotionResponse = await fetchPromotions(filters);
           setPromotions(response.results);
@@ -33,10 +33,10 @@ const PromotionsPage: React.FC = () => {
           setCurrentPage(filters.page || 1);
           setItemsPerPage(filters.limit || 10);
         } catch (err) {
-          setError('Failed to load promotions. Please try again later.');
+          // setError('Failed to load promotions. Please try again later.');
           console.error('Error fetching promotions:', err);
         } finally {
-          setLoading(false);
+          // setLoading(false);
         }
       };
   

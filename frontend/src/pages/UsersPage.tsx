@@ -10,8 +10,8 @@ const UsersPage: React.FC = () => {
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<UserFilters>({
     page: 1,
     limit: 5
@@ -21,7 +21,7 @@ const UsersPage: React.FC = () => {
 
   useEffect(() => {
     const loadUsers = async () => {
-      setLoading(true);
+      // setLoading(true);
       try {
         const response: UserResponse = await fetchUsers(filters);
         setUsers(response.results);
@@ -29,10 +29,10 @@ const UsersPage: React.FC = () => {
         setCurrentPage(filters.page || 1);
         setItemsPerPage(filters.limit || 10);
       } catch (err) {
-        setError('Failed to load users. Please try again later.');
+        // setError('Failed to load users. Please try again later.');
         console.error('Error fetching users:', err);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 

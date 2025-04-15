@@ -10,8 +10,8 @@ const OrganizerEventsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalEvents, setTotalEvents] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
   const currentUser = localStorage.getItem('currentUser');
   const currentUserId = localStorage.getItem(`userId_${currentUser}`);
   const [filters, setFilters] = useState<EventFilters>({
@@ -22,8 +22,8 @@ const OrganizerEventsPage: React.FC = () => {
 
   useEffect(() => {
     const loadEvents = async () => {
-      setLoading(true);
-      setError(null);
+      // setLoading(true);
+      // setError(null);
       try {
         const response: EventResponse = await fetchEvents(filters); 
         setEvents(response.results);
@@ -32,9 +32,9 @@ const OrganizerEventsPage: React.FC = () => {
         setItemsPerPage(filters.limit || 10);
       } catch (err) {
         console.error('Error loading events:', err);
-        setError('Failed to load events.');
+        // setError('Failed to load events.');
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
     loadEvents();

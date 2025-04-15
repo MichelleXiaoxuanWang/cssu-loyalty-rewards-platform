@@ -7,7 +7,7 @@ const CreateUserPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [createdUser, setCreatedUser] = useState<any>(null);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleUserCreated = (user: any) => {
     setCreatedUser(user);

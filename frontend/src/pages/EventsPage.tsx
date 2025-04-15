@@ -13,8 +13,8 @@ const EventsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<EventFilters>({
       page: 1,
       limit: 5
@@ -24,7 +24,7 @@ const EventsPage: React.FC = () => {
 
   useEffect(() => {
     const loadEvents = async () => {
-      setLoading(true);
+      // setLoading(true);
       try {
         const response: EventResponse = await fetchEvents(filters);
         
@@ -33,10 +33,10 @@ const EventsPage: React.FC = () => {
         setCurrentPage(filters.page || 1);
         setItemsPerPage(filters.limit || 10);
       } catch (err) {
-        setError('Failed to load events. Please try again later.');
+        // setError('Failed to load events. Please try again later.');
         console.error('Error fetching events:', err);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     };
 
