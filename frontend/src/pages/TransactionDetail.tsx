@@ -240,9 +240,9 @@ const TransactionDetailPage: React.FC = () => {
           <span>
             {transaction.type}
             {transaction.type === 'redemption' && (
-              <span className={`status-indicator ${isRedemptionProcessed() ? 'status-positive' : 'status-warning'}`}>
+              <div className={`status-tag-detail ${isRedemptionProcessed() ? 'processed-tag-detail' : 'unprocessed-tag-detail'}`}>
                 {isRedemptionProcessed() ? 'Processed' : 'Pending'}
-              </span>
+              </div>
             )}
           </span>
         </div>

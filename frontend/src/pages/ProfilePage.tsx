@@ -2,6 +2,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api.config';
+import '../styles/DetailPages.css';
 
 interface UserData {
   id: number;
@@ -186,31 +187,69 @@ const ProfilePage: React.FC = () => {
   };
 
   if (loading) return <p>Loading profile...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  if (error) return <p className="error-message">Error: {error}</p>;
   if (!user) return <p>No user information available.</p>;
 
   return (
-    <div className='profile-container'>
+    <div className="detail-page-container">
       <h1>Profile</h1>
       {!editMode ? (
-        <div>
-          <p><strong>Id:</strong> {user.id}</p>
-          <p><strong>UTORid:</strong> {user.utorid}</p>
-          <p><strong>Name:</strong> {user.name}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Birthday:</strong> {user.birthday}</p>
-          <p><strong>Role:</strong> {user.role}</p>
-          <p><strong>Points:</strong> {user.points}</p>
-          <p><strong>Created At:</strong> {new Date(user.createdAt).toLocaleString()}</p>
-          <p><strong>Last Login:</strong> {new Date(user.lastLogin).toLocaleString()}</p>
-          <p><strong>Verified:</strong> {user.verified ? 'Yes' : 'No'}</p>
-          <button onClick={handleEditClick} style={{ marginTop: '1rem' }}>Edit Profile</button>
-          <button onClick={handlePasswordToggle} style={{ marginTop: '1rem', marginLeft: '1rem' }}>
-            {passwordEditMode ? 'Cancel Password Change' : 'Change Password'}
-          </button>
+        <div className="detail-content">
+          <div className="detail-field">
+            <strong>Id:</strong>
+            <span>{user.id}</span>
+          </div>
+          <div className="detail-field">
+            <strong>UTORid:</strong>
+            <span>{user.utorid}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Name:</strong>
+            <span>{user.name}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Email:</strong>
+            <span>{user.email}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Birthday:</strong>
+            <span>{user.birthday}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Role:</strong>
+            <span>{user.role}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Points:</strong>
+            <span>{user.points}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Created At:</strong>
+            <span>{new Date(user.createdAt).toLocaleString()}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Last Login:</strong>
+            <span>{new Date(user.lastLogin).toLocaleString()}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Verified:</strong>
+            <span>
+              {user.verified ? 
+                <span className="status-indicator status-positive">Yes</span> : 
+                <span className="status-indicator status-negative">No</span>}
+            </span>
+          </div>
+          
+          <div className="action-buttons">
+            <button onClick={handleEditClick} className="detail-button primary-button">Edit Profile</button>
+            <button onClick={handlePasswordToggle} className="detail-button secondary-button">
+              {passwordEditMode ? 'Cancel Password Change' : 'Change Password'}
+            </button>
+          </div>
+          
           {passwordEditMode && (
-            <form onSubmit={handlePasswordSubmit} style={{ marginTop: '1rem' }}>
-              <div style={{ marginBottom: '1rem' }}>
+            <form onSubmit={handlePasswordSubmit} className="edit-form">
+              <div className="form-group">
                 <label htmlFor="oldPassword"><strong>Current Password:</strong></label>
                 <input
                   type="password"
@@ -218,11 +257,10 @@ const ProfilePage: React.FC = () => {
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
                   required
-                  style={{ width: '100%' }}
                   placeholder="Enter current password"
                 />
               </div>
-              <div style={{ marginBottom: '1rem' }}>
+              <div className="form-group">
                 <label htmlFor="newPassword"><strong>New Password:</strong></label>
                 <input
                   type="password"
@@ -230,21 +268,20 @@ const ProfilePage: React.FC = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  style={{ width: '100%' }}
                   placeholder="Enter new password"
                 />
               </div>
-              <button type="submit" style={{ width: '100%' }}>
-                Update Password
-              </button>
-              {pwError && <p style={{ color: 'red' }}>{pwError}</p>}
-              {pwSuccess && <p style={{ color: 'green' }}>{pwSuccess}</p>}
+              <div className="action-buttons">
+                <button type="submit" className="detail-button primary-button">Update Password</button>
+              </div>
+              {pwError && <p className="error-message">{pwError}</p>}
+              {pwSuccess && <p className="success-message">{pwSuccess}</p>}
             </form>
           )}
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
+        <form onSubmit={handleSubmit} className="edit-form">
+          <div className="form-group">
             <label htmlFor="name"><strong>Name:</strong></label>
             <input
               type="text"
@@ -253,10 +290,9 @@ const ProfilePage: React.FC = () => {
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter your name"
-              style={{ width: '100%' }}
             />
           </div>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="form-group">
             <label htmlFor="email"><strong>Email:</strong></label>
             <input
               type="email"
@@ -265,10 +301,9 @@ const ProfilePage: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              style={{ width: '100%' }}
             />
           </div>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="form-group">
             <label htmlFor="birthday"><strong>Birthday:</strong></label>
             <input
               type="date"
@@ -276,11 +311,12 @@ const ProfilePage: React.FC = () => {
               name="birthday"
               value={formData.birthday}
               onChange={handleChange}
-              style={{ width: '100%' }}
             />
           </div>
-          <button type="submit" style={{ marginRight: '1rem' }}>Save Changes</button>
-          <button type="button" onClick={handleCancel}>Cancel</button>
+          <div className="action-buttons">
+            <button type="submit" className="detail-button primary-button">Save Changes</button>
+            <button type="button" onClick={handleCancel} className="detail-button secondary-button">Cancel</button>
+          </div>
         </form>
       )}
     </div>

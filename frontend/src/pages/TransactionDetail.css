@@ -48,22 +48,29 @@
   margin-right: 8px;
 }
 
-.status-tag {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 12px;
+.status-tag-detail {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  font-size: 0.7rem;
+  padding: 3px 7px;
+  border-radius: 4px;
   font-weight: 500;
-  color: white;
+  display: inline-block;
+}
+
+.processed-tag-detail {
+  background-color: var(--success-bg);
+  color: var(--success-color);
   margin-left: 10px;
 }
 
-.processed-tag {
-  background-color: var(--processed-color, #4CAF50);
-}
-
-.unprocessed-tag {
-  background-color: var(--unprocessed-color, #757575);
+.unprocessed-tag-detail {
+  background-color: var(--pending-bg);
+  color: var(--pending-color);
+  margin-left: 10px;
 }
 
 .suspicious-badge {
