@@ -51,6 +51,9 @@ const PromotionsPage: React.FC = () => {
     try {
       let newPromotion: Promotion;
       if (creatingPromotion) {
+        if (formData.type == undefined || formData.type == null || formData.type == "") {
+          formData.type = "automatic";
+        }
         newPromotion = await createPromotion(formData);
         setCreatingPromotion(false);
         // Check if the current page is full
@@ -66,6 +69,7 @@ const PromotionsPage: React.FC = () => {
       }
       setFeedbackMessage('Submission successful!');
     } catch (error) {
+      console.error('Error creating promotion:', error);
       setFeedbackMessage('Submission failed. Please try again.');
     }
   };
