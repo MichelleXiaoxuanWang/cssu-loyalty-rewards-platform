@@ -2,6 +2,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api.config';
+import '../styles/DetailPages.css';
 
 interface UserData {
   id: number;
@@ -141,70 +142,148 @@ const UserDetailPage: React.FC = () => {
   };
 
   if (loading) return <p>Loading user details...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  if (error) return <p className="error-message">Error: {error}</p>;
   if (!user) return <p>No user information available.</p>;
 
   // Render based on the current user's role.
-  // For cashiers: limited information, including UTORid, Name, Points, Verified, and Promotions.
   const renderUserInfo = () => {
     if (currentUserRole === 'cashier') {
       return (
-        <div>
-        <p><strong>Id:</strong> {user.id}</p>
-          <p><strong>UTORid:</strong> {user.utorid}</p>
-          <p><strong>Name:</strong> {user.name}</p>
-          <p><strong>Points:</strong> {user.points}</p>
-          <p><strong>Verified:</strong> {user.verified ? 'Yes' : 'No'}</p>
+        <div className="detail-content">
+          <div className="detail-field">
+            <strong>Id:</strong>
+            <span>{user.id}</span>
+          </div>
+          <div className="detail-field">
+            <strong>UTORid:</strong>
+            <span>{user.utorid}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Name:</strong>
+            <span>{user.name}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Points:</strong>
+            <span>{user.points}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Verified:</strong>
+            <span>
+              {user.verified ? 
+                <span className="status-indicator status-positive">Yes</span> : 
+                <span className="status-indicator status-negative">No</span>}
+            </span>
+          </div>
+          
           {user.promotions && user.promotions.length > 0 && (
-            <div style={{ marginTop: '1rem' }}>
+            <div className="detail-section">
               <h3>Available Promotions</h3>
-              {user.promotions.map((promo, idx) => (
-                <div key={idx}>
-                  <p>
+              <div className="list-group">
+                {user.promotions.map((promo, idx) => (
+                  <div key={idx} className="list-item">
                     <strong>ID:</strong> {promo.id} | <strong>Name:</strong> {promo.name}
-                  </p>
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
-          <button onClick={() => navigate(`/${user.utorid}/transactions`)} style={{ marginTop: '1rem' }}>
-            Back to Transactions List
-          </button>
+          
+          <div className="action-buttons">
+            <button onClick={() => navigate(`/${user.utorid}/transactions`)} className="detail-button secondary-button">
+              Back to Transactions List
+            </button>
+          </div>
         </div>
       );
     } else {
       // For managers or superusers: display full details
       return (
-        <div>
-           <p><strong>Id:</strong> {user.id}</p>
-          <p><strong>UTORid:</strong> {user.utorid}</p>
-          <p><strong>Name:</strong> {user.name}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          {user.birthday && <p><strong>Birthday:</strong> {user.birthday}</p>}
-          <p><strong>Role:</strong> {user.role}</p>
-          <p><strong>Points:</strong> {user.points}</p>
-          {user.createdAt && <p><strong>Created At:</strong> {new Date(user.createdAt).toLocaleString()}</p>}
-          {user.lastLogin && <p><strong>Last Login:</strong> {new Date(user.lastLogin).toLocaleString()}</p>}
-          <p><strong>Verified:</strong> {user.verified ? 'Yes' : 'No'}</p>
-          <div>
-            {user.avatarUrl && <img src={user.avatarUrl} alt="Avatar" style={{ width: '150px' }} />}
+        <div className="detail-content">
+          <div className="detail-field">
+            <strong>Id:</strong>
+            <span>{user.id}</span>
           </div>
-          {user.promotions && user.promotions.length > 0 && (
-            <div style={{ marginTop: '1rem' }}>
-              <h3>Available Promotions</h3>
-              {user.promotions.map((promo, idx) => (
-                <div key={idx}>
-                  <p>
-                    <strong>ID:</strong> {promo.id} | <strong>Name:</strong> {promo.name}
-                  </p>
-                </div>
-              ))}
+          <div className="detail-field">
+            <strong>UTORid:</strong>
+            <span>{user.utorid}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Name:</strong>
+            <span>{user.name}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Email:</strong>
+            <span>{user.email}</span>
+          </div>
+          
+          {user.birthday && (
+            <div className="detail-field">
+              <strong>Birthday:</strong>
+              <span>{user.birthday}</span>
             </div>
           )}
+          
+          <div className="detail-field">
+            <strong>Role:</strong>
+            <span>{user.role}</span>
+          </div>
+          
+          <div className="detail-field">
+            <strong>Points:</strong>
+            <span>{user.points}</span>
+          </div>
+          
+          {user.createdAt && (
+            <div className="detail-field">
+              <strong>Created At:</strong>
+              <span>{new Date(user.createdAt).toLocaleString()}</span>
+            </div>
+          )}
+          
+          {user.lastLogin && (
+            <div className="detail-field">
+              <strong>Last Login:</strong>
+              <span>{new Date(user.lastLogin).toLocaleString()}</span>
+            </div>
+          )}
+          
+          <div className="detail-field">
+            <strong>Verified:</strong>
+            <span>
+              {user.verified ? 
+                <span className="status-indicator status-positive">Yes</span> : 
+                <span className="status-indicator status-negative">No</span>}
+            </span>
+          </div>
+          
+          {user.avatarUrl && (
+            <div className="detail-field">
+              <strong>Avatar:</strong>
+              <span>
+                <img src={user.avatarUrl} alt="Avatar" className="detail-image" />
+              </span>
+            </div>
+          )}
+          
+          {user.promotions && user.promotions.length > 0 && (
+            <div className="detail-section">
+              <h3>Available Promotions</h3>
+              <div className="list-group">
+                {user.promotions.map((promo, idx) => (
+                  <div key={idx} className="list-item">
+                    <strong>ID:</strong> {promo.id} | <strong>Name:</strong> {promo.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
-            <button onClick={handleEditClick} style={{ marginTop: '1rem' }}>
-              Edit User Details
-            </button>
+            <div className="action-buttons">
+              <button onClick={handleEditClick} className="detail-button primary-button">
+                Edit User Details
+              </button>
+            </div>
           )}
         </div>
       );
@@ -212,13 +291,14 @@ const UserDetailPage: React.FC = () => {
   };
 
   return (
-    <div className='profile-container'>
+    <div className="detail-page-container">
       <h1>User Details</h1>
+      
       {!editMode ? (
         renderUserInfo()
       ) : (
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
+        <form onSubmit={handleSubmit} className="edit-form">
+          <div className="form-group">
             <label htmlFor="email"><strong>Email:</strong></label>
             <input
               type="email"
@@ -226,43 +306,42 @@ const UserDetailPage: React.FC = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              style={{ width: '100%' }}
             />
           </div>
+          
           {/* Only managers/superusers have full access to these fields */}
-          <div style={{ marginBottom: '1rem' }}>
-            <label>
-              <strong>Verified:</strong>
+          <div className="form-group">
+            <label className="checkbox-label">
               <input
                 type="checkbox"
                 name="verified"
                 checked={formData.verified}
                 onChange={handleChange}
-                style={{ marginLeft: '1rem' }}
               />
+              <strong>Verified</strong>
             </label>
           </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label>
-              <strong>Suspicious:</strong>
+          
+          <div className="form-group">
+            <label className="checkbox-label">
               <input
                 type="checkbox"
                 name="suspicious"
                 checked={(formData as any).suspicious}
                 onChange={handleChange}
-                style={{ marginLeft: '1rem' }}
               />
+              <strong>Suspicious</strong>
             </label>
           </div>
+          
           {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
-            <div style={{ marginBottom: '1rem' }}>
+            <div className="form-group">
               <label htmlFor="role"><strong>Role:</strong></label>
               <select
                 id="role"
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                style={{ marginLeft: '1rem' }}
               >
                 {currentUserRole === 'superuser' ? (
                   <>
@@ -280,8 +359,11 @@ const UserDetailPage: React.FC = () => {
               </select>
             </div>
           )}
-          <button type="submit" style={{ marginRight: '1rem' }}>Save Changes</button>
-          <button type="button" onClick={handleCancel}>Cancel</button>
+          
+          <div className="action-buttons">
+            <button type="submit" className="detail-button primary-button">Save Changes</button>
+            <button type="button" onClick={handleCancel} className="detail-button secondary-button">Cancel</button>
+          </div>
         </form>
       )}
     </div>

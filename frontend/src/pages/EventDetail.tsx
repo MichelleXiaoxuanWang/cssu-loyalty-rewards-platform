@@ -2,6 +2,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api.config';
+import '../styles/DetailPages.css';
 
 interface Organizer {
   id: number;
@@ -250,187 +251,233 @@ const EventDetailPage: React.FC = () => {
   };
 
   if (loading) return <p>Loading event details...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  if (error) return <p className="error-message">Error: {error}</p>;
   if (!eventData) return <p>No event information available.</p>;
 
   const fullAccess = hasFullAccess(eventData);
 
   return (
-      <div className='profile-container'>
-        <h1>Event Details (ID: {eventData.id})</h1>
+    <div className="detail-page-container">
+      <h1>Event Details (ID: {eventData.id})</h1>
 
-        {/* two bottons here */}
-        {fullAccess && (
-            <div style={{ marginBottom: '1rem' }}>
-              <button onClick={handleEditClick} style={{ marginRight: '1rem' }}>
-                Edit Event Details
-              </button>
-              <button onClick={() => navigate(`/events/${eventData.id}/transactions`)}>
-                Add Event Transaction
-              </button>
-            </div>
-        )}
+      {fullAccess && (
+        <div className="action-buttons">
+          <button onClick={handleEditClick} className="detail-button primary-button">
+            Edit Event Details
+          </button>
+          <button onClick={() => navigate(`/events/${eventData.id}/transactions`)} className="detail-button secondary-button">
+            Add Event Transaction
+          </button>
+        </div>
+      )}
 
-        {/* Display mode */}
-        {!editMode ? (
-            <div>
-              <p><strong>Name:</strong> {eventData.name}</p>
-              <p><strong>Description:</strong> {eventData.description}</p>
-              <p><strong>Location:</strong> {eventData.location}</p>
-              <p>
-                <strong>Start Time:</strong> {new Date(eventData.startTime).toLocaleString()}
-              </p>
-              <p>
-                <strong>End Time:</strong> {new Date(eventData.endTime).toLocaleString()}
-              </p>
-              <p>
-                <strong>Capacity:</strong> {eventData.capacity !== null ? eventData.capacity : 'Unlimited'}
-              </p>
+      {/* Display mode */}
+      {!editMode ? (
+        <div className="detail-content">
+          <div className="detail-field">
+            <strong>Name:</strong>
+            <span>{eventData.name}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Description:</strong>
+            <span>{eventData.description}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Location:</strong>
+            <span>{eventData.location}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Start Time:</strong>
+            <span>{new Date(eventData.startTime).toLocaleString()}</span>
+          </div>
+          <div className="detail-field">
+            <strong>End Time:</strong>
+            <span>{new Date(eventData.endTime).toLocaleString()}</span>
+          </div>
+          <div className="detail-field">
+            <strong>Capacity:</strong>
+            <span>{eventData.capacity !== null ? eventData.capacity : 'Unlimited'}</span>
+          </div>
 
-              {fullAccess ? (
-                  <>
-                    <p><strong>Points Remain:</strong> {eventData.pointsRemain}</p>
-                    <p><strong>Points Awarded:</strong> {eventData.pointsAwarded}</p>
-                    <p><strong>Published:</strong> {eventData.published ? 'Yes' : 'No'}</p>
-                    <h3>Organizers</h3>
-                    {eventData.organizers.map(org => (
-                        <p key={org.id}>
-                          <strong>ID:</strong> {org.id} | <strong>Name:</strong> {org.name}
-                        </p>
-                    ))}
-                    <h3>Guests</h3>
-                    {eventData.guests && eventData.guests.length > 0 ? (
-                        eventData.guests.map(guest => (
-                            <p key={guest.id}>
-                              <strong>ID:</strong> {guest.id} | <strong>Name:</strong> {guest.name}
-                            </p>
-                        ))
-                    ) : (
-                        <p>No guests yet.</p>
-                    )}
-                  </>
-              ) : (
-                  <p><strong>Number of Guests:</strong> {eventData.numGuests}</p>
-              )}
+          {fullAccess ? (
+            <>
+              <div className="detail-field">
+                <strong>Points Remain:</strong>
+                <span>{eventData.pointsRemain}</span>
+              </div>
+              <div className="detail-field">
+                <strong>Points Awarded:</strong>
+                <span>{eventData.pointsAwarded}</span>
+              </div>
+              <div className="detail-field">
+                <strong>Published:</strong>
+                <span>
+                  {eventData.published ? 
+                    <span className="status-indicator status-positive">Yes</span> : 
+                    <span className="status-indicator status-negative">No</span>}
+                </span>
+              </div>
 
-              <div style={{ marginTop: '2rem' }}>
-                {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
-                  (eventData.organizers.some(org => org.utorid === currentUser))) && (
-                  <button
-                      onClick={() => navigate(`/events/${eventData.id}/organizers`)}
-                      style={{ marginRight: '1rem' }}
-                  >
-                    Manage Organizers
-                  </button>
-                )}
-                {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
-                  (eventData.organizers.some(org => org.utorid === currentUser))) ? (
-                  <button onClick={() => navigate(`/events/${eventId}/guests-manage`)}>Manage Guests</button>
-                ) : (
-                  <button onClick={handleRegister}>Register to this Event</button>
-                )}
-              </div>
-              {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
-            </div>
-        ) : (
-            // edit form
-            <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: '1rem' }}>
-                <label><strong>Name:</strong></label>
-                <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleFormChange}
-                    style={{ width: '100%' }}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label><strong>Description:</strong></label>
-                <input
-                    type="text"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleFormChange}
-                    style={{ width: '100%' }}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label><strong>Location:</strong></label>
-                <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleFormChange}
-                    style={{ width: '100%' }}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label><strong>Start Time:</strong></label>
-                <input
-                    type="datetime-local"
-                    name="startTime"
-                    value={formData.startTime}
-                    onChange={handleFormChange}
-                    style={{ width: '100%' }}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label><strong>End Time:</strong></label>
-                <input
-                    type="datetime-local"
-                    name="endTime"
-                    value={formData.endTime}
-                    onChange={handleFormChange}
-                    style={{ width: '100%' }}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label><strong>Capacity:</strong></label>
-                <input
-                    type="number"
-                    name="capacity"
-                    value={formData.capacity}
-                    onChange={handleFormChange}
-                    style={{ width: '100%' }}
-                    placeholder="Leave blank for unlimited"
-                />
-              </div>
-              {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
-                  <>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <label><strong>Total Points Allocated:</strong></label>
-                      <input
-                          type="number"
-                          name="points"
-                          value={formData.points || ''}
-                          onChange={handleFormChange}
-                          style={{ width: '100%' }}
-                      />
+              <div className="detail-section">
+                <h3>Organizers</h3>
+                <div className="list-group">
+                  {eventData.organizers.map(org => (
+                    <div key={org.id} className="list-item">
+                      <strong>ID:</strong> {org.id} | <strong>Name:</strong> {org.name}
                     </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <label>
-                        <strong>Published:</strong>
-                        <input
-                            type="checkbox"
-                            name="published"
-                            checked={!!formData.published}
-                            onChange={(e) =>
-                                setFormData({ ...formData, published: e.target.checked })
-                            }
-                            style={{ marginLeft: '1rem' }}
-                        />
-                      </label>
-                    </div>
-                  </>
-              )}
-              <button type="submit" style={{ marginRight: '1rem' }}>Save Changes</button>
-              <button type="button" onClick={handleCancel}>Cancel</button>
-              {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
-              {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
-            </form>
-        )}
-      </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="detail-section">
+                <h3>Guests</h3>
+                <div className="list-group">
+                  {eventData.guests && eventData.guests.length > 0 ? (
+                    eventData.guests.map(guest => (
+                      <div key={guest.id} className="list-item">
+                        <strong>ID:</strong> {guest.id} | <strong>Name:</strong> {guest.name}
+                      </div>
+                    ))
+                  ) : (
+                    <p>No guests yet.</p>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="detail-field">
+              <strong>Number of Guests:</strong>
+              <span>{eventData.numGuests}</span>
+            </div>
+          )}
+
+          <div className="action-buttons">
+            {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
+              (eventData.organizers.some(org => org.utorid === currentUser))) && (
+              <button
+                onClick={() => navigate(`/events/${eventData.id}/organizers`)}
+                className="detail-button secondary-button"
+              >
+                Manage Organizers
+              </button>
+            )}
+            
+            {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
+              (eventData.organizers.some(org => org.utorid === currentUser))) ? (
+              <button onClick={() => navigate(`/events/${eventId}/guests-manage`)} className="detail-button secondary-button">
+                Manage Guests
+              </button>
+            ) : (
+              <button onClick={handleRegister} className="detail-button primary-button">
+                Register to this Event
+              </button>
+            )}
+          </div>
+          
+          {updateMsg && <p className="success-message">{updateMsg}</p>}
+        </div>
+      ) : (
+        // Edit form
+        <form onSubmit={handleSubmit} className="edit-form">
+          <div className="form-group">
+            <label><strong>Name:</strong></label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleFormChange}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label><strong>Description:</strong></label>
+            <input
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={handleFormChange}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label><strong>Location:</strong></label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleFormChange}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label><strong>Start Time:</strong></label>
+            <input
+              type="datetime-local"
+              name="startTime"
+              value={formData.startTime}
+              onChange={handleFormChange}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label><strong>End Time:</strong></label>
+            <input
+              type="datetime-local"
+              name="endTime"
+              value={formData.endTime}
+              onChange={handleFormChange}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label><strong>Capacity:</strong></label>
+            <input
+              type="number"
+              name="capacity"
+              value={formData.capacity}
+              onChange={handleFormChange}
+              placeholder="Leave blank for unlimited"
+            />
+          </div>
+          
+          {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
+            <>
+              <div className="form-group">
+                <label><strong>Total Points Allocated:</strong></label>
+                <input
+                  type="number"
+                  name="points"
+                  value={formData.points || ''}
+                  onChange={handleFormChange}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="published"
+                    checked={!!formData.published}
+                    onChange={(e) =>
+                      setFormData({ ...formData, published: e.target.checked })
+                    }
+                  />
+                  <strong>Published</strong>
+                </label>
+              </div>
+            </>
+          )}
+          
+          <div className="action-buttons">
+            <button type="submit" className="detail-button primary-button">Save Changes</button>
+            <button type="button" onClick={handleCancel} className="detail-button secondary-button">Cancel</button>
+          </div>
+          
+          {error && <p className="error-message">{error}</p>}
+          {updateMsg && <p className="success-message">{updateMsg}</p>}
+        </form>
+      )}
+    </div>
   );
 };
 

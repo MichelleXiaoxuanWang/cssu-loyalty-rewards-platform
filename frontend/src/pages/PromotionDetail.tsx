@@ -2,6 +2,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api.config';
+import '../styles/DetailPages.css';
 
 export interface PromotionData {
   id: number;
@@ -212,110 +213,142 @@ const PromotionDetailPage: React.FC = () => {
   };
 
   if (loading) return <p>Loading promotion details...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  if (error) return <p className="error-message">Error: {error}</p>;
   if (!promotion) return <p>No promotion information available.</p>;
 
   return (
-    <div className='profile-container'>
+    <div className="detail-page-container">
       <h1>Promotion Details (ID: {promotion.id})</h1>
+      
       {!editMode ? (
-        <div>
-          <p><strong>Name:</strong> {promotion.name}</p>
-          <p><strong>Description:</strong> {promotion.description}</p>
-          <p><strong>Type:</strong> {promotion.type}</p>
-          <p><strong>End Time:</strong> {new Date(promotion.endTime).toLocaleString()}</p>
-          <p><strong>Min Spending:</strong> {promotion.minSpending !== undefined ? promotion.minSpending : 'N/A'}</p>
-          <p><strong>Rate:</strong> {promotion.rate !== undefined ? promotion.rate : 'N/A'}</p>
-          <p><strong>Points:</strong> {promotion.points}</p>
+        <div className="detail-content">
+          <div className="detail-field">
+            <strong>Name:</strong>
+            <span>{promotion.name}</span>
+          </div>
+          
+          <div className="detail-field">
+            <strong>Description:</strong>
+            <span>{promotion.description}</span>
+          </div>
+          
+          <div className="detail-field">
+            <strong>Type:</strong>
+            <span>{promotion.type}</span>
+          </div>
+          
+          <div className="detail-field">
+            <strong>End Time:</strong>
+            <span>{new Date(promotion.endTime).toLocaleString()}</span>
+          </div>
+          
+          <div className="detail-field">
+            <strong>Min Spending:</strong>
+            <span>{promotion.minSpending !== undefined ? promotion.minSpending : 'N/A'}</span>
+          </div>
+          
+          <div className="detail-field">
+            <strong>Rate:</strong>
+            <span>{promotion.rate !== undefined ? promotion.rate : 'N/A'}</span>
+          </div>
+          
+          <div className="detail-field">
+            <strong>Points:</strong>
+            <span>{promotion.points}</span>
+          </div>
+          
           {isManagerOrHigher && (
-            <>
-              <p><strong>Start Time:</strong> {promotion.startTime ? new Date(promotion.startTime).toLocaleString() : 'N/A'}</p>
-            </>
+            <div className="detail-field">
+              <strong>Start Time:</strong>
+              <span>{promotion.startTime ? new Date(promotion.startTime).toLocaleString() : 'N/A'}</span>
+            </div>
           )}
-          <div style={{ marginTop: '1rem' }}>
+          
+          <div className="action-buttons">
             {isManagerOrHigher && (
               <>
-                <button onClick={handleEditClick} style={{ marginRight: '1rem' }}>
+                <button onClick={handleEditClick} className="detail-button primary-button">
                   Edit Promotion
                 </button>
-                <button onClick={handleDelete} style={{ marginRight: '1rem' }}>
+                <button onClick={handleDelete} className="detail-button danger-button">
                   Delete Promotion
                 </button>
               </>
             )}
-            <button onClick={() => navigate('/promotions')}>
+            <button onClick={() => navigate('/promotions')} className="detail-button secondary-button">
               Back to Promotions List
             </button>
           </div>
-          {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
+          
+          {updateMsg && <p className="success-message">{updateMsg}</p>}
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
+        <form onSubmit={handleSubmit} className="edit-form">
+          <div className="form-group">
             <label><strong>Name:</strong></label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleFormChange}
-              style={{ width: '100%' }}
             />
           </div>
-          <div style={{ marginBottom: '1rem' }}>
+          
+          <div className="form-group">
             <label><strong>Description:</strong></label>
             <input
               type="text"
               name="description"
               value={formData.description}
               onChange={handleFormChange}
-              style={{ width: '100%' }}
             />
           </div>
-          <div style={{ marginBottom: '1rem' }}>
+          
+          <div className="form-group">
             <label><strong>Type:</strong></label>
             <select
               name="type"
               value={formData.type}
               onChange={handleFormChange}
-              style={{ width: '100%' }}
             >
               <option value="automatic">automatic</option>
               <option value="one-time">one-time</option>
             </select>
           </div>
+          
           {isManagerOrHigher && (
             <>
-              <div style={{ marginBottom: '1rem' }}>
+              <div className="form-group">
                 <label><strong>Start Time:</strong></label>
                 <input
                   type="datetime-local"
                   name="startTime"
                   value={formData.startTime || ''}
                   onChange={handleFormChange}
-                  style={{ width: '100%' }}
                 />
               </div>
-              <div style={{ marginBottom: '1rem' }}>
+              
+              <div className="form-group">
                 <label><strong>End Time:</strong></label>
                 <input
                   type="datetime-local"
                   name="endTime"
                   value={formData.endTime}
                   onChange={handleFormChange}
-                  style={{ width: '100%' }}
                 />
               </div>
-              <div style={{ marginBottom: '1rem' }}>
+              
+              <div className="form-group">
                 <label><strong>Min Spending:</strong></label>
                 <input
                   type="number"
                   name="minSpending"
                   value={formData.minSpending || ''}
                   onChange={handleFormChange}
-                  style={{ width: '100%' }}
                 />
               </div>
-              <div style={{ marginBottom: '1rem' }}>
+              
+              <div className="form-group">
                 <label><strong>Rate:</strong></label>
                 <input
                   type="number"
@@ -323,25 +356,28 @@ const PromotionDetailPage: React.FC = () => {
                   name="rate"
                   value={formData.rate || ''}
                   onChange={handleFormChange}
-                  style={{ width: '100%' }}
                 />
               </div>
-              <div style={{ marginBottom: '1rem' }}>
+              
+              <div className="form-group">
                 <label><strong>Points:</strong></label>
                 <input
                   type="number"
                   name="points"
                   value={formData.points || ''}
                   onChange={handleFormChange}
-                  style={{ width: '100%' }}
                 />
               </div>
             </>
           )}
-          <button type="submit" style={{ marginRight: '1rem' }}>Save Changes</button>
-          <button type="button" onClick={handleCancel}>Cancel</button>
-          {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
-          {updateMsg && <p style={{ color: 'green', marginTop: '1rem' }}>{updateMsg}</p>}
+          
+          <div className="action-buttons">
+            <button type="submit" className="detail-button primary-button">Save Changes</button>
+            <button type="button" onClick={handleCancel} className="detail-button secondary-button">Cancel</button>
+          </div>
+          
+          {error && <p className="error-message">{error}</p>}
+          {updateMsg && <p className="success-message">{updateMsg}</p>}
         </form>
       )}
     </div>

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api.config';
 import { QRCodeCanvas as QRCode } from 'qrcode.react';
+import '../styles/DetailPages.css';
 import './TransactionDetail.css';
 import Form from '../components/Form';
 import { AdjustmentTransactionData, createAdjustmentTransaction } from '../services/transaction.service';
@@ -215,95 +216,111 @@ const TransactionDetailPage: React.FC = () => {
   };
 
   if (loading) return <p>Loading transaction details...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  if (error) return <p className="error-message">Error: {error}</p>;
   if (!transaction) return <p>No transaction found.</p>;
 
   return (
-    <div className={`transaction-detail-container ${shouldShowQRCode() ? 'with-qr-code' : ''}`}>
-      <div className="transaction-info-section">
-        <h2>Transaction Details (ID: {transaction.id})</h2>
-        
-        {transaction.suspicious && (
-          <div className="suspicious-badge">
-            <span>⚠️ This transaction has been flagged as suspicious</span>
-          </div>
-        )}
-        
-        <div className="detail-row">
-          <strong>UTORid:</strong> {transaction.utorid}
+    <div className={`detail-page-container ${shouldShowQRCode() ? 'with-qr-code' : ''}`}>
+      <h1>Transaction Details (ID: {transaction.id})</h1>
+      
+      {transaction.suspicious && (
+        <div className="alert-banner alert-warning">
+          <span>⚠️ This transaction has been flagged as suspicious</span>
+        </div>
+      )}
+      
+      <div className="detail-content">
+        <div className="detail-field">
+          <strong>UTORid:</strong>
+          <span>{transaction.utorid}</span>
         </div>
         
-        <div className="detail-row">
-          <strong>Type:</strong> {transaction.type}
-          {transaction.type === 'redemption' && (
-            <span className={`status-tag ${isRedemptionProcessed() ? 'processed-tag' : 'unprocessed-tag'}`}>
-              {isRedemptionProcessed() ? 'Processed' : 'Pending'}
-            </span>
-          )}
+        <div className="detail-field">
+          <strong>Type:</strong>
+          <span>
+            {transaction.type}
+            {transaction.type === 'redemption' && (
+              <span className={`status-indicator ${isRedemptionProcessed() ? 'status-positive' : 'status-warning'}`}>
+                {isRedemptionProcessed() ? 'Processed' : 'Pending'}
+              </span>
+            )}
+          </span>
         </div>
         
         {transaction.spent !== undefined && (
-          <div className="detail-row">
-            <strong>Spent:</strong> ${transaction.spent}
+          <div className="detail-field">
+            <strong>Spent:</strong>
+            <span>${transaction.spent}</span>
           </div>
         )}
         
-        <div className="detail-row">
-          <strong>Amount:</strong> {transaction.amount} points
+        <div className="detail-field">
+          <strong>Amount:</strong>
+          <span>{transaction.amount} points</span>
         </div>
         
-        <div className="detail-row">
-          <strong>Suspicious:</strong> {transaction.suspicious ? 'Yes' : 'No'}
+        <div className="detail-field">
+          <strong>Suspicious:</strong>
+          <span>
+            {transaction.suspicious ? 
+              <span className="status-indicator status-negative">Yes</span> : 
+              <span className="status-indicator status-positive">No</span>}
+          </span>
         </div>
         
-        <div className="detail-row">
-          <strong>Remark:</strong> {transaction.remark || 'None'}
+        <div className="detail-field">
+          <strong>Remark:</strong>
+          <span>{transaction.remark || 'None'}</span>
         </div>
         
-        <div className="detail-row">
-          <strong>Created By:</strong> {transaction.createdBy}
+        <div className="detail-field">
+          <strong>Created By:</strong>
+          <span>{transaction.createdBy}</span>
         </div>
         
         {transaction.relatedId && (
-          <div className="detail-row">
-            <strong>Related ID:</strong> {transaction.relatedId}
+          <div className="detail-field">
+            <strong>Related ID:</strong>
+            <span>{transaction.relatedId}</span>
           </div>
         )}
         
-        {/* If current user is manager or superuser, allow editing suspicious status */}
+        {/* Manager or superuser editing section */}
         {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
-          <div className="action-section">
+          <div className="detail-section">
             <h3>Edit Transaction Suspicious Status</h3>
-            <label>
-              <input
-                type="checkbox"
-                checked={suspicious}
-                onChange={(e) => setSuspicious(e.target.checked)}
-              />
-              {' '}Mark as suspicious
-            </label>
-            <br />
-            <button onClick={handleUpdateSuspicious} className="action-button">
+            <div className="form-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={suspicious}
+                  onChange={(e) => setSuspicious(e.target.checked)}
+                />
+                Mark as suspicious
+              </label>
+            </div>
+            <button onClick={handleUpdateSuspicious} className="detail-button primary-button">
               Update Suspicious Status
             </button>
           </div>
         )}
 
-        {/* If transaction is of type "redemption" and current user's role is cashier or higher, show Process option */}
+        {/* Redemption processing section */}
         {(transaction.type === 'redemption') && !isRedemptionProcessed() &&
           (['cashier', 'manager', 'superuser'].includes(currentUserRole)) && (
-          <div className="action-section">
+          <div className="detail-section">
             <h3>Process Redemption</h3>
-            <button onClick={handleProcessRedemption} disabled={processing} className="action-button">
+            <button onClick={handleProcessRedemption} disabled={processing} className="detail-button primary-button">
               {processing ? 'Processing...' : 'Process Redemption'}
             </button>
           </div>
         )}
 
-        {/* Add the button in the JSX */}
+        {/* Adjustment creation section */}
         {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
-          <div className="action-section">
-            <button onClick={handleCreateAdjustmentClick} className="action-button">
+          <div className="detail-section">
+            <h3>Transaction Adjustments</h3>
+            <button onClick={handleCreateAdjustmentClick} className="detail-button secondary-button">
               Create Adjustment
             </button>
             {creatingAdjustment && (
@@ -316,23 +333,27 @@ const TransactionDetailPage: React.FC = () => {
                 onSubmit={handleAdjustmentSubmit}
               />
             )}
-            {feedbackMessage && <p style={{ color: feedbackMessage.includes('Failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
+            {feedbackMessage && (
+              <p className={feedbackMessage.includes('Failed') ? 'error-message' : 'success-message'}>
+                {feedbackMessage}
+              </p>
+            )}
           </div>
         )}
 
-        {updateMsg && <p className="update-message">{updateMsg}</p>}
+        {updateMsg && <p className="success-message">{updateMsg}</p>}
         
-        <div className="navigation-links">
-          <a href="/transactions">Back to Transactions List</a>
+        <div className="action-buttons">
+          <a href="/transactions" className="detail-button secondary-button">Back to Transactions List</a>
         </div>
       </div>
       
-      {/* Show QR code only for regular users viewing their unprocessed redemption */}
+      {/* QR code section for redemptions */}
       {shouldShowQRCode() && (
-        <div className="qr-code-section">
+        <div className="qr-code-container">
           <h3>Redemption QR Code</h3>
           <p>Show this QR code to a cashier to process your redemption.</p>
-          <div className="qr-code-container">
+          <div className="qr-code">
             <QRCode value={generateQRCodeData()} size={200} />
           </div>
         </div>
