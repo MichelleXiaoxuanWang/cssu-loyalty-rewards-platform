@@ -6,7 +6,10 @@
   margin: 2rem auto;
   gap: 30px;
 }
-
+.checkbox-label input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+}
 .transaction-info-section {
   flex: 1;
   padding: 24px;
