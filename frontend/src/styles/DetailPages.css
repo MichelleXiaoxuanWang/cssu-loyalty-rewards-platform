@@ -30,6 +30,7 @@
   margin-bottom: 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid #f0f0f0;
+  align-items: center;
 }
 
 .detail-field:last-child {
@@ -124,6 +125,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  max-width: 200px;
+
 }
 
 .primary-button {
