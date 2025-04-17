@@ -4,7 +4,6 @@ import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchUsers, User, UserFilters, UserResponse } from '../services/user.service';
 import '../styles/ListingPage.css';
-import { getCurrentRole } from '../services/auth.service';
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -19,10 +18,8 @@ const UsersPage: React.FC = () => {
   });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
+  const isAdminRole = role === 'manager' || role === 'superuser';
   const [hasUnverifiedUser, setHasUnverifiedUser] = useState(false);
-
-  const currentRole = getCurrentRole();
-  const isAdminRole = currentRole === 'manager' || currentRole === 'superuser';
 
   useEffect(() => {
     if (isAdminRole) {
