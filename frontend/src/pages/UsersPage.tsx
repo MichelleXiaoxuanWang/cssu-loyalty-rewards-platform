@@ -94,6 +94,12 @@ const UsersPage: React.FC = () => {
             verified={`${user.verified ? 'Verified' : 'Not Verified'}`}
             details={`${user.role}`}
             navigateTo={`/users/${user.id}`}
+            id={user.id}
+            extraInfo={[
+              { label: 'UTORid', value: user.utorid },
+              user.email ? { label: 'Email', value: user.email } : null,
+              { label: 'Points', value: user.points },
+            ].filter(Boolean) as {label: string; value: string | number}[]}
           />
         ))
       )}

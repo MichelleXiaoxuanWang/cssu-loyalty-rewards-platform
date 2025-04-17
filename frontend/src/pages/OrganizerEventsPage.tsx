@@ -63,6 +63,14 @@ const OrganizerEventsPage: React.FC = () => {
             title={`ID: ${event.id} - Name: ${event.name}`}
             description={`${event.published ? 'Published' : 'Not Published'}`}
             navigateTo={`/events/${event.id}`}
+            id={event.id}
+            extraInfo={[
+              { label: 'Location', value: event.location },
+              { label: 'Start Time', value: event.startTime ? new Date(event.startTime).toLocaleDateString() : 'N/A' },
+              { label: 'End Time', value: event.endTime ? new Date(event.endTime).toLocaleDateString() : 'N/A' },
+              event.capacity !== null ? { label: 'Capacity', value: event.capacity } : { label: 'Capacity', value: 'Unlimited' },
+              event.numGuests !== undefined ? { label: 'Guests', value: event.numGuests } : null
+            ].filter(Boolean) as {label: string; value: string | number}[]}
           />
         ))
       )}

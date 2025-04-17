@@ -8,9 +8,26 @@ interface ItemBoxProps {
   details?: string;
   verified?: string;
   navigateTo?: string;
+  id?: number | string;
+  createdAt?: string;
+  createdBy?: string;
+  extraInfo?: {
+    label: string;
+    value: string | number;
+  }[];
 }
 
-const ItemBox: React.FC<ItemBoxProps> = ({ title, description, details, verified, navigateTo }) => {
+const ItemBox: React.FC<ItemBoxProps> = ({ 
+  title, 
+  description, 
+  details, 
+  verified, 
+  navigateTo,
+  id,
+  createdAt,
+  createdBy,
+  extraInfo = []
+}) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -64,6 +81,19 @@ const ItemBox: React.FC<ItemBoxProps> = ({ title, description, details, verified
     return null;
   };
 
+  // Format date for display
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className={`item-box ${getItemTypeClass()}`} onClick={handleClick}>
       <div className="item-content">
@@ -79,14 +109,37 @@ const ItemBox: React.FC<ItemBoxProps> = ({ title, description, details, verified
         </div>
         
         <div className="item-info">
+          {/* First row of info */}
           <div className="item-info-row">
+            {id && (
+              <span className="item-detail">ID: {id}</span>
+            )}
             {details && (
-              <span className="item-detail">{details}</span>
+              <span className="item-detail">Role: {details}</span>
             )}
             {description && !['Published', 'Not Published', 'automatic', 'one-time'].includes(description) && (
-              <span className="item-detail">{description}</span>
+              <span className="item-detail">Type: {description}</span>
             )}
+            
+            {/* Display any extra info items */}
+            {extraInfo.map((info, index) => (
+              <span key={index} className="item-detail">
+                {info.label}: {info.value}
+              </span>
+            ))}
           </div>
+
+          {/* Second row of info (if date or created by exists) */}
+          {(createdAt || createdBy) && (
+            <div className="item-info-row">
+              {createdAt && (
+                <span className="item-detail">Date: {formatDate(createdAt)}</span>
+              )}
+              {createdBy && (
+                <span className="item-detail">Created by: {createdBy}</span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
