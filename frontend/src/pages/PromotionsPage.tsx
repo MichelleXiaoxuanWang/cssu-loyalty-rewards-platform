@@ -101,11 +101,19 @@ const PromotionsPage: React.FC = () => {
         ) : (
           promotions?.map((promotion) => (
             <ItemBox
-              key={promotion.id}
-              title={`ID: ${promotion.id} - ${promotion.name}`}
-              description={`${promotion.type}`}
-              navigateTo={`/promotions/${promotion.id}`}
-            />
+            key={promotion.id}
+            title={`${promotion.name}`}
+            description={`${promotion.type}`}
+            navigateTo={`/promotions/${promotion.id}`}
+            id={promotion.id}
+            extraInfo={[
+              { label: 'Start Time', value: promotion.startTime ? new Date(promotion.startTime).toLocaleDateString() : 'N/A' },
+              { label: 'End Time', value: promotion.endTime ? new Date(promotion.endTime).toLocaleDateString() : 'N/A' },
+              promotion.minSpending !== undefined ? { label: 'Min Spending', value: `$${promotion.minSpending}` } : null,
+              promotion.rate !== undefined ? { label: 'Rate', value: `${promotion.rate}` } : null,
+              promotion.points !== undefined ? { label: 'Points', value: promotion.points } : null
+            ].filter(Boolean) as {label: string; value: string | number}[]}
+          />
           ))
         )}
       </div>
