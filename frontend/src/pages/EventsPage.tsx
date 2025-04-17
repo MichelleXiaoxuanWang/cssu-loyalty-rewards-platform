@@ -21,7 +21,32 @@ const EventsPage: React.FC = () => {
 
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
+  const isAdminRole = role === 'manager' || role === 'superuser';
+  const [hasUnpublished, setHasUnpublished] = useState(false);
 
+  useEffect(() => {
+      if (isAdminRole) {
+        checkSystemAlerts();
+      }
+    }, [isAdminRole]);
+  
+    const checkSystemAlerts = async () => {
+      try {
+        // Get first page with high limit to efficiently check for alerts
+        const alertCheckFilters: EventFilters = { 
+          page: 1, 
+          limit: 100, 
+          published: false 
+        };
+        
+        // Check for suspicious transactions
+        const unpublishedCheck: EventResponse = await fetchEvents(alertCheckFilters);
+        setHasUnpublished(unpublishedCheck.count > 0);
+      } catch (err) {
+        console.error('Error checking system alerts:', err);
+      }
+    };
+  
   useEffect(() => {
     const loadEvents = async () => {
       try {
@@ -173,6 +198,17 @@ const EventsPage: React.FC = () => {
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />
+
+      {isAdminRole && (
+        <div className="transactions-alerts">
+          {hasUnpublished && (
+            <div className="pending-redemptions-alert">
+              🔔 Some events are unpublished
+            </div>
+          )}
+        </div>
+      )}
+
       {events && events.length === 0 ? (
         <div className="no-entries">
           <p>No events available</p>
