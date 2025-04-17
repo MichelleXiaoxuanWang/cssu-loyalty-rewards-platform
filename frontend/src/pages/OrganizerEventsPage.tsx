@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ItemBox from '../components/ItemBox';
 import { fetchEvents, Event, EventResponse, EventFilters } from '../services/event.service';
-import '../App.css';
+import '../styles/ListingPage.css';
 import Pagination from '../components/Pagination';
 
 const OrganizerEventsPage: React.FC = () => {
@@ -50,7 +50,7 @@ const OrganizerEventsPage: React.FC = () => {
   const totalPages = Math.ceil(totalEvents / itemsPerPage);
 
   return (
-    <div>
+    <div className="listing-page">
       <h1>My Organized Events</h1>
       {events && events.length === 0 ? (
         <div className="no-entries">

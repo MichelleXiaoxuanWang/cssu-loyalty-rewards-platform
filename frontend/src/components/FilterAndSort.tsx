@@ -142,7 +142,7 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
           {regularFilters.map((filter) => (
             <div key={filter.value} className="filter-group">
               <label htmlFor={filter.value}>
-                {filter.label}
+            {filter.label}
                 {filter.options && <span className="hint-text">(select one)</span>}
               </label>
               
@@ -157,9 +157,9 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
                   {filter.options.map(option => (
                     <option key={option} value={option}>
                       {option}
-                    </option>
-                  ))}
-                </select>
+          </option>
+        ))}
+      </select>
               ) : (
                 <input
                   type="text"
@@ -230,7 +230,7 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
                     {option}
                   </option>
                 ))}
-              </select>
+            </select>
             </div>
           )}
           
@@ -245,11 +245,11 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
             >
               <option value="">Default Order</option>
               {sortOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
           </div>
         </div>
 

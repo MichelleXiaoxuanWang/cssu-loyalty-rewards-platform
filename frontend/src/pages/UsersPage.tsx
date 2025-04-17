@@ -3,7 +3,7 @@ import ItemBox from '../components/ItemBox';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchUsers, User, UserFilters, UserResponse } from '../services/user.service';
-import '../App.css';
+import '../styles/ListingPage.css';
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -62,7 +62,7 @@ const UsersPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="listing-page">
       <h1>Users</h1>
       <FilterAndSort
         filters={[
