@@ -26,6 +26,17 @@
     margin-top: 10px;
   }
 
+  .listing-list {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+
 
 @media (max-width: 768px) {
     .page-header {
