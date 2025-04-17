@@ -169,6 +169,7 @@ async function getUserById(userId, clearanceRole) {
             lastLogin: user.lastLogin,
             verified: user.verified,
             avatarUrl: user.avatarUrl,
+            suspicious: user.suspicious,
             promotions: availablePromotions
         };
     }
