@@ -263,11 +263,19 @@ const EventDetailPage: React.FC = () => {
       <h1>Event Details (ID: {eventData.id})</h1>
 
       {fullAccess && !editMode && (
-        <div className="action-buttons">
-          <button onClick={handleEditClick} className="detail-button primary-button">
-            Edit Event Details
-          </button>
-          
+        <div className="detail-section">
+          <div>
+            <button onClick={handleEditClick} className="detail-button primary-button">
+              Edit Event Details
+            </button>
+          </div>
+          <div>
+            {!(eventData.organizers.some(org => org.utorid === currentUser)) && (
+                <button onClick={handleRegister} className="detail-button primary-button">
+                  Register to this Event
+                </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -327,16 +335,21 @@ const EventDetailPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
+                <div>
+                  {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
+                  (eventData.organizers.some(org => org.utorid === currentUser))) && (
+                    <button
+                      onClick={() => navigate(`/events/${eventData.id}/organizers`)}
+                      className="detail-button primary-button"
+                    >
+                      Manage Organizers
+                    </button>
+                  )}
+                </div>
+              </div>
 
-                {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
-                (eventData.organizers.some(org => org.utorid === currentUser))) && (
-                  <button
-                    onClick={() => navigate(`/events/${eventData.id}/organizers`)}
-                    className="detail-button primary-button"
-                  >
-                    Manage Organizers
-                  </button>
-                )}
+              <div className="detail-section"> 
+                
               </div>
 
               <div className="detail-section">
@@ -352,15 +365,17 @@ const EventDetailPage: React.FC = () => {
                     <p>No guests yet.</p>
                   )}
                 </div>
-                <button onClick={() => navigate(`/events/${eventData.id}/transactions`)} className="detail-button tertiary-button">
-                  Reward Points to Guest
-                </button>
-
-                <button onClick={() => navigate(`/events/${eventId}/guests-manage`)} className="detail-button primary-button">
-                  Manage Guests
-                </button>
-              </div>
-              
+                <div>
+                  <button onClick={() => navigate(`/events/${eventData.id}/transactions`)} className="detail-button tertiary-button">
+                    Reward Points to Guest
+                  </button>
+                </div>
+                <div>     
+                  <button onClick={() => navigate(`/events/${eventId}/guests-manage`)} className="detail-button primary-button">
+                    Manage Guests
+                  </button>
+                </div>
+              </div>          
             </>
           ) : (
             <div className="detail-field">
@@ -369,13 +384,6 @@ const EventDetailPage: React.FC = () => {
             </div>
           )}
 
-          <div className="detail-section">
-            {!(eventData.organizers.some(org => org.utorid === currentUser)) && (
-                <button onClick={handleRegister} className="detail-button primary-button">
-                  Register to this Event
-                </button>
-            )}
-          </div>
 
           <div className="action-buttons">
             <button onClick={() => navigate('/events')} className="detail-button secondary-button">
