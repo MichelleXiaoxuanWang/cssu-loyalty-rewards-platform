@@ -70,7 +70,7 @@ const ProfilePage: React.FC = () => {
           birthday: data.birthday
         });
       } catch (err: any) {
-        setError(err.message);
+        alert(err.message);
       } finally {
         setLoading(false);
       }
@@ -140,7 +140,7 @@ const ProfilePage: React.FC = () => {
       setUser(updatedUser);
       setEditMode(false);
     } catch (err: any) {
-      setError(err.message);
+      alert(err.message);
     }
   };
 
@@ -182,7 +182,7 @@ const ProfilePage: React.FC = () => {
       setOldPassword('');
       setNewPassword('');
     } catch (err: any) {
-      setPwError(err.message);
+      alert(err.message);
     }
   };
 

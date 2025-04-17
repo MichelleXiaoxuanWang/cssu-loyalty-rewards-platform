@@ -189,7 +189,7 @@
   gap: 24px;
 }
 
-.transaction-id, .transaction-created-by, .transaction-date, .transaction-related {
+.transaction-id, .transaction-created-by, .transaction-date, .transaction-related, .transaction-user-account {
   color: #888;
 }
 

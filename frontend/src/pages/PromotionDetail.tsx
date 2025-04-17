@@ -83,7 +83,7 @@ const PromotionDetailPage: React.FC = () => {
           ...(data.rate !== undefined ? { rate: String(data.rate) } : {}),
         });
       } catch (err: any) {
-        setError(err.message);
+        alert(err.message);
       } finally {
         setLoading(false);
       }
@@ -186,7 +186,7 @@ const PromotionDetailPage: React.FC = () => {
       setUpdateMsg('Promotion updated successfully!');
       setEditMode(false);
     } catch (err: any) {
-      setError(err.message);
+      alert(err.message);
     }
   };
 
@@ -208,7 +208,7 @@ const PromotionDetailPage: React.FC = () => {
         throw new Error(data.error || 'Failed to delete promotion');
       }
     } catch (err: any) {
-      setError(err.message);
+      alert(err.message);
     }
   };
 

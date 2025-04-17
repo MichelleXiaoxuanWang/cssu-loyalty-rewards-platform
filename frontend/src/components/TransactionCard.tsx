@@ -190,7 +190,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
         <div className="transaction-info">
           <div className="transaction-info-row">
             <span className="transaction-id">ID: {transaction.id}</span>
-            <span className="transaction-created-by">Created by: {transaction.createdBy}</span>
+            <span className="transaction-user-account">Account: {transaction.utorid}</span>
             {getRelatedEntityInfo() && (
               <span className="transaction-related">
                 {getRelatedEntityInfo()?.label}: {getRelatedEntityInfo()?.value}
@@ -199,6 +199,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
           </div>
           <div className="transaction-info-row">
             <span className="transaction-date">Date: {formatDate(transaction.createdAt)}</span>
+            <span className="transaction-created-by">Created by: {transaction.createdBy}</span>
           </div>
         </div>
       </div>
