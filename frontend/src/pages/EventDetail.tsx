@@ -267,9 +267,7 @@ const EventDetailPage: React.FC = () => {
           <button onClick={handleEditClick} className="detail-button primary-button">
             Edit Event Details
           </button>
-          <button onClick={() => navigate(`/events/${eventData.id}/transactions`)} className="detail-button tertiary-button">
-            Add Event Transaction
-          </button>
+          
         </div>
       )}
 
@@ -331,6 +329,18 @@ const EventDetailPage: React.FC = () => {
                 </div>
               </div>
 
+              <div className="action-buttons"> 
+                {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
+                (eventData.organizers.some(org => org.utorid === currentUser))) && (
+                  <button
+                    onClick={() => navigate(`/events/${eventData.id}/organizers`)}
+                    className="detail-button primary-button"
+                  >
+                    Manage Organizers
+                  </button>
+                )}
+              </div>
+
               <div className="detail-section">
                 <h3>Guests</h3>
                 <div className="list-group">
@@ -345,6 +355,16 @@ const EventDetailPage: React.FC = () => {
                   )}
                 </div>
               </div>
+
+              <button onClick={() => navigate(`/events/${eventData.id}/transactions`)} className="detail-button tertiary-button">
+                Reward Points to Guest
+              </button>
+
+              <button onClick={() => navigate(`/events/${eventId}/guests-manage`)} className="detail-button primary-button">
+                Manage Guests
+              </button>
+
+              
             </>
           ) : (
             <div className="detail-field">
@@ -353,35 +373,20 @@ const EventDetailPage: React.FC = () => {
             </div>
           )}
 
-          <div className="action-buttons">
+          <div className="detail-field">
+            {!(eventData.organizers.some(org => org.utorid === currentUser)) && (
+                <button onClick={handleRegister} className="detail-button primary-button">
+                  Register to this Event
+                </button>
+            )}
+          </div>
 
+          <div className="action-buttons">
             <button onClick={() => navigate('/events')} className="detail-button secondary-button">
               Back to Events List
             </button>
-            {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
-              (eventData.organizers.some(org => org.utorid === currentUser))) && (
-              <button
-                onClick={() => navigate(`/events/${eventData.id}/organizers`)}
-                className="detail-button primary-button"
-              >
-                Manage Organizers
-              </button>
-            )}
-            
-            {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
-              eventData.organizers.some(org => org.utorid === currentUser)) && (
-              <button onClick={() => navigate(`/events/${eventId}/guests-manage`)} className="detail-button primary-button">
-                Manage Guests
-              </button>
-            )}
-
-            {!(eventData.organizers.some(org => org.utorid === currentUser)) && (
-              <button onClick={handleRegister} className="detail-button primary-button">
-                Register to this Event
-              </button>
-            )}
           </div>
-          
+
           {updateMsg && <p className="success-message">{updateMsg}</p>}
         </div>
       ) : (
