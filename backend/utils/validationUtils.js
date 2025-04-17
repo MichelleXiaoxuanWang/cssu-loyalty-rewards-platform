@@ -13,6 +13,11 @@ function validateRequest(req, schema) {
         const rules = schema[key];
         let value = data[key];
 
+        // Treat blank values as null for nullable fields
+        if (rules.nullable && value === "") {
+            value = null;
+        }
+
         // Check for required fields
         if (rules.required && (value == undefined || value == null)) {
             const error = new Error(`The field '${key}' is required.`);

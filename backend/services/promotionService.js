@@ -43,12 +43,9 @@ async function createPromotion(promotionData) {
                 type: promotionData.type === 'automatic' ? 'automatic' : 'one_time',
                 startTime,
                 endTime,
-
-                // optional fields, only apply if provided. 
-                // if not provided here, db will automatically set default values
-                minSpending: promotionData.minSpending,
-                rate: promotionData.rate,
-                points: promotionData.points
+                ...(promotionData.minSpending !== undefined && promotionData.minSpending !== null && { minSpending: promotionData.minSpending }),
+                ...(promotionData.rate !== undefined && promotionData.rate !== null && { rate: promotionData.rate }),
+                ...(promotionData.points !== undefined && promotionData.points !== null && { points: promotionData.points })
             }
         });
 
