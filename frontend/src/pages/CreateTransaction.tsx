@@ -103,8 +103,8 @@ const CreateTransaction: React.FC = () => {
         throw new Error('Redemption failed');
       }
       setQrCodeData(JSON.stringify(result));
-      handleTransactionSuccess('Redemption successful!');
-      console.log('Redemption successful:', result);
+      handleTransactionSuccess('Request successful，waiting to be verified!');
+      console.log('Request successful，waiting to be verified:', result);
     } catch (error) {
       handleTransactionError('Redemption failed. Please try again.');
       console.error('Redemption failed:', error);

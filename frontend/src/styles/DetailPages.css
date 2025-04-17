@@ -145,6 +145,15 @@
   background-color: #e0e0e0;
 }
 
+.tertiary-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.tertiary-button:hover {
+  background-color: #388E3C;
+}
+
 .danger-button {
   background-color: #f44336;
   color: white;

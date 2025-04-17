@@ -189,8 +189,8 @@ const UserDetailPage: React.FC = () => {
           )}
           
           <div className="action-buttons">
-            <button onClick={() => navigate(`/${user.utorid}/transactions`)} className="detail-button secondary-button">
-              Back to Transactions List
+            <button onClick={() => navigate(`/users`)} className="detail-button secondary-button">
+              Back to Users List
             </button>
           </div>
         </div>
@@ -280,6 +280,9 @@ const UserDetailPage: React.FC = () => {
           
           {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
             <div className="action-buttons">
+              <button onClick={() => navigate(`/users`)} className="detail-button secondary-button">
+                Back to Users List
+              </button>
               <button onClick={handleEditClick} className="detail-button primary-button">
                 Edit User Details
               </button>

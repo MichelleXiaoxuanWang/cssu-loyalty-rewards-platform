@@ -265,6 +265,9 @@ const PromotionDetailPage: React.FC = () => {
           )}
           
           <div className="action-buttons">
+            <button onClick={() => navigate('/promotions')} className="detail-button secondary-button">
+              Back to Promotions List
+            </button>
             {isManagerOrHigher && (
               <>
                 <button onClick={handleEditClick} className="detail-button primary-button">
@@ -275,9 +278,6 @@ const PromotionDetailPage: React.FC = () => {
                 </button>
               </>
             )}
-            <button onClick={() => navigate('/promotions')} className="detail-button secondary-button">
-              Back to Promotions List
-            </button>
           </div>
           
           {updateMsg && <p className="success-message">{updateMsg}</p>}
