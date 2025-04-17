@@ -67,7 +67,7 @@ const UserDetailPage: React.FC = () => {
           role: data.role
         });
       } catch (err: any) {
-        setError(err.message);
+        alert(err.message);
       } finally {
         setLoading(false);
       }
@@ -137,7 +137,7 @@ const UserDetailPage: React.FC = () => {
       setUser(updatedUser);
       setEditMode(false);
     } catch (err: any) {
-      setError(err.message);
+      alert(err.message);
     }
   };
 

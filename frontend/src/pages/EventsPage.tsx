@@ -73,7 +73,8 @@ const EventsPage: React.FC = () => {
         setTotalEvents((prevTotal) => prevTotal + 1);
       }
       setFeedbackMessage('Submission successful!');
-    } catch (error) {
+    } catch (error: any) {
+      alert(error.message);
       setFeedbackMessage('Submission failed. Please try again.');
     }
   };

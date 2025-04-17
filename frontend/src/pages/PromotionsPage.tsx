@@ -68,8 +68,8 @@ const PromotionsPage: React.FC = () => {
         }
       }
       setFeedbackMessage('Submission successful!');
-    } catch (error) {
-      console.error('Error creating promotion:', error);
+    } catch (error: any) {
+      alert(error.message);
       setFeedbackMessage('Submission failed. Please try again.');
     }
   };
