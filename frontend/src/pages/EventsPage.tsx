@@ -6,6 +6,7 @@ import FilterAndSort from '../components/FilterAndSort';
 import { fetchEvents, createEvent, Event, EventResponse, EventFilters } from '../services/event.service';
 import '../styles/ListingPage.css';
 import { API_BASE_URL } from '../config/api.config';
+import './TransactionPreviewPage.css';
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);

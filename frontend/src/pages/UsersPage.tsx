@@ -4,6 +4,7 @@ import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchUsers, User, UserFilters, UserResponse } from '../services/user.service';
 import '../styles/ListingPage.css';
+import './TransactionPreviewPage.css';
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
