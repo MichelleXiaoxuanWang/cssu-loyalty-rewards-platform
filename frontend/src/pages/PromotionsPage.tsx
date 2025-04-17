@@ -4,7 +4,7 @@ import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchPromotions, createPromotion, Promotion, PromotionFilters, PromotionResponse } from '../services/promotion.service';
-import '../App.css';
+import '../styles/ListingPage.css';
 
 const PromotionsPage: React.FC = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -113,10 +113,10 @@ const PromotionsPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="listing-page">
       <h1>Promotions</h1>
       {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
-      <button onClick={handleCreate}>Create New Promotion</button>
+      <button className="listing-create-button" onClick={handleCreate}>+ Create New Promotion</button>
       {(creatingPromotion) && (
         <Form
           fields={[

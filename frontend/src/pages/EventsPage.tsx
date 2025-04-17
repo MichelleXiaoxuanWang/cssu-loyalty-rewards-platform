@@ -4,7 +4,7 @@ import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchEvents, createEvent, Event, EventResponse, EventFilters } from '../services/event.service';
-import '../App.css';
+import '../styles/ListingPage.css';
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -109,11 +109,11 @@ const EventsPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="listing-page">
       <h1>Events</h1>
       {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
       {role !== 'regular' && role !== 'cashier' && (
-        <button onClick={handleCreate}>Create New Event</button>
+        <button className="listing-create-button" onClick={handleCreate}>+ Create New Event</button>
       )}
       {creatingEvent && (
         <Form

@@ -7,6 +7,7 @@
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
     padding-left: 40px;
     padding-right: 40px;
+    min-width: 350px;
 }
 button {
     margin-top:1rem;
