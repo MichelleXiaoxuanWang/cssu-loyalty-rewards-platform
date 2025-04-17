@@ -366,11 +366,13 @@ const EventDetailPage: React.FC = () => {
             )}
             
             {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
-              (eventData.organizers.some(org => org.utorid === currentUser))) ? (
+              eventData.organizers.some(org => org.utorid === currentUser)) && (
               <button onClick={() => navigate(`/events/${eventId}/guests-manage`)} className="detail-button primary-button">
                 Manage Guests
               </button>
-            ) : (
+            )}
+
+            {!(eventData.organizers.some(org => org.utorid === currentUser)) && (
               <button onClick={handleRegister} className="detail-button primary-button">
                 Register to this Event
               </button>

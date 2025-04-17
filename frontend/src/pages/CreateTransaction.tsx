@@ -3,16 +3,11 @@ import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import './CreateTransaction.css';
 import { transferPoints, redeemPoints, purchaseTransaction, processRedemptionTransaction } from '../services/transaction.service';
 import { isUserVerified } from '../services/auth.service';
+import Form from '../components/Form';
 
 const CreateTransaction: React.FC = () => {
   const [activeTab, setActiveTab] = useState('qrCode');
-  const [userId, setUserId] = useState('');
-  const [points, setPoints] = useState('');
   const [qrCodeData, setQrCodeData] = useState('');
-  const [spent, setSpent] = useState('');
-  const [relatedId, setRelatedId] = useState('');
-  const [promotionIds, setPromotionIds] = useState('');
-  const [remark, setRemark] = useState('');
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
   const currentUserId = localStorage.getItem(`userId_${currentUser}`);
@@ -52,21 +47,32 @@ const CreateTransaction: React.FC = () => {
     setSuccessMessage(null); // Clear success message when changing tabs
   };
 
-  const handleTransfer = async () => {
+  // Added type annotations for the `data` parameter in all handlers
+  interface FormData {
+    userId?: string;
+    spent?: string;
+    promotionIds?: string;
+    relatedId?: string;
+    points?: string;
+    remark?: string;
+  }
+  
+  // Updated all handlers to access FormData attributes directly using dot notation
+  const handleTransfer = async (formData: FormData) => {
     try {
-      // Validate user ID
-      if (!userId.trim()) {
+      const { userId, points, remark } = formData;
+  
+      if (!userId?.trim()) {
         alert('Please enter a user ID');
         return;
       }
-
-      // Validate points
+  
       const pointsNum = Number(points);
       if (isNaN(pointsNum) || pointsNum <= 0) {
         alert('Please enter a valid points amount greater than 0');
         return;
       }
-
+  
       const transactionData = {
         type: 'transfer',
         amount: pointsNum,
@@ -83,16 +89,17 @@ const CreateTransaction: React.FC = () => {
       console.error('Transfer failed:', error);
     }
   };
-
-  const handleRedemption = async () => {
+  
+  const handleRedemption = async (formData: FormData) => {
     try {
-      // Validate points
+      const { points, remark } = formData;
+  
       const pointsNum = Number(points);
       if (isNaN(pointsNum) || pointsNum <= 0) {
         alert('Please enter a valid points amount greater than 0');
         return;
       }
-
+  
       const transactionData = {
         type: 'redemption',
         amount: pointsNum,
@@ -110,22 +117,22 @@ const CreateTransaction: React.FC = () => {
       console.error('Redemption failed:', error);
     }
   };
-
-  const handlePurchase = async () => {
+  
+  const handlePurchase = async (formData: FormData) => {
     try {
-      // Validate user ID
-      if (!userId.trim()) {
+      const { userId, spent, promotionIds, remark } = formData;
+  
+      if (!userId?.trim()) {
         alert('Please enter a utorid');
         return;
       }
-
-      // Validate spent amount
+  
       const spentNum = Number(spent);
       if (isNaN(spentNum) || spentNum <= 0) {
         alert('Please enter a valid spent amount greater than 0');
         return;
       }
-
+  
       const transactionData = {
         utorid: userId,
         type: 'purchase',
@@ -144,14 +151,16 @@ const CreateTransaction: React.FC = () => {
       console.error('Purchase failed:', error);
     }
   };
-
-  const handleProcessRedemption = async () => {
+  
+  const handleProcessRedemption = async (formData: FormData) => {
     try {
+      const { relatedId } = formData;
+  
       if (!relatedId) {
         setErrorMessage('Transaction ID is required to process redemption.');
         return;
       }
-
+  
       const result = await processRedemptionTransaction(Number(relatedId));
       if (!result) {
         throw new Error('Process redemption failed');
@@ -163,6 +172,7 @@ const CreateTransaction: React.FC = () => {
       console.error('Error processing redemption:', error);
     }
   };
+  
 
   return (
     <div className="create-transaction">
@@ -236,44 +246,27 @@ const CreateTransaction: React.FC = () => {
         {activeTab === 'transfer' && (
           <div>
             <h2>Transfer Points</h2>
-            <input
-              type="text"
-              placeholder="Enter User ID to transfer to"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
+            <Form
+              fields={[
+                { name: 'userId', label: 'User ID', type: 'text' },
+                { name: 'points', label: 'Points', type: 'number' },
+                { name: 'remark', label: 'Remark', type: 'text' },
+              ]}
+              onSubmit={(data) => {handleTransfer(data);}}
             />
-            <input
-              type="number"
-              placeholder="Enter Points to transfer (non-negative integer)"
-              value={points}
-              onChange={(e) => setPoints(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Enter Remark"
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-            />
-            <button onClick={handleTransfer}>Transfer</button>
           </div>
         )}
 
         {activeTab === 'redemption' && (
           <div>
             <h2>Redeem Points</h2>
-            <input
-              type="number"
-              placeholder="Enter Points to redeem (non-negative integer)"
-              value={points}
-              onChange={(e) => setPoints(e.target.value)}
+            <Form
+              fields={[
+                { name: 'points', label: 'Points', type: 'number' },
+                { name: 'remark', label: 'Remark', type: 'text' },
+              ]}
+              onSubmit={(data) => { handleRedemption(data); }}
             />
-            <input
-              type="text"
-              placeholder="Enter Remark"
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-            />
-            <button onClick={handleRedemption}>Redeem</button>
             {qrCodeData && (
               <div style={{ marginTop: '1rem' }}>
                 <QRCode value={qrCodeData} />
@@ -285,44 +278,27 @@ const CreateTransaction: React.FC = () => {
         {activeTab === 'purchase' && role !== 'regular' && (
           <div>
             <h2>Purchase</h2>
-            <input
-              type="text"
-              placeholder="Enter User utorid"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
+            <Form
+              fields={[
+                { name: 'userId', label: 'User UTORid', type: 'text' },
+                { name: 'spent', label: 'Spent Amount', type: 'number' },
+                { name: 'promotionIds', label: 'Promotion IDs', type: 'text' },
+                { name: 'remark', label: 'Remark', type: 'text' },
+              ]}
+              onSubmit={(data) => { handlePurchase(data); }}
             />
-            <input
-              type="number"
-              placeholder="Enter Spent Amount (non-negative)"
-              value={spent}
-              onChange={(e) => setSpent(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Enter Promotion IDs (comma-separated)"
-              value={promotionIds}
-              onChange={(e) => setPromotionIds(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Enter Remark"
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-            />
-            <button onClick={handlePurchase}>Purchase</button>
           </div>
         )}
 
         {activeTab === 'processRedemption' && role === 'cashier' && (
           <div>
             <h2>Process Redemption</h2>
-            <input
-              type="number"
-              placeholder="Enter Transaction ID"
-              value={relatedId}
-              onChange={(e) => setRelatedId(e.target.value)}
+            <Form
+              fields={[
+                { name: 'relatedId', label: 'Transaction ID', type: 'number' },
+              ]}
+              onSubmit={(data) => { handleProcessRedemption(data);}}
             />
-            <button onClick={handleProcessRedemption}>Process</button>
           </div>
         )}
       </div>
