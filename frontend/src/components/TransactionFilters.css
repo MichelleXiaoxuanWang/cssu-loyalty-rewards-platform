@@ -49,6 +49,7 @@
   grid-template-areas: 
     "type related"
     "promotion amount"
+    "utorid createdby"
     "sort empty";
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -75,6 +76,14 @@
 
 .filter-group.amount-filter {
   grid-area: amount;
+}
+
+.filter-group.utorid-filter {
+  grid-area: utorid;
+}
+
+.filter-group.createdby-filter {
+  grid-area: createdby;
 }
 
 .filter-group.sort-filter {
@@ -191,6 +200,8 @@
       "related"
       "promotion"
       "amount"
+      "utorid"
+      "createdby"
       "sort";
     grid-template-columns: 1fr;
   }

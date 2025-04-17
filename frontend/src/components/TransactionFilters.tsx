@@ -209,6 +209,38 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
             </div>
           </div>
 
+          {/* UTORid Filter */}
+          <div className="filter-group utorid-filter">
+            <label htmlFor="name">
+              User Account
+              <span className="hint-text">(utorid)</span>
+            </label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              value={filters.name || ''} 
+              onChange={handleChange} 
+              placeholder="Enter UTORid"
+            />
+          </div>
+
+          {/* Created By Filter */}
+          <div className="filter-group createdby-filter">
+            <label htmlFor="createdBy">
+              Created By
+              <span className="hint-text">(utorid)</span>
+            </label>
+            <input 
+              type="text" 
+              id="createdBy" 
+              name="createdBy" 
+              value={filters.createdBy || ''} 
+              onChange={handleChange} 
+              placeholder="Enter creator UTORid"
+            />
+          </div>
+
           {/* Sort Filter */}
           <div className="filter-group sort-filter">
             <label htmlFor="sort">Sort By</label>
