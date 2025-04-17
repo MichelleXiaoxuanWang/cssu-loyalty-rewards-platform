@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import ItemBox from '../components/ItemBox';
 import { fetchEvents, Event, EventResponse, EventFilters } from '../services/event.service';
 import '../App.css';
-import FilterAndSort from '../components/FilterAndSort';
 import Pagination from '../components/Pagination';
 
 const OrganizerEventsPage: React.FC = () => {
@@ -40,14 +39,6 @@ const OrganizerEventsPage: React.FC = () => {
     loadEvents();
   }, [filters]);
 
-  const handleFilterChange = async (newFilters: EventFilters) => {
-    setFilters({ ...newFilters, page: 1 });
-  };
-
-  const handleSortChange = (sort: string) => {
-    setFilters(prev => ({ ...prev, sort }));
-  };
-
   const handlePageChange = (newPage: number) => {
     setFilters(prev => ({ ...prev, page: newPage }));
   };
@@ -61,23 +52,6 @@ const OrganizerEventsPage: React.FC = () => {
   return (
     <div>
       <h1>My Organized Events</h1>
-      <FilterAndSort
-        filters={[
-          { label: 'Name', value: 'name' },
-          { label: 'Location', value: 'location' },
-          { label: 'Started', value: 'started', options: ['true', 'false'] },
-          { label: 'Ended', value: 'ended', options: ['true', 'false'] },
-          { label: 'Published', value: 'published', options: ['true', 'false'] },
-        ]}
-        sortOptions={[
-          { label: 'Name (A-Z)', value: 'name-asc' },
-          { label: 'Name (Z-A)', value: 'name-desc' },
-          { label: 'Start Time (Earliest)', value: 'starttime-asc' },
-          { label: 'Start Time (Latest)', value: 'starttime-desc' },
-        ]}
-        onFilterChange={handleFilterChange}
-        onSortChange={handleSortChange}
-      />
       {events && events.length === 0 ? (
         <div className="no-entries">
           <p>No events available</p>
