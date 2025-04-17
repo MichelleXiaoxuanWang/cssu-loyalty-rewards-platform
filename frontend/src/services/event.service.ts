@@ -28,6 +28,7 @@ export interface EventFilters {
   limit?: number;
   sort?: string;
   organizer?: number;
+  published?: boolean;
 }
 
 export const fetchEvents = async (filters?: EventFilters): Promise<EventResponse> => {
