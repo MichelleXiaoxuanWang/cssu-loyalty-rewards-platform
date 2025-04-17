@@ -130,6 +130,8 @@ const Navbar: React.FC = () => {
         <Link to="/promotions" className={isActiveLink('/promotions') ? 'active-link' : ''}>Promotions</Link>
         <Link to="/events" className={isActiveLink('/events') ? 'active-link' : ''}>Events</Link>
         <Link to="/create-user" className={isActiveLink('/create-user') ? 'active-link' : ''}>Register Users</Link>
+        <Link to="/profile" className={isActiveLink('/profile') ? 'active-link' : ''}>Profile</Link>
+
         
         {isOrganizer && (
           <Link to="/organizer-events" className={isActiveLink('/organizer-events') ? 'active-link' : ''}>

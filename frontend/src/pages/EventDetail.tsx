@@ -191,7 +191,8 @@ const EventDetailPage: React.FC = () => {
           updates.points = Number(formData.points);
         }
       }
-      if (formData.published !== eventData.published && formData.published === true) {
+      // only show "published" update if event is not already published
+      if (!eventData.published && formData.published === true) {
         updates.published = true;
       }
     }
@@ -227,6 +228,7 @@ const EventDetailPage: React.FC = () => {
   };
 
   const handleRegister = async () => {
+    if (!eventId) return;
     try {
       const response = await fetch(`${API_BASE_URL}/events/${eventId}/guests/me`, {
         method: 'POST',
@@ -246,7 +248,7 @@ const EventDetailPage: React.FC = () => {
       setEventData(prev => prev ? { ...prev, numGuests: updatedEvent.numGuests } : prev);
       alert('Successfully registered for the event!');
     } catch (err: any) {
-      alert("Error registering for event: " + err.message || 'Failed to register for event. Please try again.');
+      alert("Error registering for event: " + (err.message || 'Please try again.'));
     }
   };
 
@@ -260,7 +262,7 @@ const EventDetailPage: React.FC = () => {
     <div className="detail-page-container">
       <h1>Event Details (ID: {eventData.id})</h1>
 
-      {fullAccess && (
+      {fullAccess && !editMode && (
         <div className="action-buttons">
           <button onClick={handleEditClick} className="detail-button primary-button">
             Edit Event Details
@@ -352,8 +354,8 @@ const EventDetailPage: React.FC = () => {
           )}
 
           <div className="action-buttons">
-            {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
-              (eventData.organizers.some(org => org.utorid === currentUser))) && (
+            {(currentUserRole === 'manager' || currentUserRole === 'superuser' ||
+              eventData.organizers.some(org => org.utorid === currentUser)) && (
               <button
                 onClick={() => navigate(`/events/${eventData.id}/organizers`)}
                 className="detail-button secondary-button"
@@ -362,9 +364,9 @@ const EventDetailPage: React.FC = () => {
               </button>
             )}
             
-            {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
-              (eventData.organizers.some(org => org.utorid === currentUser))) ? (
-              <button onClick={() => navigate(`/events/${eventId}/guests-manage`)} className="detail-button secondary-button">
+            {(currentUserRole === 'manager' || currentUserRole === 'superuser' ||
+              eventData.organizers.some(org => org.utorid === currentUser)) ? (
+              <button onClick={() => navigate(`/events/${eventData.id}/guests-manage`)} className="detail-button secondary-button">
                 Manage Guests
               </button>
             ) : (
@@ -452,19 +454,22 @@ const EventDetailPage: React.FC = () => {
                 />
               </div>
               
-              <div className="form-group">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="published"
-                    checked={!!formData.published}
-                    onChange={(e) =>
-                      setFormData({ ...formData, published: e.target.checked })
-                    }
-                  />
-                  <strong>Published</strong>
-                </label>
-              </div>
+              {/* only show the Published checkbox when the event is not yet published */}
+              {!eventData.published && (
+                <div className="form-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      name="published"
+                      checked={!!formData.published}
+                      onChange={(e) =>
+                        setFormData({ ...formData, published: e.target.checked })
+                      }
+                    />
+                    <strong>Published</strong>
+                  </label>
+                </div>
+              )}
             </>
           )}
           

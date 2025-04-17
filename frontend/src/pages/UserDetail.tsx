@@ -20,14 +20,14 @@ interface UserData {
 }
 
 const UserDetailPage: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>(); // route: /users/:userId
+  const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
 
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
-  
+
   // State for editing: fields that managers/superusers can update.
   const [formData, setFormData] = useState({
     email: '',
@@ -35,7 +35,7 @@ const UserDetailPage: React.FC = () => {
     suspicious: false,
     role: ''
   });
-  
+
   // Get currently logged in user's identifier and token/role from localStorage.
   const currentUser = localStorage.getItem('currentUser');
   const token = currentUser ? localStorage.getItem(`token_${currentUser}`) : '';
@@ -80,7 +80,7 @@ const UserDetailPage: React.FC = () => {
 
   // Handlers for edit mode
   const handleEditClick = () => setEditMode(true);
-  
+
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData({
@@ -106,19 +106,19 @@ const UserDetailPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     if (!user) return;
-    
+
     const updates: Record<string, any> = {};
     if (formData.email !== user.email) updates.email = formData.email;
     if (formData.verified !== user.verified) updates.verified = true;
     if ((formData as any).suspicious !== ((user as any).suspicious || false))
       updates.suspicious = formData.suspicious;
     if (formData.role !== user.role) updates.role = formData.role;
-    
+
     if (Object.keys(updates).length === 0) {
       setEditMode(false);
       return;
     }
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
         method: 'PATCH',
@@ -174,7 +174,7 @@ const UserDetailPage: React.FC = () => {
                 <span className="status-indicator status-negative">No</span>}
             </span>
           </div>
-          
+
           {user.promotions && user.promotions.length > 0 && (
             <div className="detail-section">
               <h3>Available Promotions</h3>
@@ -187,9 +187,12 @@ const UserDetailPage: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           <div className="action-buttons">
-            <button onClick={() => navigate(`/${user.utorid}/transactions`)} className="detail-button secondary-button">
+            <button
+              onClick={() => navigate(`/${user.utorid}/transactions`)}
+              className="detail-button secondary-button"
+            >
               Back to Transactions List
             </button>
           </div>
@@ -215,38 +218,38 @@ const UserDetailPage: React.FC = () => {
             <strong>Email:</strong>
             <span>{user.email}</span>
           </div>
-          
+
           {user.birthday && (
             <div className="detail-field">
               <strong>Birthday:</strong>
               <span>{user.birthday}</span>
             </div>
           )}
-          
+
           <div className="detail-field">
             <strong>Role:</strong>
             <span>{user.role}</span>
           </div>
-          
+
           <div className="detail-field">
             <strong>Points:</strong>
             <span>{user.points}</span>
           </div>
-          
+
           {user.createdAt && (
             <div className="detail-field">
               <strong>Created At:</strong>
               <span>{new Date(user.createdAt).toLocaleString()}</span>
             </div>
           )}
-          
+
           {user.lastLogin && (
             <div className="detail-field">
               <strong>Last Login:</strong>
               <span>{new Date(user.lastLogin).toLocaleString()}</span>
             </div>
           )}
-          
+
           <div className="detail-field">
             <strong>Verified:</strong>
             <span>
@@ -255,7 +258,7 @@ const UserDetailPage: React.FC = () => {
                 <span className="status-indicator status-negative">No</span>}
             </span>
           </div>
-          
+
           {user.avatarUrl && (
             <div className="detail-field">
               <strong>Avatar:</strong>
@@ -264,7 +267,7 @@ const UserDetailPage: React.FC = () => {
               </span>
             </div>
           )}
-          
+
           {user.promotions && user.promotions.length > 0 && (
             <div className="detail-section">
               <h3>Available Promotions</h3>
@@ -277,7 +280,7 @@ const UserDetailPage: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
             <div className="action-buttons">
               <button onClick={handleEditClick} className="detail-button primary-button">
@@ -293,7 +296,7 @@ const UserDetailPage: React.FC = () => {
   return (
     <div className="detail-page-container">
       <h1>User Details</h1>
-      
+
       {!editMode ? (
         renderUserInfo()
       ) : (
@@ -308,32 +311,37 @@ const UserDetailPage: React.FC = () => {
               onChange={handleChange}
             />
           </div>
-          
-          {/* Only managers/superusers have full access to these fields */}
-          <div className="form-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="verified"
-                checked={formData.verified}
-                onChange={handleChange}
-              />
-              <strong>Verified</strong>
-            </label>
-          </div>
-          
-          <div className="form-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="suspicious"
-                checked={(formData as any).suspicious}
-                onChange={handleChange}
-              />
-              <strong>Suspicious</strong>
-            </label>
-          </div>
-          
+
+          {/* Only show 'Verified' checkbox if the user is not already verified */}
+          {!user.verified && (
+            <div className="form-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="verified"
+                  checked={formData.verified}
+                  onChange={handleChange}
+                />
+                <strong>Verified</strong>
+              </label>
+            </div>
+          )}
+
+          {/* Show 'Suspicious' checkbox only if the user being edited is a cashier */}
+          {user.role === 'cashier' && (
+            <div className="form-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="suspicious"
+                  checked={(formData as any).suspicious}
+                  onChange={handleChange}
+                />
+                <strong>Suspicious</strong>
+              </label>
+            </div>
+          )}
+
           {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
             <div className="form-group">
               <label htmlFor="role"><strong>Role:</strong></label>
@@ -359,7 +367,7 @@ const UserDetailPage: React.FC = () => {
               </select>
             </div>
           )}
-          
+
           <div className="action-buttons">
             <button type="submit" className="detail-button primary-button">Save Changes</button>
             <button type="button" onClick={handleCancel} className="detail-button secondary-button">Cancel</button>

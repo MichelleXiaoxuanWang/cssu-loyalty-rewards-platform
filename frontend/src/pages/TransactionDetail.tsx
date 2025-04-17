@@ -277,10 +277,29 @@ const TransactionDetailPage: React.FC = () => {
           <strong>Created By:</strong>
           <span>{transaction.createdBy}</span>
         </div>
+
+        <div className="detail-field">
+          <strong>Promotion Ids:</strong>
+          <span>{transaction.promotionIds.length
+          ? transaction.promotionIds.join(', ')
+          : '—'}</span>
+        </div>
         
-        {transaction.relatedId && (
+        {transaction.relatedId && transaction.type === "transfer" && (
           <div className="detail-field">
-            <strong>Related ID:</strong>
+            <strong>Sender ID:</strong>
+            <span>{transaction.relatedId}</span>
+          </div>
+        )}
+        {transaction.relatedId && transaction.type === "adjustment" && (
+          <div className="detail-field">
+            <strong>Adjusted Transaction:</strong>
+            <span>{transaction.relatedId}</span>
+          </div>
+        )}
+        {transaction.relatedId && transaction.type === "redemption" && (
+          <div className="detail-field">
+            <strong>Processed By:</strong>
             <span>{transaction.relatedId}</span>
           </div>
         )}
