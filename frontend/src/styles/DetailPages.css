@@ -19,7 +19,7 @@
 
 /* Section styling */
 .detail-section {
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
 /* Field rows with proper spacing */
@@ -125,8 +125,6 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  max-width: 200px;
-
 }
 
 .primary-button {
