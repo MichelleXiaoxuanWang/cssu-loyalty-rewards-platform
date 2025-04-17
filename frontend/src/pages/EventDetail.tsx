@@ -267,7 +267,7 @@ const EventDetailPage: React.FC = () => {
           <button onClick={handleEditClick} className="detail-button primary-button">
             Edit Event Details
           </button>
-          <button onClick={() => navigate(`/events/${eventData.id}/transactions`)} className="detail-button secondary-button">
+          <button onClick={() => navigate(`/events/${eventData.id}/transactions`)} className="detail-button tertiary-button">
             Add Event Transaction
           </button>
         </div>
@@ -354,22 +354,28 @@ const EventDetailPage: React.FC = () => {
           )}
 
           <div className="action-buttons">
-            {(currentUserRole === 'manager' || currentUserRole === 'superuser' ||
-              eventData.organizers.some(org => org.utorid === currentUser)) && (
+
+            <button onClick={() => navigate('/events')} className="detail-button secondary-button">
+              Back to Events List
+            </button>
+            {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
+              (eventData.organizers.some(org => org.utorid === currentUser))) && (
               <button
                 onClick={() => navigate(`/events/${eventData.id}/organizers`)}
-                className="detail-button secondary-button"
+                className="detail-button primary-button"
               >
                 Manage Organizers
               </button>
             )}
             
-            {(currentUserRole === 'manager' || currentUserRole === 'superuser' ||
-              eventData.organizers.some(org => org.utorid === currentUser)) ? (
-              <button onClick={() => navigate(`/events/${eventData.id}/guests-manage`)} className="detail-button secondary-button">
+            {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
+              eventData.organizers.some(org => org.utorid === currentUser)) && (
+              <button onClick={() => navigate(`/events/${eventId}/guests-manage`)} className="detail-button primary-button">
                 Manage Guests
               </button>
-            ) : (
+            )}
+
+            {!(eventData.organizers.some(org => org.utorid === currentUser)) && (
               <button onClick={handleRegister} className="detail-button primary-button">
                 Register to this Event
               </button>

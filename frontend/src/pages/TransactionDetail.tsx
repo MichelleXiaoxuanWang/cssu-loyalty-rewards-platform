@@ -339,13 +339,13 @@ const TransactionDetailPage: React.FC = () => {
         {(currentUserRole === 'manager' || currentUserRole === 'superuser') && (
           <div className="detail-section">
             <h3>Transaction Adjustments</h3>
-            <button onClick={handleCreateAdjustmentClick} className="detail-button secondary-button">
+            <button onClick={handleCreateAdjustmentClick} className="detail-button tertiary-button">
               Create Adjustment
             </button>
             {creatingAdjustment && (
               <Form
                 fields={[
-                  { name: 'amount', label: 'Amount', type: 'number' },
+                  { name: 'amount', label: 'Points Amount', type: 'number' },
                   { name: 'remark', label: 'Remark', type: 'text' },
                   ...(transaction?.type === 'purchase' ? [{ name: 'promotionIds', label: 'Promotion IDs', type: 'text' }] : [])
                 ]}
