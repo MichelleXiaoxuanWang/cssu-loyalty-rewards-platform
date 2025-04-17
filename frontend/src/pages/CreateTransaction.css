@@ -20,11 +20,12 @@
   margin: 0 auto 20px;
 }
 
+/* Updated the tabs button colors to incorporate a blue tone for better accessibility and alignment with the page's theme */
 .tabs button {
   padding: 10px 20px;
   border: none;
-  background-color: #4d4b52;
-  color: #bcbbbe;
+  background-color: #d0e7ff; /* Light blue */
+  color: #00336671; /* Dark blue text */
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.3s;
@@ -33,26 +34,27 @@
 }
 
 .tabs button.active {
-  background-color: #212023;
-  color: #ffffff;
-  font-weight: 700;
+  background-color: rgba(133, 189, 245, 0.87); /* Medium blue */
+  font-weight: 650;
+  color: #003366;
+}
+
+.tabs button:hover {
+  background-color: #b3d9ff; /* Slightly darker blue for hover */
 }
 
 .tabs button:hover:not(.active) {
-  background-color: #212023;
-  color: #ffffff;
+  background-color: #cce5ff; /* Lighter blue for non-active hover */
 }
 
 .tabs button.disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background-color: #3a3940;
-  color: #bcbbbe;
+  background-color: #e6f2ff; /* Very light blue for disabled */
 }
 
 .tabs button.disabled:hover {
   background-color: #3a3940;
-  color: #bcbbbe;
 }
 
 .tab-content {

@@ -17,6 +17,7 @@ const TransactionPreviewPage: React.FC = () => {
     limit: 10
   });
   const [totalPages, setTotalPages] = useState(1);
+  const [totalTransactions, setTotalTransactions] = useState<number>(0);
   const [hasSuspiciousTransactions, setHasSuspiciousTransactions] = useState(false);
   const [hasPendingRedemptions, setHasPendingRedemptions] = useState(false);
 
@@ -32,11 +33,48 @@ const TransactionPreviewPage: React.FC = () => {
     }
   }, [currentUser, currentRole]);
 
+  // Check for system-wide suspicious transactions and pending redemptions
+  useEffect(() => {
+    if (isAdminRole) {
+      checkSystemAlerts();
+    }
+  }, [isAdminRole]);
+
+  // Fetch transactions based on filters
   useEffect(() => {
     if (currentUser && currentRole) {
       fetchTransactions();
     }
   }, [filters, currentUser, currentRole]);
+
+  // Separate function to check for system-wide alerts
+  const checkSystemAlerts = async () => {
+    try {
+      // Get first page with high limit to efficiently check for alerts
+      const alertCheckFilters: FiltersType = { 
+        page: 1, 
+        limit: 100, 
+        suspicious: true 
+      };
+      
+      // Check for suspicious transactions
+      const suspiciousCheck = await getAllTransactions(alertCheckFilters);
+      setHasSuspiciousTransactions(suspiciousCheck.count > 0);
+      
+      // Check for pending redemptions
+      const pendingRedemptionFilters: FiltersType = {
+        page: 1,
+        limit: 100,
+        type: 'redemption',
+        unprocessed: true
+      };
+      
+      const pendingCheck = await getAllTransactions(pendingRedemptionFilters);
+      setHasPendingRedemptions(pendingCheck.count > 0);
+    } catch (err) {
+      console.error('Error checking system alerts:', err);
+    }
+  };
 
   const fetchTransactions = async () => {
     try {
@@ -45,16 +83,9 @@ const TransactionPreviewPage: React.FC = () => {
         ? await getAllTransactions(filters)
         : await getMyTransactions(filters);
       
+      setTotalTransactions(response.count);
       setTransactions(response.results);
       setTotalPages(Math.ceil(response.count / (filters.limit || 10)));
-
-      // Check for suspicious transactions and pending redemptions
-      if (isAdminRole) {
-        setHasSuspiciousTransactions(response.results.some(t => t.suspicious));
-        setHasPendingRedemptions(response.results.some(t => 
-          t.type === 'redemption' && t.relatedId === undefined
-        ));
-      }
     } catch (err) {
       setError('Failed to fetch transactions');
       console.error('Error fetching transactions:', err);
@@ -138,6 +169,7 @@ const TransactionPreviewPage: React.FC = () => {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={filters.limit || 10}
+        totalItems={totalTransactions}
       />
     </div>
   );

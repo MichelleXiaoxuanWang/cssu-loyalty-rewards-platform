@@ -45,3 +45,11 @@
 .pagination label {
     margin-right: 8px;
 }
+
+/* Updated styles to set a fixed space between the two divs and center the row */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px; /* Set fixed space between the two divs */
+}

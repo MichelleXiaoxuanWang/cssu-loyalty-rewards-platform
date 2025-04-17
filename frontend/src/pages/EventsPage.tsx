@@ -1,18 +1,11 @@
-// src/pages/EventsPage.tsx
 import React, { useState, useEffect } from 'react';
 import ItemBox from '../components/ItemBox';
 import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
-import {
-  fetchEvents,
-  createEvent,
-  Event,
-  EventResponse,
-  EventFilters
-} from '../services/event.service';
+import { fetchEvents, createEvent, Event, EventResponse, EventFilters } from '../services/event.service';
+import '../styles/ListingPage.css';
 import { API_BASE_URL } from '../config/api.config';
-import '../App.css';
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -21,7 +14,10 @@ const EventsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
-  const [filters, setFilters] = useState<EventFilters>({ page: 1, limit: 5 });
+  const [filters, setFilters] = useState<EventFilters>({
+    page: 1,
+    limit: 5
+  });
 
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
@@ -38,61 +34,83 @@ const EventsPage: React.FC = () => {
         console.error('Error fetching events:', err);
       }
     };
+
     loadEvents();
   }, [filters]);
 
   useEffect(() => {
     if (role === 'regular') {
-      setFilters(prev => ({ ...prev, published: true }));
+      setFilters((prevFilters) => ({ ...prevFilters, published: true }));
     }
   }, [role]);
 
-  const handleCreate = () => setCreatingEvent(true);
+  const handleCreate = () => {
+    setCreatingEvent(true);
+  };
 
   const handleSubmit = async (formData: Record<string, any>) => {
     try {
+      let newEvent: Event;
       if (creatingEvent) {
-        const newEvent = await createEvent(formData);
+        const created = await createEvent(formData);
+  
+        // Add default/fallback values to ensure consistency
+        newEvent = {
+          ...created,
+          numGuests: created.numGuests ?? 0,
+          published: created.published ?? false,
+          location: created.location ?? 'N/A',
+          startTime: created.startTime ?? '',
+          endTime: created.endTime ?? '',
+          capacity: created.capacity ?? undefined,
+        };
+  
         setCreatingEvent(false);
+  
         if (events.length >= itemsPerPage) {
-          setCurrentPage(p => p + 1);
-          setFilters(prev => ({ ...prev, page: currentPage + 1 }));
+          setCurrentPage((prevPage) => prevPage + 1);
+          setFilters((prevFilters) => ({ ...prevFilters, page: currentPage + 1 }));
           setEvents([newEvent]);
         } else {
-          setEvents(prev => [...prev, newEvent]);
+          setEvents((prevEvents) => [...prevEvents, newEvent]);
         }
-        setTotalEvents(prev => prev + 1);
-        setFeedbackMessage('Submission successful!');
+  
+        setTotalEvents((prevTotal) => prevTotal + 1);
       }
-    } catch {
+      setFeedbackMessage('Submission successful!');
+    } catch (error: any) {
+      alert(error.message);
       setFeedbackMessage('Submission failed. Please try again.');
     }
   };
+  
 
   const handleFilterChange = (newFilters: EventFilters) => {
-    setFilters({ ...newFilters, page: 1 });
+    setFilters({ ...newFilters, page: 1, limit: itemsPerPage });
   };
-  const handleSortChange = (sort: string) => setFilters(prev => ({ ...prev, sort }));
-  const handlePageChange = (page: number) => setFilters(prev => ({ ...prev, page }));
-  const handleLimitChange = (limit: number) => setFilters(prev => ({ ...prev, page: 1, limit }));
 
-  const totalPages = Math.ceil(totalEvents / itemsPerPage);
-  const filterOptions = [
-    { label: 'Name', value: 'name' },
-    { label: 'Location', value: 'location' },
-    { label: 'Started', value: 'started', options: ['true','false'] },
-    { label: 'Ended', value: 'ended', options: ['true','false'] },
-  ];
-  if (role !== 'regular') {
-    filterOptions.push({ label: 'Published', value: 'published', options: ['true','false'] });
-  }
+  const handleSortChange = (sort: string) => {
+    setFilters(prev => ({ ...prev, sort }));
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
+  };
 
   const handleDelete = async (eventId: number) => {
     if (!window.confirm('Are you sure you want to delete this event?')) return;
     try {
+      const token = localStorage.getItem(`token_${currentUser}`);
       const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem(`token_${currentUser}`)}` },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || ''}`
+        },
         credentials: 'include'
       });
       if (!response.ok) {
@@ -106,16 +124,25 @@ const EventsPage: React.FC = () => {
     }
   };
 
+  const totalPages = Math.ceil(totalEvents / itemsPerPage);
+
+  const filterOptions = [
+    { label: 'Name', value: 'name' },
+    { label: 'Location', value: 'location' },
+    { label: 'Started', value: 'started', options: ['true', 'false'] },
+    { label: 'Ended', value: 'ended', options: ['true', 'false'] },
+  ];
+
+  if (role !== 'regular') {
+    filterOptions.push({ label: 'Published', value: 'published', options: ['true', 'false'] });
+  }
+
   return (
-    <div>
+    <div className="listing-page">
       <h1>Events</h1>
-      {feedbackMessage && (
-        <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>
-          {feedbackMessage}
-        </p>
-      )}
+      {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
       {role !== 'regular' && role !== 'cashier' && (
-        <button onClick={handleCreate}>Create New Event</button>
+        <button className="listing-create-button" onClick={handleCreate}>+ Create New Event</button>
       )}
       {creatingEvent && (
         <Form
@@ -146,72 +173,57 @@ const EventsPage: React.FC = () => {
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />
-
-      {events.length === 0 ? (
+      {events && events.length === 0 ? (
         <div className="no-entries">
           <p>No events available</p>
         </div>
       ) : (
-        events.map(ev => (
-          <div key={ev.id} style={{ position: 'relative' }}>
-            {/* Keep the box exactly as before */}
+        events?.map((event) => (
+          <div key={event.id} style={{ position: 'relative' }}>
             <ItemBox
-              title={`ID: ${ev.id} – ${ev.name}`}
-              navigateTo={`/events/${ev.id}`}
+              title={`${event.name}`}
+              description={`${event.published ? 'Published' : 'Not Published'}`}
+              navigateTo={`/events/${event.id}`}
+              id={event.id}
+              extraInfo={[
+                { label: 'Location', value: event.location },
+                { label: 'Start Time', value: event.startTime ? new Date(event.startTime).toLocaleDateString() : 'N/A' },
+                { label: 'End Time', value: event.endTime ? new Date(event.endTime).toLocaleDateString() : 'N/A' },
+                event.capacity !== null
+                  ? { label: 'Capacity', value: event.capacity }
+                  : { label: 'Capacity', value: 'Unlimited' },
+                event.numGuests !== undefined ? { label: 'Guests', value: event.numGuests } : null
+              ].filter(Boolean) as { label: string; value: string | number }[]}
             />
-
-            {/* Move published badge to bottom-right */}
-            <span
-              style={{
-                position: 'absolute',
-                bottom: '8px',
-                right: '8px',
-                fontSize: '0.9rem',
-                color: ev.published ? '#28a745' : '#dc3545',
-                background: 'rgba(255,255,255,0.9)',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                boxShadow: '0 0 4px rgba(0,0,0,0.1)',
-                pointerEvents: 'none'
-              }}
-            >
-              {ev.published ? 'Published' : 'Not Published'}
-            </span>
-
-            {/* Delete “×” still top-right */}
             {(role === 'manager' || role === 'superuser') && (
-              <span
-                onClick={() => handleDelete(ev.id)}
+              <button
+                onClick={() => handleDelete(event.id)}
                 style={{
                   position: 'absolute',
                   top: '8px',
                   right: '8px',
-                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'transparent',
                   fontSize: '1.2rem',
+                  cursor: 'pointer',
                   color: '#dc3545',
-                  background: 'white',
-                  borderRadius: '50%',
-                  lineHeight: '1',
-                  width: '24px',
-                  height: '24px',
-                  textAlign: 'center',
-                  boxShadow: '0 0 4px rgba(0,0,0,0.2)'
+                  lineHeight: 1
                 }}
                 title="Delete"
               >
                 ×
-              </span>
+              </button>
             )}
           </div>
         ))
       )}
-
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={itemsPerPage}
+        totalItems={totalEvents}
       />
     </div>
   );

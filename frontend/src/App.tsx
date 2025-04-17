@@ -78,6 +78,11 @@ function HomeRedirect() {
   
   console.log('Current user role:', role);
   
+  // If the user is an organizer, redirect to OrganizerEventsPage
+  if (role === 'organizer') {
+    return <Navigate to="/organizer-events" replace />;
+  }
+  
   // Return appropriate landing page based on role
   if (role === 'regular') {
     return <RegularLandingPage key={role} />;
@@ -184,9 +189,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {isOrganizer && (
-          <Route path="/organizer-events" element={<OrganizerEventsPage />} />
-        )}
+        <Route path="/organizer-events" element={<OrganizerEventsPage />} />
         
         <Route
           path="/create-user"

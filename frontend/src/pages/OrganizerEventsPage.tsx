@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ItemBox from '../components/ItemBox';
 import { fetchEvents, Event, EventResponse, EventFilters } from '../services/event.service';
-import '../App.css';
-import FilterAndSort from '../components/FilterAndSort';
+import '../styles/ListingPage.css';
 import Pagination from '../components/Pagination';
 
 const OrganizerEventsPage: React.FC = () => {
@@ -40,14 +39,6 @@ const OrganizerEventsPage: React.FC = () => {
     loadEvents();
   }, [filters]);
 
-  const handleFilterChange = async (newFilters: EventFilters) => {
-    setFilters({ ...newFilters, page: 1 });
-  };
-
-  const handleSortChange = (sort: string) => {
-    setFilters(prev => ({ ...prev, sort }));
-  };
-
   const handlePageChange = (newPage: number) => {
     setFilters(prev => ({ ...prev, page: newPage }));
   };
@@ -55,29 +46,12 @@ const OrganizerEventsPage: React.FC = () => {
   const handleLimitChange = (newLimit: number) => {
     setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
   };
-  
+
   const totalPages = Math.ceil(totalEvents / itemsPerPage);
 
   return (
-    <div>
+    <div className="listing-page">
       <h1>My Organized Events</h1>
-      <FilterAndSort
-        filters={[
-          { label: 'Name', value: 'name' },
-          { label: 'Location', value: 'location' },
-          { label: 'Started', value: 'started', options: ['true', 'false'] },
-          { label: 'Ended', value: 'ended', options: ['true', 'false'] },
-          { label: 'Published', value: 'published', options: ['true', 'false'] },
-        ]}
-        sortOptions={[
-          { label: 'Name (A-Z)', value: 'name-asc' },
-          { label: 'Name (Z-A)', value: 'name-desc' },
-          { label: 'Start Time (Earliest)', value: 'starttime-asc' },
-          { label: 'Start Time (Latest)', value: 'starttime-desc' },
-        ]}
-        onFilterChange={handleFilterChange}
-        onSortChange={handleSortChange}
-      />
       {events && events.length === 0 ? (
         <div className="no-entries">
           <p>No events available</p>
@@ -86,9 +60,17 @@ const OrganizerEventsPage: React.FC = () => {
         events?.map((event) => (
           <ItemBox
             key={event.id}
-            title={`ID: ${event.id} - Name: ${event.name}`}
+            title={`${event.name}`}
             description={`${event.published ? 'Published' : 'Not Published'}`}
             navigateTo={`/events/${event.id}`}
+            id={event.id}
+            extraInfo={[
+              { label: 'Location', value: event.location },
+              { label: 'Start Time', value: event.startTime ? new Date(event.startTime).toLocaleDateString() : 'N/A' },
+              { label: 'End Time', value: event.endTime ? new Date(event.endTime).toLocaleDateString() : 'N/A' },
+              event.capacity !== null ? { label: 'Capacity', value: event.capacity } : { label: 'Capacity', value: 'Unlimited' },
+              event.numGuests !== undefined ? { label: 'Guests', value: event.numGuests } : null
+            ].filter(Boolean) as {label: string; value: string | number}[]}
           />
         ))
       )}
@@ -98,6 +80,7 @@ const OrganizerEventsPage: React.FC = () => {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={itemsPerPage}
+        totalItems={totalEvents}
       />
     </div>
   );

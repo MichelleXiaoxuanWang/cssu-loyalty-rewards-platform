@@ -3,7 +3,7 @@ import ItemBox from '../components/ItemBox';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchUsers, User, UserFilters, UserResponse } from '../services/user.service';
-import '../App.css';
+import '../styles/ListingPage.css';
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -40,7 +40,7 @@ const UsersPage: React.FC = () => {
   }, [filters, role]);
 
   const handleFilterChange = async (newFilters: UserFilters) => {
-    setFilters({ ...newFilters, page: 1 });
+    setFilters({ ...newFilters, page: 1, limit: itemsPerPage });
   };
 
   const handleSortChange = (sort: string) => {
@@ -62,7 +62,7 @@ const UsersPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="listing-page">
       <h1>Users</h1>
       <FilterAndSort
         filters={[
@@ -90,10 +90,16 @@ const UsersPage: React.FC = () => {
         users.map((user) => (
           <ItemBox
             key={user.id}
-            title={`ID: ${user.id} - ${user.name}`}
+            title={`${user.name}`}
             verified={`${user.verified ? 'Verified' : 'Not Verified'}`}
             details={`${user.role}`}
             navigateTo={`/users/${user.id}`}
+            id={user.id}
+            extraInfo={[
+              { label: 'UTORid', value: user.utorid },
+              user.email ? { label: 'Email', value: user.email } : null,
+              { label: 'Points', value: user.points },
+            ].filter(Boolean) as {label: string; value: string | number}[]}
           />
         ))
       )}
@@ -103,6 +109,7 @@ const UsersPage: React.FC = () => {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={itemsPerPage}
+        totalItems={totalUsers}
       />
     </div>
   );

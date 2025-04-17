@@ -4,7 +4,7 @@ import Form from '../components/Form';
 import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchPromotions, createPromotion, Promotion, PromotionFilters, PromotionResponse } from '../services/promotion.service';
-import '../App.css';
+import '../styles/ListingPage.css';
 
 const PromotionsPage: React.FC = () => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -68,14 +68,14 @@ const PromotionsPage: React.FC = () => {
         }
       }
       setFeedbackMessage('Submission successful!');
-    } catch (error) {
-      console.error('Error creating promotion:', error);
+    } catch (error: any) {
+      alert(error.message);
       setFeedbackMessage('Submission failed. Please try again.');
     }
   };
 
   const handleFilterChange = async (newFilters: PromotionFilters) => {
-      setFilters({ ...newFilters, page: 1 });
+    setFilters({ ...newFilters, page: 1, limit: itemsPerPage });
   };
 
   const handleSortChange = (sort: string) => {
@@ -113,10 +113,10 @@ const PromotionsPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="listing-page">
       <h1>Promotions</h1>
       {feedbackMessage && <p style={{ color: feedbackMessage.includes('failed') ? 'red' : 'green' }}>{feedbackMessage}</p>}
-      <button onClick={handleCreate}>Create New Promotion</button>
+      <button className="listing-create-button" onClick={handleCreate}>+ Create New Promotion</button>
       {(creatingPromotion) && (
         <Form
           fields={[
@@ -160,9 +160,17 @@ const PromotionsPage: React.FC = () => {
         promotions?.map((promotion) => (
           <ItemBox
             key={promotion.id}
-            title={`ID: ${promotion.id} - ${promotion.name}`}
+            title={`${promotion.name}`}
             description={`${promotion.type}`}
             navigateTo={`/promotions/${promotion.id}`}
+            id={promotion.id}
+            extraInfo={[
+              { label: 'Start Time', value: promotion.startTime ? new Date(promotion.startTime).toLocaleDateString() : 'N/A' },
+              { label: 'End Time', value: promotion.endTime ? new Date(promotion.endTime).toLocaleDateString() : 'N/A' },
+              promotion.minSpending !== undefined ? { label: 'Min Spending', value: `$${promotion.minSpending}` } : null,
+              promotion.rate !== undefined ? { label: 'Rate', value: `${promotion.rate}` } : null,
+              promotion.points !== undefined ? { label: 'Points', value: promotion.points } : null
+            ].filter(Boolean) as {label: string; value: string | number}[]}
           />
         ))
       )}
@@ -172,6 +180,7 @@ const PromotionsPage: React.FC = () => {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={itemsPerPage}
+        totalItems={totalPromotions}
       />
     </div>
   );
