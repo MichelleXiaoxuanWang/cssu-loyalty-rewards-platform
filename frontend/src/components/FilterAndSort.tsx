@@ -28,17 +28,26 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
   initialFilters = {}
 }) => {
   const [filterValues, setFilterValues] = useState<Record<string, any>>(initialFilters);
-  const [timeStatusType, setTimeStatusType] = useState<string>('');
+  const [timeStatusType, setTimeStatusType] = useState<string>('started');
   const [timeStatusValue, setTimeStatusValue] = useState<string>('');
 
   // Find if we have started/ended filters that need special handling
   const hasStartedEndedFilters = filters.some(f => f.value === 'started') && 
                                filters.some(f => f.value === 'ended');
   
-  // Get all filters except started/ended when we need special handling
-  const regularFilters = hasStartedEndedFilters 
-    ? filters.filter(f => f.value !== 'started' && f.value !== 'ended')
-    : filters;
+  // Find the published filter if it exists
+  const publishedFilter = filters.find(f => f.value === 'published');
+  
+  // Get all filters except started/ended and published when we need special handling
+  const regularFilters = filters.filter(f => {
+    if (hasStartedEndedFilters && (f.value === 'started' || f.value === 'ended')) {
+      return false;
+    }
+    if (publishedFilter && f.value === 'published') {
+      return false;
+    }
+    return true;
+  });
 
   // Set initial time status values if present
   useEffect(() => {
@@ -49,6 +58,9 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
       } else if (initialFilters.ended !== undefined) {
         setTimeStatusType('ended');
         setTimeStatusValue(initialFilters.ended);
+      } else {
+        // Default to 'started' if no filter is set
+        setTimeStatusType('started');
       }
     }
   }, []);
@@ -103,7 +115,7 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
   const handleReset = () => {
     const resetFilters = {};
     setFilterValues(resetFilters);
-    setTimeStatusType('');
+    setTimeStatusType('started');
     setTimeStatusValue('');
     onFilterChange(resetFilters);
   };
@@ -126,6 +138,7 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
       
       <form onSubmit={handleSubmit}>
         <div className="filters-grid">
+          {/* Regular filters except started/ended and published */}
           {regularFilters.map((filter) => (
             <div key={filter.value} className="filter-group">
               <label htmlFor={filter.value}>
@@ -174,31 +187,51 @@ const FilterAndSort: React.FC<FilterAndSortProps> = ({
                   value={timeStatusType}
                   onChange={handleTimeStatusTypeChange}
                 >
-                  <option value="">No Time Filter</option>
                   <option value="started">Started</option>
                   <option value="ended">Ended</option>
                 </select>
               </div>
               
-              {timeStatusType && (
-                <div className="filter-group">
-                  <label htmlFor="timeStatusValue">
-                    Status Value
-                    <span className="hint-text">(true/false)</span>
-                  </label>
-                  <select
-                    id="timeStatusValue"
-                    name="timeStatusValue"
-                    value={timeStatusValue}
-                    onChange={handleTimeStatusValueChange}
-                  >
-                    <option value="">Select a value</option>
-                    <option value="true">True</option>
-                    <option value="false">False</option>
-                  </select>
-                </div>
-              )}
+              <div className="filter-group">
+                <label htmlFor="timeStatusValue">
+                  Status Value
+                  <span className="hint-text">(true/false)</span>
+                </label>
+                <select
+                  id="timeStatusValue"
+                  name="timeStatusValue"
+                  value={timeStatusValue}
+                  onChange={handleTimeStatusValueChange}
+                >
+                  <option value="">Select a value</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </div>
             </>
+          )}
+          
+          {/* Published filter after time status */}
+          {publishedFilter && (
+            <div className="filter-group">
+              <label htmlFor="published">
+                {publishedFilter.label}
+                <span className="hint-text">(select one)</span>
+              </label>
+              <select
+                id="published"
+                name="published"
+                value={filterValues.published || ''}
+                onChange={handleChange}
+              >
+                <option value="">All {publishedFilter.label}</option>
+                {publishedFilter.options?.map(option => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
           
           {/* Sort dropdown */}
