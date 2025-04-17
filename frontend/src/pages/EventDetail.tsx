@@ -327,9 +327,7 @@ const EventDetailPage: React.FC = () => {
                     </div>
                   ))}
                 </div>
-              </div>
 
-              <div className="detail-section"> 
                 {(currentUserRole === 'manager' || currentUserRole === 'superuser' || 
                 (eventData.organizers.some(org => org.utorid === currentUser))) && (
                   <button
@@ -354,9 +352,6 @@ const EventDetailPage: React.FC = () => {
                     <p>No guests yet.</p>
                   )}
                 </div>
-              </div>
-
-              <div className="detail-section"> 
                 <button onClick={() => navigate(`/events/${eventData.id}/transactions`)} className="detail-button tertiary-button">
                   Reward Points to Guest
                 </button>
@@ -365,7 +360,6 @@ const EventDetailPage: React.FC = () => {
                   Manage Guests
                 </button>
               </div>
-
               
             </>
           ) : (
