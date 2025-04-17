@@ -103,7 +103,6 @@ function HomeRedirect() {
 }
 
 function App() {
-  const [isOrganizer, setIsOrganizer] = useState(false);
 
   useEffect(() => {
     const checkOrganizerStatus = async () => {

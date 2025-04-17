@@ -133,9 +133,33 @@ const UserDetailPage: React.FC = () => {
         const data = await response.json();
         throw new Error(data.error || 'Failed to update user');
       }
-      const updatedUser: UserData = await response.json();
-      setUser(updatedUser);
+
+      const response_get = await fetch(`${API_BASE_URL}/users/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || ''}`
+        },
+        credentials: 'include'
+      });
+      if (!response_get.ok) {
+        const data = await response_get.json();
+        throw new Error(data.error || 'Failed to fetch user data');
+      }
+      const data: UserData = await response_get.json();
+      setUser(data);
+      setFormData({
+        email: data.email || '',
+        verified: data.verified,
+        suspicious: (data as any).suspicious || false,
+        role: data.role
+      });
+      console.log(data);
+      setUser(data);
       setEditMode(false);
+
+
+      
     } catch (err: any) {
       alert(err.message);
     }
