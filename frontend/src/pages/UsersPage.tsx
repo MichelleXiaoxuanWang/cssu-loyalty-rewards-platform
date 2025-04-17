@@ -40,7 +40,7 @@ const UsersPage: React.FC = () => {
   }, [filters, role]);
 
   const handleFilterChange = async (newFilters: UserFilters) => {
-    setFilters({ ...newFilters, page: 1 });
+    setFilters({ ...newFilters, page: 1, limit: itemsPerPage });
   };
 
   const handleSortChange = (sort: string) => {

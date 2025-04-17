@@ -37,16 +37,19 @@ const Pagination: React.FC<PaginationProps> = ({
     }
   };
 
+  const displayCurrentPage = totalPages === 0 ? 0 : currentPage;
+  const displayTotalPages = totalPages === 0 ? 0 : totalPages;
+
   return (
     <div className="pagination">
       <div>
-        <button onClick={handlePrevious} disabled={currentPage === 1}>
+        <button onClick={handlePrevious} disabled={currentPage === 1 || totalPages === 0}>
           Previous
         </button>
         <span>
-          Page {currentPage} of {totalPages}
+          Page {displayCurrentPage} of {displayTotalPages}
         </span>
-        <button onClick={handleNext} disabled={currentPage === totalPages}>
+        <button onClick={handleNext} disabled={currentPage === totalPages || totalPages === 0}>
           Next
         </button>
       </div>

@@ -75,7 +75,7 @@ const PromotionsPage: React.FC = () => {
   };
 
   const handleFilterChange = async (newFilters: PromotionFilters) => {
-      setFilters({ ...newFilters, page: 1 });
+    setFilters({ ...newFilters, page: 1, limit: itemsPerPage });
   };
 
   const handleSortChange = (sort: string) => {

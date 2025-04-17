@@ -46,7 +46,7 @@ const OrganizerEventsPage: React.FC = () => {
   const handleLimitChange = (newLimit: number) => {
     setFilters(prev => ({ ...prev, page: 1, limit: newLimit }));
   };
-  
+
   const totalPages = Math.ceil(totalEvents / itemsPerPage);
 
   return (
