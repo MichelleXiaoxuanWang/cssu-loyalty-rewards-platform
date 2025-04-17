@@ -22,6 +22,7 @@ export interface TransactionDetailData {
   processedBy?: string;
   redeemed?: number;
   relatedId?: number;
+  relatedUtorid?: string;
   // etc.
 }
 
@@ -231,7 +232,7 @@ const TransactionDetailPage: React.FC = () => {
       
       <div className="detail-content">
         <div className="detail-field">
-          <strong>UTORid:</strong>
+          <strong>User Account (UTORid):</strong>
           <span>{transaction.utorid}</span>
         </div>
         
@@ -287,19 +288,25 @@ const TransactionDetailPage: React.FC = () => {
         
         {transaction.relatedId && transaction.type === "transfer" && (
           <div className="detail-field">
-            <strong>Sender ID:</strong>
-            <span>{transaction.relatedId}</span>
+            <strong>{transaction.amount > 0 ? 'Sender' : 'Receiver'} (UTORid):</strong>
+            <span>{transaction.relatedUtorid || 'N/A'}</span>
           </div>
         )}
         {transaction.relatedId && transaction.type === "adjustment" && (
           <div className="detail-field">
-            <strong>Adjusted Transaction:</strong>
+            <strong>Adjusted Transaction ID:</strong>
             <span>{transaction.relatedId}</span>
           </div>
         )}
         {transaction.relatedId && transaction.type === "redemption" && (
           <div className="detail-field">
-            <strong>Processed By:</strong>
+            <strong>Processed By (UTORid):</strong>
+            <span>{transaction.relatedUtorid || 'N/A'}</span>
+          </div>
+        )}
+        {transaction.relatedId && transaction.type === "event" && (
+          <div className="detail-field">
+            <strong>Event ID:</strong>
             <span>{transaction.relatedId}</span>
           </div>
         )}
