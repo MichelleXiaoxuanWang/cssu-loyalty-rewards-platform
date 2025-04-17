@@ -4,14 +4,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { getUserUtorid, getUserRole, getCurrentRole, setCurrentRole, getUserName, logout } from '../services/auth.service';
 import logoutIcon from '../assets/logout.png';  // Attribute: this is external image from https://www.flaticon.com/free-icon/logout_8212701
-import { isUserOrganizer } from '../services/event.service';
 
-// Role hierarchy for determining available roles
 const ROLE_HIERARCHY = {
-  'superuser': ['superuser', 'manager', 'cashier', 'regular'],
-  'manager': ['manager', 'cashier', 'regular'],
-  'cashier': ['cashier', 'regular'],
-  'regular': ['regular']
+  'superuser': ['superuser', 'manager', 'cashier', 'regular', 'organizer'],
+  'manager': ['manager', 'cashier', 'regular', 'organizer'],
+  'cashier': ['cashier', 'regular', 'organizer'],
+  'regular': ['regular', 'organizer']
 };
 
 const Navbar: React.FC = () => {
@@ -23,7 +21,6 @@ const Navbar: React.FC = () => {
   const [currentRole, setCurrentRoleState] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
-  const [isOrganizer, setIsOrganizer] = useState<boolean>(false);
   
   useEffect(() => {
     const userUtorid = getUserUtorid();
@@ -41,20 +38,6 @@ const Navbar: React.FC = () => {
       setAvailableRoles(ROLE_HIERARCHY[userMaxRole as keyof typeof ROLE_HIERARCHY]);
     }
 
-    const checkOrganizerStatus = async () => {
-      const currentUser = localStorage.getItem('currentUser');
-      const userId = localStorage.getItem(`userId_${currentUser}`);
-      if (userId) {
-        try {
-          const organizerStatus = await isUserOrganizer(Number(userId));
-          setIsOrganizer(organizerStatus);
-        } catch (error) {
-          console.error('Error checking organizer status:', error);
-        }
-      }
-    };
-
-    checkOrganizerStatus();
   }, [location]);
   
   // Don't show navbar on authentication pages
@@ -68,13 +51,9 @@ const Navbar: React.FC = () => {
   }
 
   const handleRoleChange = (newRole: string) => {
-    // Update the current role in local storage
     setCurrentRole(newRole);
     setCurrentRoleState(newRole);
     setDropdownOpen(false);
-    
-    // Instead of just navigating to home, we'll force a refresh by
-    // navigating with a replaced state which forces App component to re-render
     navigate('/', { replace: true, state: { roleChanged: true, timestamp: Date.now() } });
   };
 
@@ -131,12 +110,6 @@ const Navbar: React.FC = () => {
         <Link to="/events" className={isActiveLink('/events') ? 'active-link' : ''}>Events</Link>
         <Link to="/create-user" className={isActiveLink('/create-user') ? 'active-link' : ''}>Register Users</Link>
         
-        {isOrganizer && (
-          <Link to="/organizer-events" className={isActiveLink('/organizer-events') ? 'active-link' : ''}>
-            My Organized Events
-          </Link>
-        )}
-
         <button className="logout-button" onClick={handleLogout}>
           Logout
           <img src={logoutIcon} alt="Logout" className="logout-icon" />
@@ -186,12 +159,50 @@ const Navbar: React.FC = () => {
         <Link to="/profile" className={isActiveLink('/profile') ? 'active-link' : ''}>Profile</Link>
         {(currentRole === 'manager' || currentRole === 'superuser') && 
          <Link to="/create-user" className={isActiveLink('/create-user') ? 'active-link' : ''}>Create User</Link>}
+
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+          <img src={logoutIcon} alt="Logout" className="logout-icon" />
+        </button>
+      </nav>
+    );
+  }
+
+  // Organizer navbar
+  if (currentRole === 'organizer') {
+    return (
+      <nav className="navbar">
+        <div className="user-info">
+          <div className="username">Welcome back, {userName || utorid}!</div>
+          
+          <div className="role-switcher">
+            <div className="role-label">Current role:</div>
+            <div 
+              className="current-role" 
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              {currentRole} ▼
+            </div>
+            
+            {dropdownOpen && (
+              <div className="role-dropdown">
+                {availableRoles.map(role => (
+                  <div 
+                    key={role} 
+                    className={`role-option ${role === currentRole ? 'active' : ''}`}
+                    onClick={() => handleRoleChange(role)}
+                  >
+                    {role}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
         
-        {isOrganizer && (
-          <Link to="/organizer-events" className={isActiveLink('/organizer-events') ? 'active-link' : ''}>
-            My Organized Events
-          </Link>
-        )}
+        <Link to="/organizer-events" className={isActiveLink('/organizer-events') ? 'active-link' : ''}>
+          My Organized Events
+        </Link>
 
         <button className="logout-button" onClick={handleLogout}>
           Logout
@@ -237,12 +248,6 @@ const Navbar: React.FC = () => {
       <Link to="/events" className={isActiveLink('/events') ? 'active-link' : ''}>Events</Link>
       <Link to="/promotions" className={isActiveLink('/promotions') ? 'active-link' : ''}>Promotions</Link>
       <Link to="/profile" className={isActiveLink('/profile') ? 'active-link' : ''}>Profile</Link>
-      
-      {isOrganizer && (
-        <Link to="/organizer-events" className={isActiveLink('/organizer-events') ? 'active-link' : ''}>
-          My Organized Events
-        </Link>
-      )}
 
       <button className="logout-button" onClick={handleLogout}>
         Logout
