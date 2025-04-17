@@ -17,6 +17,7 @@ const TransactionPreviewPage: React.FC = () => {
     limit: 10
   });
   const [totalPages, setTotalPages] = useState(1);
+  const [totalTransactions, setTotalTransactions] = useState<number>(0);
   const [hasSuspiciousTransactions, setHasSuspiciousTransactions] = useState(false);
   const [hasPendingRedemptions, setHasPendingRedemptions] = useState(false);
 
@@ -82,6 +83,7 @@ const TransactionPreviewPage: React.FC = () => {
         ? await getAllTransactions(filters)
         : await getMyTransactions(filters);
       
+      setTotalTransactions(response.count);
       setTransactions(response.results);
       setTotalPages(Math.ceil(response.count / (filters.limit || 10)));
     } catch (err) {
@@ -167,6 +169,7 @@ const TransactionPreviewPage: React.FC = () => {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={filters.limit || 10}
+        totalItems={totalTransactions}
       />
     </div>
   );

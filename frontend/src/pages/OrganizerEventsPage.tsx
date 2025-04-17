@@ -80,6 +80,7 @@ const OrganizerEventsPage: React.FC = () => {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={itemsPerPage}
+        totalItems={totalEvents}
       />
     </div>
   );

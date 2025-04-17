@@ -109,6 +109,7 @@ const UsersPage: React.FC = () => {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={itemsPerPage}
+        totalItems={totalUsers}
       />
     </div>
   );

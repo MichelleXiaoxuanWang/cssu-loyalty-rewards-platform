@@ -180,6 +180,7 @@ const PromotionsPage: React.FC = () => {
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
         itemsPerPage={itemsPerPage}
+        totalItems={totalPromotions}
       />
     </div>
   );
