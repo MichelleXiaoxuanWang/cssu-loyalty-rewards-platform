@@ -4,6 +4,7 @@ import Pagination from '../components/Pagination';
 import FilterAndSort from '../components/FilterAndSort';
 import { fetchUsers, User, UserFilters, UserResponse } from '../services/user.service';
 import '../styles/ListingPage.css';
+import { getCurrentRole } from '../services/auth.service';
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,6 +19,33 @@ const UsersPage: React.FC = () => {
   });
   const currentUser = localStorage.getItem('currentUser');
   const role = localStorage.getItem(`current_role_${currentUser}`);
+  const [hasUnverifiedUser, setHasUnverifiedUser] = useState(false);
+
+  const currentRole = getCurrentRole();
+  const isAdminRole = currentRole === 'manager' || currentRole === 'superuser';
+
+  useEffect(() => {
+    if (isAdminRole) {
+      checkSystemAlerts();
+    }
+  }, [isAdminRole]);
+
+  const checkSystemAlerts = async () => {
+    try {
+      // Get first page with high limit to efficiently check for alerts
+      const alertCheckFilters: UserFilters = { 
+        page: 1, 
+        limit: 100, 
+        verified: false 
+      };
+      
+      // Check for suspicious transactions
+      const unverifiedCheck: UserResponse = await fetchUsers(alertCheckFilters);
+      setHasUnverifiedUser(unverifiedCheck.count > 0);
+    } catch (err) {
+      console.error('Error checking system alerts:', err);
+    }
+  };
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -82,6 +110,17 @@ const UsersPage: React.FC = () => {
         onFilterChange={handleFilterChange}
         onSortChange={handleSortChange}
       />
+
+      {isAdminRole && (
+        <div className="transactions-alerts">
+          {hasUnverifiedUser && (
+            <div className="pending-redemptions-alert">
+              🔔 Some users are unverified
+            </div>
+          )}
+        </div>
+      )}
+
       {users && users.length === 0 ? (
         <div className="no-entries">
           <p>There are currently no users</p>
