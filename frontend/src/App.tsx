@@ -1,5 +1,5 @@
 import './App.css'
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import VerifyEmailPage from './pages/VerifyEmail';
@@ -16,7 +16,6 @@ import CreateUser from './pages/CreateUser.tsx';
 import Navbar from './components/NavBar.tsx';
 import { hasAccess } from './utils/auth.utils';
 import CreateTransaction from './pages/CreateTransaction.tsx';
-import { isUserOrganizer } from './services/event.service';
 
 import ProfilePage from './pages/ProfilePage.tsx';
 import UserDetailPage from './pages/UserDetail.tsx';
@@ -103,19 +102,6 @@ function HomeRedirect() {
 }
 
 function App() {
-
-  useEffect(() => {
-    const checkOrganizerStatus = async () => {
-      const currentUser = localStorage.getItem('currentUser');
-      const userId = localStorage.getItem(`userId_${currentUser}`);
-      if (userId) {
-        const isOrganizer = await isUserOrganizer(parseInt(userId));
-        setIsOrganizer(isOrganizer);
-      }
-    };
-
-    checkOrganizerStatus();
-  }, []);
 
   // login: the page to login, uses /auth/tokens
   // verifyEmail: the page to send verify email, uses /auth/resets
