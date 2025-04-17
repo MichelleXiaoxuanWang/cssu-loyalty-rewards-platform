@@ -85,7 +85,8 @@ async function filterUsers(req, filters = {}) {
         createdAt: true,
         lastLogin: true,
         verified: true,
-        avatarUrl: true
+        avatarUrl: true,
+        suspicious: true
     };
 
     /// Determine orderBy clause based on filters.sort
